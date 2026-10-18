@@ -1,4 +1,4 @@
+controler\PublicCatalogServlet.class
 config\DBContext.class
 com\mycompany\groupasm\resources\JakartaEE10Resource.class
-controler\PublicCatalogServlet.class
 com\mycompany\groupasm\JakartaRestConfiguration.class
