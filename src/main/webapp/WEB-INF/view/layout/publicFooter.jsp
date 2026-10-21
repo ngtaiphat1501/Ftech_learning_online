@@ -29,7 +29,6 @@
                     Học hôm nay, phát triển ngày mai.
                 </span>
             </div>
-
             <%-- Explore --%>
             <div class="col-6 col-md-3 col-lg-2">
                 <h2 class="h6 fw-bold mb-3">Khám phá</h2>
@@ -79,3 +78,6 @@
         </div>
     </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
