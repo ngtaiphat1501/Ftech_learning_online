@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 
 public class Course {
 
+    private double averageRating;
+    private long reviewCount;
     private long id;
     private String title;
     private String thumbnailUrl;
@@ -101,4 +103,20 @@ public class Course {
     public void setLessonCount(int lessonCount) {
         this.lessonCount = lessonCount;
     }
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public long getReviewCount() {
+        return reviewCount;
+    }
+
+    public void setReviewCount(long reviewCount) {
+        this.reviewCount = reviewCount;
+    }
+
 }

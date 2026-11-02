@@ -291,6 +291,29 @@
                         <%= escape(course.getInstructorName()) %>
                     </p>
 
+                    <div class="d-flex flex-wrap align-items-center gap-2 small mb-2">
+                        <% if (course.getReviewCount() > 0) {
+                            double stars = Math.round(course.getAverageRating() * 2) / 2.0;
+                        %>
+                        <span class="fw-bold text-warning">
+                            <%= String.format(Locale.US, "%.1f", course.getAverageRating()) %>/5
+                        </span>
+                        <span class="text-warning" aria-hidden="true">
+                            <% for (int star = 1; star <= 5; star++) { %>
+                            <i class="bi <%= stars >= star ? "bi-star-fill" : stars >= star - 0.5 ? "bi-star-half" : "bi-star" %>"></i>
+                            <% } %>
+                        </span>
+                        <span class="text-body-secondary">
+                            (<%= course.getReviewCount() %> đánh giá)
+                        </span>
+                        <% } else { %>
+                        <span class="text-body-secondary">
+                            <i class="bi bi-star me-1" aria-hidden="true"></i>
+                            Chưa có đánh giá
+                        </span>
+                        <% } %>
+                    </div>
+
                     <div class="d-flex flex-wrap gap-2 small text-body-secondary mb-3">
                         <span>
                             <i class="bi bi-collection-play me-1"></i>

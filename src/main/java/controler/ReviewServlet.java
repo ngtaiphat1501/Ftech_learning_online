@@ -40,9 +40,10 @@ public class ReviewServlet extends HttpServlet {
             long courseId=positiveId(request.getParameter("courseId"));
             int rating=Integer.parseInt(request.getParameter("rating"));
             new ReviewDAO().save(userId,courseId,rating,request.getParameter("comment"));
-            response.sendRedirect(request.getContextPath()+"/student/learn?courseId="+courseId+"&reviewSaved=1#course-review");
+            response.sendRedirect(request.getContextPath()+"/student/courses?reviewSaved=1#course-"+courseId);
         } catch(SecurityException ex) {response.sendError(403,ex.getMessage());
         } catch(IllegalArgumentException ex) {response.sendError(400,ex instanceof NumberFormatException?"Mã hoặc dữ liệu không hợp lệ.":ex.getMessage());
         } catch(SQLException ex) {throw new ServletException("Không thể xử lý dữ liệu.",ex);}
     }
 }
+
