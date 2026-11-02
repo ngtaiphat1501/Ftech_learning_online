@@ -18,6 +18,12 @@ public class Course {
     private BigDecimal salePrice;
     private BigDecimal estimatedHours;
     private int lessonCount;
+    private String status;
+    private long instructorId;
+    private long categoryId;
+    private String slug;
+    private String description;
+    private int enrollmentCount;
 
     public Course() {
     }
@@ -28,6 +34,38 @@ public class Course {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getInstructorId() {
+        return instructorId;
+    }
+
+    public void setInstructorId(long instructorId) {
+        this.instructorId = instructorId;
+    }
+
+    public long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTitle() {
@@ -101,4 +139,21 @@ public class Course {
     public void setLessonCount(int lessonCount) {
         this.lessonCount = lessonCount;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getEnrollmentCount() {
+        return enrollmentCount;
+    }
+
+    public void setEnrollmentCount(int enrollmentCount) {
+        this.enrollmentCount = enrollmentCount;
+    }
+
 }
