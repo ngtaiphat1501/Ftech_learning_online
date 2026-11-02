@@ -24,11 +24,20 @@ public class CourseDAO {
                 + "c.PricingType, c.ListPriceVnd, c.SalePriceVnd, "
                 + "c.EstimatedHours, u.FullName AS InstructorName, "
                 + "ca.Name AS CategoryName, "
+                + "COALESCE(rv.AverageRating, 0) AS AverageRating, "
+                + "COALESCE(rv.ReviewCount, 0) AS ReviewCount, "
                 + "(SELECT COUNT(*) FROM Lessons l "
                 + "WHERE l.CourseId = c.CourseId) AS LessonCount "
                 + "FROM Courses c "
                 + "JOIN Users u ON c.InstructorId = u.UserId "
                 + "JOIN Categories ca ON c.CategoryId = ca.CategoryId "
+                + "LEFT JOIN (SELECT e.CourseId, "
+                + "AVG(CAST(r.Rating AS decimal(10, 4))) AS AverageRating, "
+                + "COUNT_BIG(*) AS ReviewCount "
+                + "FROM dbo.CourseReviews r "
+                + "JOIN dbo.Enrollments e ON e.EnrollmentId = r.EnrollmentId "
+                + "WHERE r.IsHidden = 0 "
+                + "GROUP BY e.CourseId) rv ON rv.CourseId = c.CourseId "
                 + "WHERE c.Status = 'PUBLISHED' "
                 + "AND ca.IsActive = 1 "
                 + "AND c.Title LIKE ? "
@@ -59,6 +68,9 @@ public class CourseDAO {
                     course.setSalePrice(result.getBigDecimal("SalePriceVnd"));
                     course.setEstimatedHours(result.getBigDecimal("EstimatedHours"));
                     course.setLessonCount(result.getInt("LessonCount"));
+
+                    course.setAverageRating(result.getDouble("AverageRating"));
+                    course.setReviewCount(result.getLong("ReviewCount"));
 
                     list.add(course);
                 }

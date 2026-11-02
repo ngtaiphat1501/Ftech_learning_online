@@ -2,13 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
- /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controler;
 
 import dao.StudentCourseDAO;
+import dao.ReviewDAO;
+import java.util.UUID;
 import java.io.IOException;
 import java.sql.SQLException;
 import jakarta.servlet.ServletException;
@@ -48,6 +46,9 @@ public class StudentCourseServlet extends HttpServlet {
         }
 
         long studentId = ((Number) sessionUserId).longValue();
+        if (session.getAttribute("csrfToken") == null) {
+            session.setAttribute("csrfToken", UUID.randomUUID().toString());
+        }
 
         try {
             StudentCourseDAO studentCourseDAO = new StudentCourseDAO();
@@ -56,6 +57,8 @@ public class StudentCourseServlet extends HttpServlet {
                     "list",
                     studentCourseDAO.getList(studentId)
             );
+
+            request.setAttribute("reviews", new ReviewDAO().getOwnReviews(studentId));
 
             request.setAttribute("pageTitle", "Khóa học của tôi");
             request.setAttribute("activeMenu", "myCourses");
