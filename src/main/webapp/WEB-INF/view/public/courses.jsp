@@ -353,12 +353,20 @@
 
                         <% } %>
 
+                        <% if (free) { %>
+                        <a href="<%= contextPath %>/student/enroll?courseId=<%= course.getId() %>"
+                           class="btn btn-outline-success w-100 rounded-3 fw-semibold">
+                            Đăng ký học ngay
+                            <i class="bi bi-mortarboard ms-1"></i>
+                        </a>
+                        <% } else { %>
                         <button type="button"
-                                class="btn btn-outline-secondary w-100"
-                                disabled>
-                            Chi tiết sẽ được bổ sung
-                            <i class="bi bi-arrow-right ms-1"></i>
+                                class="btn btn-primary w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                                onclick="if(typeof addCourseToCart === 'function'){ addCourseToCart(<%= course.getId() %>); } else { window.location.href='<%= contextPath %>/student/cart?action=add&courseId=<%= course.getId() %>'; }">
+                            <i class="bi bi-cart-plus"></i>
+                            <span>Thêm vào giỏ</span>
                         </button>
+                        <% } %>
                     </div>
                 </div>
             </article>

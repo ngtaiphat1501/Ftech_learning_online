@@ -57,7 +57,6 @@
                             </li>
                         </ul>
 
-
                         <!-- Right side -->
                         <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
 
@@ -76,11 +75,12 @@
                             </button>
 
                             <!-- Giỏ hàng -->
-                            <a href="${pageContext.request.contextPath}/cart"
+                            <a href="${pageContext.request.contextPath}/student/cart"
+                               onclick="if(typeof handleOpenCart === 'function'){ handleOpenCart(); return false; }"
                                class="btn btn-icon position-relative rounded-circle bg-body-tertiary border-0 d-inline-flex align-items-center justify-content-center"
                                aria-label="Giỏ hàng">
                                 <i class="bi bi-cart3"></i>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <span id="headerCartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger ${empty cartCount || cartCount == 0 ? 'd-none' : ''}">
                                     ${empty cartCount ? 0 : cartCount}
                                 </span>
                             </a>
@@ -95,3 +95,5 @@
                 </div>
             </nav>
         </header>
+
+        <%@include file="/WEB-INF/view/student/cart-drawer.jsp" %>

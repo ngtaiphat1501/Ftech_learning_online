@@ -29,6 +29,7 @@
                     Học hôm nay, phát triển ngày mai.
                 </span>
             </div>
+
             <%-- Explore --%>
             <div class="col-6 col-md-3 col-lg-2">
                 <h2 class="h6 fw-bold mb-3">Khám phá</h2>
@@ -78,6 +79,49 @@
         </div>
     </div>
 </footer>
+
+<!-- Thư viện JS của Bootstrap (giúp menu mobile co giãn và dropdown hoạt động) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  (function () {
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    if (!themeBtn) return;
+    const icon = themeBtn.querySelector('i');
+
+    // 1. Đọc theme đã lưu từ bộ nhớ trình duyệt (mặc định là dark)
+    const currentTheme = localStorage.getItem('ftech_theme') || 'dark';
+    html.dataset.bsTheme = currentTheme;
+    if (icon) {
+      icon.className = currentTheme === 'dark' ? 'bi bi-brightness-high' : 'bi bi-moon';
+    }
+
+    // 2. Bắt sự kiện click để bật tắt Sáng / Tối
+    themeBtn.addEventListener('click', () => {
+      const isDark = html.dataset.bsTheme === 'dark';
+      const newTheme = isDark ? 'light' : 'dark';
+      
+      html.dataset.bsTheme = newTheme;
+      localStorage.setItem('ftech_theme', newTheme);
+      
+      if (icon) {
+        icon.className = newTheme === 'dark' ? 'bi bi-brightness-high' : 'bi bi-moon';
+      }
+    });
+
+    // 3. Phím tắt tiện ích: nhấn Ctrl + K để nhảy vào ô Search
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        const search = document.getElementById('searchInput');
+        if (search) {
+          e.preventDefault();
+          search.focus();
+        }
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>
