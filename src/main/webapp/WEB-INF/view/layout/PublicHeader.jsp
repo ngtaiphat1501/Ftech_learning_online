@@ -55,6 +55,12 @@
                                     Khóa học của tôi
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-3 px-3 ${activeMenu == 'orders' ? 'active bg-primary-subtle text-primary-emphasis' : ''}"
+                                   href="${pageContext.request.contextPath}/student/orders">
+                                    Lịch sử đơn hàng
+                                </a>
+                            </li>
                         </ul>
 
                         <!-- Right side -->
@@ -97,3 +103,4 @@
         </header>
 
         <%@include file="/WEB-INF/view/student/cart-drawer.jsp" %>
+        <%@include file="/WEB-INF/view/student/checkout-modal.jsp" %>
