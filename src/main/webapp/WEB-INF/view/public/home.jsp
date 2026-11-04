@@ -106,7 +106,7 @@
 
     <!-- Chiếm 70% chiều rộng Hero trên desktop, ở lớp nền phía phải -->
     <div class="ftech-hero-3d" aria-label="Mô hình 3D trang trí tương tác của Ftech">
-      <spline-viewer
+        <spline-viewer
         url="https://prod.spline.design/H7xybsdJWgc6ZWbN/scene.splinecode">
       </spline-viewer>
     </div>

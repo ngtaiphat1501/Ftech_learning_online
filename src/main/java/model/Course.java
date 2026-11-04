@@ -1,15 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.math.BigDecimal;
 
 public class Course {
 
+    // ===== MAIN / TEAM =====
     private double averageRating;
     private long reviewCount;
+
+    // ===== COMMON =====
     private long id;
     private String title;
     private String thumbnailUrl;
@@ -20,6 +19,14 @@ public class Course {
     private BigDecimal salePrice;
     private BigDecimal estimatedHours;
     private int lessonCount;
+
+    // ===== INSTRUCTOR =====
+    private String status;
+    private long instructorId;
+    private long categoryId;
+    private String slug;
+    private String description;
+    private int enrollmentCount;
 
     public Course() {
     }
@@ -103,6 +110,7 @@ public class Course {
     public void setLessonCount(int lessonCount) {
         this.lessonCount = lessonCount;
     }
+
     public double getAverageRating() {
         return averageRating;
     }
@@ -119,4 +127,51 @@ public class Course {
         this.reviewCount = reviewCount;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public long getInstructorId() {
+        return instructorId;
+    }
+
+    public void setInstructorId(long instructorId) {
+        this.instructorId = instructorId;
+    }
+
+    public long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getEnrollmentCount() {
+        return enrollmentCount;
+    }
+
+    public void setEnrollmentCount(int enrollmentCount) {
+        this.enrollmentCount = enrollmentCount;
+    }
 }
