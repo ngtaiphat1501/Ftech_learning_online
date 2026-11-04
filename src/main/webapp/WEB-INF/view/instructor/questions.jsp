@@ -349,4 +349,4 @@ function openEditQuestionModal(id, content, explanation, points, sortOrder) {
 }
 </script>
 
-<%@include file="/WEB-INF/view/layout/PublicFooter.jsp" %>
+<%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>

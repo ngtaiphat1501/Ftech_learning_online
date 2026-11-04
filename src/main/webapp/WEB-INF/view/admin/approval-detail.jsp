@@ -289,4 +289,4 @@
     </div>
 </div>
 
-<%@include file="/WEB-INF/view/layout/PublicFooter.jsp" %>
+<%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>

@@ -306,4 +306,4 @@ function openEditQuizModal(id, title, desc, duration, maxAttempts, passingScore,
 }
 </script>
 
-<%@include file="/WEB-INF/view/layout/PublicFooter.jsp" %>
+<%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>
