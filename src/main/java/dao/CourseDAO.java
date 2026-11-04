@@ -97,6 +97,14 @@ public class CourseDAO {
                             result.getInt("LessonCount")
                     );
 
+                    course.setAverageRating(
+                            result.getDouble("AverageRating")
+                    );
+
+                    course.setReviewCount(
+                            result.getLong("ReviewCount")
+                    );
+
                     list.add(course);
                 }
             }
