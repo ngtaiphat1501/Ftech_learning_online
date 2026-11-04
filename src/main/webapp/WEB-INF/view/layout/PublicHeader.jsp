@@ -767,19 +767,7 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item">
-                                <a
-                                    class="
-                                    nav-link
-                                    rounded-3
-                                    px-3
-                                    ${activeMenu == 'orders'
-                                      ? 'active bg-primary-subtle text-primary-emphasis'
-                                      : ''}"
-                                    href="${pageContext.request.contextPath}/student/orders">
-                                    Lịch sử đơn hàng
-                                </a>
-                            </li>
+
                             <% } %>
 
                         </ul>
