@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(name = "CourseDetailServlet", urlPatterns = {"/course"})
+@WebServlet(name = "CourseDetailServlet", urlPatterns = {"/course", "/course/"})
 public class CourseDetailServlet extends HttpServlet {
 
     private final CourseDAO courseDAO = new CourseDAO();
@@ -66,7 +66,7 @@ public class CourseDetailServlet extends HttpServlet {
             }
 
             // Only published courses or visible to owner/admin
-            boolean isStaff = (currentUser != null && (currentUser.isAdmin() || currentUser.getUserId() == course.getInstructorId()));
+            boolean isStaff = (currentUser != null && (currentUser.isAdmin() || (currentUser.getUserId() != null && currentUser.getUserId().longValue() == course.getInstructorId())));
             if (!"PUBLISHED".equalsIgnoreCase(course.getStatus()) && !isStaff) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Khóa học chưa được công khai.");
                 return;

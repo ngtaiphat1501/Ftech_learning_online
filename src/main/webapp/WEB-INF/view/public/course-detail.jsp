@@ -10,6 +10,10 @@
 
 <%
     Course course = (Course) request.getAttribute("course");
+    if (course == null) {
+        response.sendRedirect(request.getContextPath() + "/courses");
+        return;
+    }
     Boolean isEnrolled = (Boolean) request.getAttribute("isEnrolled");
     Boolean isInCart = (Boolean) request.getAttribute("isInCart");
     List<CourseReview> reviews = (List<CourseReview>) request.getAttribute("reviews");
