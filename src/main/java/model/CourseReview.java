@@ -8,11 +8,15 @@ public class CourseReview implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long enrollmentId;
+    private Long courseId;
+    private String courseTitle;
     private int rating;
     private String comment;
     private Timestamp createdAt;
     private String studentName;
+    private String studentEmail;
     private String studentAvatar;
+    private boolean hidden;
 
     // Flags used by student review flow
     private boolean eligible;
@@ -37,6 +41,22 @@ public class CourseReview implements Serializable {
 
     public void setEnrollmentId(Long enrollmentId) {
         this.enrollmentId = enrollmentId;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public String getCourseTitle() {
+        return courseTitle;
+    }
+
+    public void setCourseTitle(String courseTitle) {
+        this.courseTitle = courseTitle;
     }
 
     public int getRating() {
@@ -71,12 +91,28 @@ public class CourseReview implements Serializable {
         this.studentName = studentName;
     }
 
+    public String getStudentEmail() {
+        return studentEmail;
+    }
+
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
+    }
+
     public String getStudentAvatar() {
         return studentAvatar;
     }
 
     public void setStudentAvatar(String studentAvatar) {
         this.studentAvatar = studentAvatar;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     public boolean isEligible() {

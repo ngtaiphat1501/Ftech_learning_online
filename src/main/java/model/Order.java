@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +14,15 @@ public class Order implements Serializable {
     private Long orderId;
     private String orderCode;
     private Long studentId;
-    private String status; // 'PENDING_PAYMENT', 'PAYMENT_REVIEW', 'PAID', 'CANCELLED', 'EXPIRED', 'REFUNDED'
+    private String studentName;
+    private String studentEmail;
+    private String status; // 'PENDING_PAYMENT', 'PAID', 'CANCELLED', 'REFUNDED', 'PAYMENT_REVIEW'
     private String currency = "VND";
     private BigDecimal subtotalVnd = BigDecimal.ZERO;
     private BigDecimal discountVnd = BigDecimal.ZERO;
     private BigDecimal totalVnd = BigDecimal.ZERO;
     private String couponCode;
-    private String policyVersion = "v2026.1";
+    private String policyVersion = "2026-v1";
     private String idempotencyKey;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
@@ -27,6 +30,7 @@ public class Order implements Serializable {
 
     private String paymentProvider;
     private String paymentMerchantRef;
+    private String reconcileNote;
 
     private List<OrderItem> items = new ArrayList<>();
 
@@ -55,6 +59,22 @@ public class Order implements Serializable {
 
     public void setStudentId(Long studentId) {
         this.studentId = studentId;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String getStudentEmail() {
+        return studentEmail;
+    }
+
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
     }
 
     public String getStatus() {
@@ -150,13 +170,35 @@ public class Order implements Serializable {
     }
 
     public void setItems(List<OrderItem> items) {
-        this.items = items != null ? items : new ArrayList<>();
+        this.items = (items != null) ? items : new ArrayList<>();
     }
 
     public void addItem(OrderItem item) {
         if (item != null) {
             this.items.add(item);
         }
+    }
+
+    public String getFormattedCreatedAt() {
+        if (createdAt == null) return "";
+        return createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    }
+
+    public String getFormattedPaidAt() {
+        if (paidAt == null) return "";
+        return paidAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    }
+
+    public boolean isPaid() {
+        return "PAID".equalsIgnoreCase(status);
+    }
+
+    public boolean isPending() {
+        return "PENDING_PAYMENT".equalsIgnoreCase(status);
+    }
+
+    public boolean isCancelled() {
+        return "CANCELLED".equalsIgnoreCase(status);
     }
 
     public String getPaymentProvider() {
@@ -173,6 +215,14 @@ public class Order implements Serializable {
 
     public void setPaymentMerchantRef(String paymentMerchantRef) {
         this.paymentMerchantRef = paymentMerchantRef;
+    }
+
+    public String getReconcileNote() {
+        return reconcileNote;
+    }
+
+    public void setReconcileNote(String reconcileNote) {
+        this.reconcileNote = reconcileNote;
     }
 
     public int getItemCount() {
