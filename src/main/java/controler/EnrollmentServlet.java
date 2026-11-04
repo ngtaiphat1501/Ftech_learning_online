@@ -116,10 +116,7 @@ public class EnrollmentServlet extends HttpServlet {
         Long studentId = getStudentId(session);
 
         if (studentId == null) {
-            response.sendError(
-                    HttpServletResponse.SC_UNAUTHORIZED,
-                    "Vui long dang nhap"
-            );
+            response.sendRedirect(request.getContextPath() + "/?authModal=signin");
             return;
         }
 
@@ -231,9 +228,7 @@ public class EnrollmentServlet extends HttpServlet {
         Long studentId = getStudentId(session);
 
         if (studentId == null) {
-            response.sendError(
-                    HttpServletResponse.SC_UNAUTHORIZED,
-                    "Vui long dang nhap");
+            response.sendRedirect(request.getContextPath() + "/?authModal=signin");
             return;
         }
 
