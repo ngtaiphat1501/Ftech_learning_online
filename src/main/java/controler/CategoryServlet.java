@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(name = "CategoryServlet", urlPatterns = {"/admin/category", "/admin/categories", "/admin", "/admin/dashboard"})
+@WebServlet(name = "CategoryServlet", urlPatterns = {"/admin/category", "/admin/categories"})
 public class CategoryServlet extends HttpServlet {
 
     private final CategoryDAO categoryDAO = new CategoryDAO();

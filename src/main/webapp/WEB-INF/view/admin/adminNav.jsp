@@ -14,6 +14,16 @@
         </div>
 
         <nav class="nav nav-pills gap-1">
+            <a class="nav-link rounded-pill px-3 py-1.5 small <%= "dashboard".equals(currentAdminTab) ? "active bg-primary" : "text-light" %>"
+               href="${pageContext.request.contextPath}/admin/dashboard">
+                <i class="bi bi-speedometer2 me-1"></i>Tổng quan
+            </a>
+
+            <a class="nav-link rounded-pill px-3 py-1.5 small <%= "approvals".equals(currentAdminTab) ? "active bg-primary" : "text-light" %>"
+               href="${pageContext.request.contextPath}/admin/approvals">
+                <i class="bi bi-patch-check me-1"></i>Duyệt khóa học
+            </a>
+
             <a class="nav-link rounded-pill px-3 py-1.5 small <%= "categories".equals(currentAdminTab) ? "active bg-primary" : "text-light" %>"
                href="${pageContext.request.contextPath}/admin/category">
                 <i class="bi bi-tags me-1"></i>Danh mục
@@ -21,17 +31,17 @@
 
             <a class="nav-link rounded-pill px-3 py-1.5 small <%= "users".equals(currentAdminTab) ? "active bg-primary" : "text-light" %>"
                href="${pageContext.request.contextPath}/admin/users">
-                <i class="bi bi-people me-1"></i>Người dùng & Phân quyền
+                <i class="bi bi-people me-1"></i>Người dùng & Quyền
             </a>
 
             <a class="nav-link rounded-pill px-3 py-1.5 small <%= "moderation".equals(currentAdminTab) ? "active bg-primary" : "text-light" %>"
                href="${pageContext.request.contextPath}/admin/moderation">
-                <i class="bi bi-shield-check me-1"></i>Kiểm duyệt nội dung
+                <i class="bi bi-shield-check me-1"></i>Kiểm duyệt
             </a>
 
             <a class="nav-link rounded-pill px-3 py-1.5 small <%= "orders".equals(currentAdminTab) ? "active bg-primary" : "text-light" %>"
                href="${pageContext.request.contextPath}/admin/orders">
-                <i class="bi bi-receipt me-1"></i>Đơn hàng & Đối soát
+                <i class="bi bi-receipt me-1"></i>Đơn hàng
             </a>
         </nav>
     </div>

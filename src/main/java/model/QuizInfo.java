@@ -16,6 +16,8 @@ public class QuizInfo {
     private long activeAttemptId;
     private boolean activeExpired;
     private boolean passed;
+    private int sortOrder = 1;
+    private int attemptCount = 0;
     private int totalRequiredLessons;
     private int completedRequiredLessons;
 
@@ -143,5 +145,21 @@ public class QuizInfo {
 
     public boolean isLessonsCompleted() {
         return totalRequiredLessons > 0 && completedRequiredLessons >= totalRequiredLessons;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public int getAttemptCount() {
+        return attemptCount;
+    }
+
+    public void setAttemptCount(int attemptCount) {
+        this.attemptCount = attemptCount;
     }
 }

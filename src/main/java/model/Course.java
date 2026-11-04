@@ -376,4 +376,46 @@ public class Course implements Serializable {
         }
         return null;
     }
+
+    private java.time.LocalDateTime createdAt;
+
+    public long getCourseId() {
+        return id;
+    }
+
+    public void setCourseId(long courseId) {
+        this.id = courseId;
+    }
+
+    public String getHeadline() {
+        return subtitle;
+    }
+
+    public void setHeadline(String headline) {
+        this.subtitle = headline;
+    }
+
+    public BigDecimal getListPriceVnd() {
+        return listPrice;
+    }
+
+    public void setListPriceVnd(BigDecimal listPriceVnd) {
+        this.listPrice = listPriceVnd;
+    }
+
+    public BigDecimal getSalePriceVnd() {
+        return salePrice;
+    }
+
+    public void setSalePriceVnd(BigDecimal salePriceVnd) {
+        this.salePrice = salePriceVnd;
+    }
+
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(java.time.LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

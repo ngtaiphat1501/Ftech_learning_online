@@ -660,4 +660,13 @@ public class CourseDAO {
             }
         }
     }
+
+    public Course getCourseDetail(Connection conn, long courseId) throws SQLException {
+        return getCourseDetail(courseId);
+    }
+
+    public List<Chapter> getCourseChaptersWithLessons(Connection conn, long courseId) throws SQLException {
+        return getCourseChaptersWithLessons(courseId);
+    }
+
 }
