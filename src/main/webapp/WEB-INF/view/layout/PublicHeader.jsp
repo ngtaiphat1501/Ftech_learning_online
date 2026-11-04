@@ -754,7 +754,33 @@
 
                             <li class="nav-item">
 
-                                <a
+                                                                    <a
+                                        class="
+                                        dropdown-item
+                                        d-flex
+                                        align-items-center
+                                        gap-3
+                                        py-2"
+
+                                        href="${pageContext.request.contextPath}/profile">
+
+
+                                        <i
+                                            class="
+                                            bi
+                                            bi-person-circle
+                                            text-primary
+                                            fs-5">
+                                        </i>
+
+
+                                        <span>
+                                            Hồ sơ cá nhân
+                                        </span>
+
+                                    </a>
+
+<a
                                     class="
                                     nav-link
                                     rounded-3

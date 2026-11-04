@@ -299,4 +299,29 @@ public class UserDAO {
             return ps.executeUpdate() > 0;
         }
     }
+
+    public boolean updateProfile(long userId, String fullName, String headline, String bio, String avatarUrl) throws SQLException {
+        String sql = "UPDATE dbo.Users "
+                   + "SET FullName = ?, Headline = ?, Bio = ?, AvatarUrl = ?, UpdatedAt = SYSUTCDATETIME() "
+                   + "WHERE UserId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, fullName != null ? fullName.trim() : "");
+            ps.setString(2, headline != null ? headline.trim() : null);
+            ps.setString(3, bio != null ? bio.trim() : null);
+            ps.setString(4, avatarUrl != null ? avatarUrl.trim() : null);
+            ps.setLong(5, userId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updatePassword(long userId, String newPasswordHash) throws SQLException {
+        String sql = "UPDATE dbo.Users SET PasswordHash = ?, UpdatedAt = SYSUTCDATETIME() WHERE UserId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPasswordHash);
+            ps.setLong(2, userId);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }
