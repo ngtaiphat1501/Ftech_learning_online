@@ -171,9 +171,6 @@ public class CourseDAO {
                     course.setStatus(result.getString("Status"));
                     course.setEnrollmentCount(result.getInt("EnrollmentCount"));
 
-                    course.setAverageRating(result.getDouble("AverageRating"));
-                    course.setReviewCount(result.getLong("ReviewCount"));
-
                     list.add(course);
                 }
             }
