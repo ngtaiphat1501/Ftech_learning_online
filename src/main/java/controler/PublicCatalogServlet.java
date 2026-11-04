@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author ACER
  */
-@WebServlet(name = "PublicCatalogServlet", urlPatterns = {"/"})
+@WebServlet(name = "PublicCatalogServlet", urlPatterns = {"", "/", "/home"})
 public class PublicCatalogServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -24,30 +24,28 @@ public class PublicCatalogServlet extends HttpServlet {
        
     }
 
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String path = request.getServletPath();
-        if(path==null || path.isEmpty() || "/".equals(path)){
-            path ="/home";
+        if (path == null || path.isEmpty() || "/".equals(path) || "".equals(path)) {
+            path = "/home";
         }
-        try{
-            switch(path){
+        try {
+            switch (path) {
                 case "/home":
                     request.getRequestDispatcher("/WEB-INF/view/public/home.jsp").forward(request, response);
-                
-                
-                
+                    break;
+                default:
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    break;
             }
-            
-        }catch(Exception ex){
-            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new ServletException(ex);
         }
-        
     }
 
- 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
