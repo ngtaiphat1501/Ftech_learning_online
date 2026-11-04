@@ -1,32 +1,48 @@
 package model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Course {
+public class Course implements Serializable {
 
-    // ===== MAIN / TEAM =====
-    private double averageRating;
-    private long reviewCount;
+    private static final long serialVersionUID = 1L;
 
-    // ===== COMMON =====
     private long id;
+    private long categoryId;
+    private long instructorId;
+    private String slug;
     private String title;
+    private String subtitle;
+    private String description;
+    private String learningObjectives;
+    private String requirements;
+    private String targetAudience;
     private String thumbnailUrl;
-    private String instructorName;
-    private String categoryName;
+    private String introVideoUrl;
+    private String level;
+    private String language;
+    private BigDecimal estimatedHours;
     private String pricingType;
     private BigDecimal listPrice;
     private BigDecimal salePrice;
-    private BigDecimal estimatedHours;
-    private int lessonCount;
-
-    // ===== INSTRUCTOR =====
     private String status;
-    private long instructorId;
-    private long categoryId;
-    private String slug;
-    private String description;
-    private int enrollmentCount;
+
+    // Joined / Calculated fields
+    private String instructorName;
+    private String instructorHeadline;
+    private String instructorBio;
+    private String instructorAvatar;
+    private String categoryName;
+    private int moduleCount;
+    private int lessonCount;
+    private int learnerCount;
+    private double averageRating = 5.0;
+    private int totalRatings = 0;
+
+    private List<Chapter> chapters = new ArrayList<>();
 
     public Course() {
     }
@@ -39,12 +55,104 @@ public class Course {
         this.id = id;
     }
 
+    public long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public long getInstructorId() {
+        return instructorId;
+    }
+
+    public void setInstructorId(long instructorId) {
+        this.instructorId = instructorId;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLearningObjectives() {
+        return learningObjectives;
+    }
+
+    public void setLearningObjectives(String learningObjectives) {
+        this.learningObjectives = learningObjectives;
+    }
+
+    public List<String> getLearningObjectivesList() {
+        List<String> list = new ArrayList<>();
+        if (learningObjectives != null && !learningObjectives.isBlank()) {
+            String[] parts = learningObjectives.split("\\||\r?\n");
+            for (String p : parts) {
+                String trimmed = p.trim();
+                if (!trimmed.isEmpty()) {
+                    list.add(trimmed);
+                }
+            }
+        }
+        return list;
+    }
+
+    public String getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(String requirements) {
+        this.requirements = requirements;
+    }
+
+    public List<String> getRequirementsList() {
+        List<String> list = new ArrayList<>();
+        if (requirements != null && !requirements.isBlank()) {
+            String[] parts = requirements.split("\\||\r?\n");
+            for (String p : parts) {
+                String trimmed = p.trim();
+                if (!trimmed.isEmpty()) {
+                    list.add(trimmed);
+                }
+            }
+        }
+        return list;
+    }
+
+    public String getTargetAudience() {
+        return targetAudience;
+    }
+
+    public void setTargetAudience(String targetAudience) {
+        this.targetAudience = targetAudience;
     }
 
     public String getThumbnailUrl() {
@@ -55,20 +163,36 @@ public class Course {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public String getInstructorName() {
-        return instructorName;
+    public String getIntroVideoUrl() {
+        return introVideoUrl;
     }
 
-    public void setInstructorName(String instructorName) {
-        this.instructorName = instructorName;
+    public void setIntroVideoUrl(String introVideoUrl) {
+        this.introVideoUrl = introVideoUrl;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getLevel() {
+        return level;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public BigDecimal getEstimatedHours() {
+        return estimatedHours;
+    }
+
+    public void setEstimatedHours(BigDecimal estimatedHours) {
+        this.estimatedHours = estimatedHours;
     }
 
     public String getPricingType() {
@@ -77,6 +201,10 @@ public class Course {
 
     public void setPricingType(String pricingType) {
         this.pricingType = pricingType;
+    }
+
+    public boolean isFree() {
+        return "FREE".equalsIgnoreCase(pricingType);
     }
 
     public BigDecimal getListPrice() {
@@ -95,36 +223,31 @@ public class Course {
         this.salePrice = salePrice;
     }
 
-    public BigDecimal getEstimatedHours() {
-        return estimatedHours;
+    public BigDecimal getCurrentPrice() {
+        if (isFree()) {
+            return BigDecimal.ZERO;
+        }
+        return (salePrice != null) ? salePrice : (listPrice != null ? listPrice : BigDecimal.ZERO);
     }
 
-    public void setEstimatedHours(BigDecimal estimatedHours) {
-        this.estimatedHours = estimatedHours;
+    public boolean isDiscounted() {
+        return !isFree() && salePrice != null && listPrice != null && salePrice.compareTo(listPrice) < 0;
     }
 
-    public int getLessonCount() {
-        return lessonCount;
+    public BigDecimal getSavings() {
+        if (isDiscounted()) {
+            return listPrice.subtract(salePrice);
+        }
+        return BigDecimal.ZERO;
     }
 
-    public void setLessonCount(int lessonCount) {
-        this.lessonCount = lessonCount;
-    }
-
-    public double getAverageRating() {
-        return averageRating;
-    }
-
-    public void setAverageRating(double averageRating) {
-        this.averageRating = averageRating;
-    }
-
-    public long getReviewCount() {
-        return reviewCount;
-    }
-
-    public void setReviewCount(long reviewCount) {
-        this.reviewCount = reviewCount;
+    public int getDiscountPercentage() {
+        if (isDiscounted() && listPrice != null && listPrice.compareTo(BigDecimal.ZERO) > 0) {
+            return getSavings().multiply(BigDecimal.valueOf(100))
+                    .divide(listPrice, 0, RoundingMode.HALF_UP)
+                    .intValue();
+        }
+        return 0;
     }
 
     public String getStatus() {
@@ -135,43 +258,122 @@ public class Course {
         this.status = status;
     }
 
-    public long getInstructorId() {
-        return instructorId;
+    public String getInstructorName() {
+        return instructorName;
     }
 
-    public void setInstructorId(long instructorId) {
-        this.instructorId = instructorId;
+    public void setInstructorName(String instructorName) {
+        this.instructorName = instructorName;
     }
 
-    public long getCategoryId() {
-        return categoryId;
+    public String getInstructorHeadline() {
+        return instructorHeadline;
     }
 
-    public void setCategoryId(long categoryId) {
-        this.categoryId = categoryId;
+    public void setInstructorHeadline(String instructorHeadline) {
+        this.instructorHeadline = instructorHeadline;
     }
 
-    public String getSlug() {
-        return slug;
+    public String getInstructorBio() {
+        return instructorBio;
     }
 
-    public void setSlug(String slug) {
-        this.slug = slug;
+    public void setInstructorBio(String instructorBio) {
+        this.instructorBio = instructorBio;
     }
 
-    public String getDescription() {
-        return description;
+    public String getInstructorAvatar() {
+        return instructorAvatar;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setInstructorAvatar(String instructorAvatar) {
+        this.instructorAvatar = instructorAvatar;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public int getModuleCount() {
+        return moduleCount;
+    }
+
+    public void setModuleCount(int moduleCount) {
+        this.moduleCount = moduleCount;
+    }
+
+    public int getLessonCount() {
+        return lessonCount;
+    }
+
+    public void setLessonCount(int lessonCount) {
+        this.lessonCount = lessonCount;
+    }
+
+    public int getLearnerCount() {
+        return learnerCount;
+    }
+
+    public void setLearnerCount(int learnerCount) {
+        this.learnerCount = learnerCount;
     }
 
     public int getEnrollmentCount() {
-        return enrollmentCount;
+        return learnerCount;
     }
 
     public void setEnrollmentCount(int enrollmentCount) {
-        this.enrollmentCount = enrollmentCount;
+        this.learnerCount = enrollmentCount;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public int getTotalRatings() {
+        return totalRatings;
+    }
+
+    public void setTotalRatings(int totalRatings) {
+        this.totalRatings = totalRatings;
+    }
+
+    public long getReviewCount() {
+        return totalRatings;
+    }
+
+    public void setReviewCount(long reviewCount) {
+        this.totalRatings = (int) reviewCount;
+    }
+
+    public List<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<Chapter> chapters) {
+        this.chapters = (chapters != null) ? chapters : new ArrayList<>();
+    }
+
+    public Long getFirstPreviewLessonId() {
+        if (chapters != null) {
+            for (Chapter chapter : chapters) {
+                if (chapter.getLessons() != null) {
+                    for (Lesson lesson : chapter.getLessons()) {
+                        if (lesson.isPreview()) {
+                            return lesson.getLessonId();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

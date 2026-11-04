@@ -283,7 +283,9 @@
                     </div>
 
                     <h3 class="fw-bold course-title mb-2">
-                        <%= escape(course.getTitle()) %>
+                        <a href="<%= contextPath %>/course?id=<%= course.getId() %>" class="text-decoration-none text-reset">
+                            <%= escape(course.getTitle()) %>
+                        </a>
                     </h3>
 
                     <p class="text-body-secondary small mb-2">
