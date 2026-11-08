@@ -73,10 +73,18 @@
 
 <style>
     .course-studio-page { min-height: calc(100vh - 76px); background: var(--bs-body-bg); }
-    .course-studio-container { max-width: 1510px; }
+    .course-studio-container { width: 100%; max-width: 100% !important; padding-left: 18px; padding-right: 24px; }
+    .course-studio-sidebar-wrapper {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+        align-self: flex-start;
+    }
     .course-studio-sidebar {
         background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color);
-        border-radius: 22px; padding: 18px 12px;
+        border-radius: 20px; padding: 18px 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
     .course-studio-brand { display: flex; gap: 12px; align-items: center; padding: 12px 14px 19px;
         border-bottom: 1px solid var(--bs-border-color); margin-bottom: 16px; }
@@ -105,11 +113,11 @@
 </style>
 
 <main class="course-studio-page">
-    <div class="container-fluid course-studio-container py-4 py-lg-5">
-        <div class="row g-4">
-            <!-- STUDIO SIDEBAR -->
-            <aside class="col-12 col-lg-3 col-xl-2" aria-label="Điều hướng giảng viên">
-                <nav class="course-studio-sidebar sticky-lg-top" style="top: 20px">
+    <div class="container-fluid course-studio-container py-4">
+        <div class="row g-3 g-xl-4 align-items-start">
+            <!-- STUDIO SIDEBAR (Sticky & Flush to Left) -->
+            <aside class="col-12 col-lg-3 col-xl-2 course-studio-sidebar-wrapper" aria-label="Điều hướng giảng viên">
+                <nav class="course-studio-sidebar">
                     <div class="course-studio-brand">
                         <div class="course-studio-brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
                         <div><div class="fw-bold">Instructor</div><div class="small text-body-secondary">Ftech Studio</div></div>

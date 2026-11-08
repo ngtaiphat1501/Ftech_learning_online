@@ -194,6 +194,51 @@ public class CourseDAO {
         return list;
     }
 
+    public List<Course> getTopCoursesByInstructor(long instructorId, int limit) throws SQLException {
+        List<Course> list = new ArrayList<>();
+
+        String sql = "SELECT TOP (?) c.CourseId, c.Title, c.ThumbnailUrl, "
+                + "c.PricingType, c.ListPriceVnd, c.SalePriceVnd, "
+                + "c.EstimatedHours, c.Status, "
+                + "u.FullName AS InstructorName, "
+                + "ca.Name AS CategoryName, "
+                + "(SELECT COUNT(*) FROM Lessons l WHERE l.CourseId = c.CourseId) AS LessonCount, "
+                + "(SELECT COUNT(*) FROM dbo.Enrollments e WHERE e.CourseId = c.CourseId) AS EnrollmentCount, "
+                + "ISNULL((SELECT SUM(oi.PayableVnd) FROM dbo.OrderItems oi JOIN dbo.Orders o ON o.OrderId = oi.OrderId AND o.Status = 'PAID' WHERE oi.CourseId = c.CourseId), 0) AS RevenueVnd "
+                + "FROM Courses c "
+                + "JOIN Users u ON c.InstructorId = u.UserId "
+                + "JOIN Categories ca ON c.CategoryId = ca.CategoryId "
+                + "WHERE c.InstructorId = ? "
+                + "ORDER BY EnrollmentCount DESC, RevenueVnd DESC, c.CourseId DESC";
+
+        try (Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, limit);
+            statement.setLong(2, instructorId);
+
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    Course course = new Course();
+                    course.setId(result.getLong("CourseId"));
+                    course.setTitle(result.getString("Title"));
+                    course.setThumbnailUrl(result.getString("ThumbnailUrl"));
+                    course.setInstructorName(result.getString("InstructorName"));
+                    course.setCategoryName(result.getString("CategoryName"));
+                    course.setPricingType(result.getString("PricingType"));
+                    course.setListPrice(result.getBigDecimal("ListPriceVnd"));
+                    course.setSalePrice(result.getBigDecimal("SalePriceVnd"));
+                    course.setEstimatedHours(result.getBigDecimal("EstimatedHours"));
+                    course.setLessonCount(result.getInt("LessonCount"));
+                    course.setStatus(result.getString("Status"));
+                    course.setEnrollmentCount(result.getInt("EnrollmentCount"));
+                    course.setRevenueVnd(result.getBigDecimal("RevenueVnd"));
+                    list.add(course);
+                }
+            }
+        }
+
+        return list;
+    }
+
     public Course getByIdForInstructor(long courseId, long instructorId)
             throws SQLException {
 

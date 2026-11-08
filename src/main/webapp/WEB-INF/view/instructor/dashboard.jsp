@@ -21,6 +21,10 @@
 <%
     User instructorUser = (User) request.getAttribute("instructorUser");
     List<Course> courses = (List<Course>) request.getAttribute("courses");
+    List<Course> topCourses = (List<Course>) request.getAttribute("topCourses");
+    if (topCourses == null) {
+        topCourses = (courses != null) ? courses : new java.util.ArrayList<>();
+    }
     List<Map<String, Object>> recentEnrollments = (List<Map<String, Object>>) request.getAttribute("recentEnrollments");
     List<Map<String, Object>> monthlyRevList = (List<Map<String, Object>>) request.getAttribute("monthlyRevenue");
 
@@ -79,10 +83,18 @@
 
 <style>
     .course-studio-page { min-height: calc(100vh - 76px); background: var(--bs-body-bg); }
-    .course-studio-container { max-width: 1510px; }
+    .course-studio-container { width: 100%; max-width: 100% !important; padding-left: 18px; padding-right: 24px; }
+    .course-studio-sidebar-wrapper {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+        align-self: flex-start;
+    }
     .course-studio-sidebar {
         background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color);
-        border-radius: 22px; padding: 18px 12px;
+        border-radius: 20px; padding: 18px 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
     .course-studio-brand { display: flex; gap: 12px; align-items: center; padding: 12px 14px 19px;
         border-bottom: 1px solid var(--bs-border-color); margin-bottom: 16px; }
@@ -111,11 +123,11 @@
 </style>
 
 <main class="course-studio-page">
-    <div class="container-fluid course-studio-container py-4 py-lg-5">
-        <div class="row g-4">
-            <!-- STUDIO SIDEBAR -->
-            <aside class="col-12 col-lg-3 col-xl-2" aria-label="Điều hướng giảng viên">
-                <nav class="course-studio-sidebar sticky-lg-top" style="top: 20px">
+    <div class="container-fluid course-studio-container py-4">
+        <div class="row g-3 g-xl-4 align-items-start">
+            <!-- STUDIO SIDEBAR (Sticky & Flush to Left) -->
+            <aside class="col-12 col-lg-3 col-xl-2 course-studio-sidebar-wrapper" aria-label="Điều hướng giảng viên">
+                <nav class="course-studio-sidebar">
                     <div class="course-studio-brand">
                         <div class="course-studio-brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
                         <div><div class="fw-bold">Instructor</div><div class="small text-body-secondary">Ftech Studio</div></div>
@@ -311,25 +323,25 @@
                                 </a>
                             </div>
                             <div class="p-3">
-                                <% if (courses == null || courses.isEmpty()) { %>
+                                <% if (topCourses == null || topCourses.isEmpty()) { %>
                                     <p class="text-secondary small mb-0 text-center py-4">Chưa có khóa học nào.</p>
                                 <% } else { %>
                                     <div class="list-group list-group-flush gap-2">
                                         <% 
-                                            // Top 4 courses
-                                            int limitCount = Math.min(courses.size(), 4);
-                                            for (int i = 0; i < limitCount; i++) {
-                                                Course c = courses.get(i);
+                                            for (int i = 0; i < topCourses.size(); i++) {
+                                                Course c = topCourses.get(i);
                                                 String thumb = (c.getThumbnailUrl() != null && !c.getThumbnailUrl().isBlank())
                                                         ? c.getThumbnailUrl()
                                                         : "https://placehold.co/100x65/212529/ced4da?text=Course";
+                                                String rankColor = (i == 0) ? "text-warning" : ((i == 1) ? "text-info" : ((i == 2) ? "text-primary" : "text-secondary"));
                                         %>
                                             <div class="list-group-item bg-dark-subtle border border-secondary border-opacity-25 rounded-3 d-flex align-items-center gap-3 p-2.5">
-                                                <div class="fw-bold fs-5 text-secondary px-2">#<%= i + 1 %></div>
+                                                <div class="fw-bold fs-5 <%= rankColor %> px-2">#<%= i + 1 %></div>
                                                 <img src="<%= thumb %>" alt="thumb" class="rounded-2 object-fit-cover" style="width: 54px; height: 36px;">
                                                 <div class="flex-grow-1 text-truncate">
                                                     <a href="<%= context %>/instructor/curriculum?courseId=<%= c.getId() %>"
-                                                       class="fw-semibold text-white text-decoration-none small d-block text-truncate">
+                                                       class="fw-semibold text-white text-decoration-none small d-block text-truncate"
+                                                       title="<%= escapeHtml(c.getTitle()) %>">
                                                         <%= escapeHtml(c.getTitle()) %>
                                                     </a>
                                                     <div class="small text-success font-monospace" style="font-size: 0.75rem;">

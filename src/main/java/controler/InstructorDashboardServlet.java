@@ -63,8 +63,10 @@ public class InstructorDashboardServlet extends HttpServlet {
             int currentYear = LocalDate.now().getYear();
             List<Map<String, Object>> monthlyRevenue = courseDAO.getMonthlyRevenueByInstructor(instructorId, currentYear);
             List<Map<String, Object>> recentEnrollments = courseDAO.getRecentEnrollmentsByInstructor(instructorId, 6);
+            List<Course> topCourses = courseDAO.getTopCoursesByInstructor(instructorId, 5);
 
             request.setAttribute("instructorUser", instructorUser);
+            request.setAttribute("topCourses", topCourses);
             request.setAttribute("courses", courses);
             request.setAttribute("totalRevenue", totalRevenue);
             request.setAttribute("totalStudents", totalStudents);
