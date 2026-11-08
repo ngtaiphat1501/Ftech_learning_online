@@ -358,12 +358,24 @@
 
                         <div class="d-flex flex-column gap-2">
                             <a href="<%= contextPath %>/course?id=<%= course.getId() %>"
-                               class="btn btn-outline-secondary text-light w-100 rounded-3 fw-semibold btn-sm d-flex align-items-center justify-content-center gap-2">
+                               class="btn btn-outline-secondary text-body w-100 rounded-3 fw-semibold btn-sm d-flex align-items-center justify-content-center gap-2">
                                 <i class="bi bi-info-circle"></i>
                                 <span>Xem chi tiết</span>
                             </a>
 
-                            <% if (free) { %>
+                            <% if (currentUser != null && currentUser.isAdmin()) { %>
+                            <a href="<%= contextPath %>/student/learn?courseId=<%= course.getId() %>"
+                               class="btn btn-warning text-dark w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-play-circle-fill"></i>
+                                <span>Vào học ngay (Admin)</span>
+                            </a>
+                            <% } else if (currentUser != null && currentUser.isInstructor() && currentUser.getUserId() != null && course.getInstructorId() == currentUser.getUserId().longValue()) { %>
+                            <a href="<%= contextPath %>/instructor/curriculum?courseId=<%= course.getId() %>"
+                               class="btn btn-primary w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-pencil-square"></i>
+                                <span>Quản lý khóa học</span>
+                            </a>
+                            <% } else if (free) { %>
                             <a href="<%= contextPath %>/student/enroll?courseId=<%= course.getId() %>"
                                class="btn btn-outline-success w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2">
                                 <span>Đăng ký học ngay</span>

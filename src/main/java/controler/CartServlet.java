@@ -2,6 +2,7 @@ package controler;
 
 import dao.CartDAO;
 import model.CartItem;
+import model.User;
 import service.CartService;
 import service.CartService.Result;
 import util.CartCsrf;
@@ -56,6 +57,12 @@ public class CartServlet extends HttpServlet {
         response.setDateHeader("Expires", 0);
 
         HttpSession session = request.getSession(false);
+        User currentUser = session != null ? (User) session.getAttribute("user") : null;
+        if (currentUser != null && currentUser.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/courses");
+            return;
+        }
+
         Long studentId = getStudentId(session);
 
         if (studentId == null) {
@@ -142,11 +149,23 @@ public class CartServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        Long studentId = getStudentId(session);
-
         boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))
                 || "json".equalsIgnoreCase(request.getParameter("format"))
                 || "true".equalsIgnoreCase(request.getParameter("ajax"));
+
+        User currentUser = session != null ? (User) session.getAttribute("user") : null;
+        if (currentUser != null && currentUser.isAdmin()) {
+            if (isAjax) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"success\": false, \"message\": \"Tài khoản Quản trị viên có toàn quyền truy cập tất cả khóa học mà không cần thêm vào giỏ hàng.\"}");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/courses");
+            }
+            return;
+        }
+
+        Long studentId = getStudentId(session);
 
         if (studentId == null) {
             if (isAjax) {

@@ -795,6 +795,7 @@
                                 </i>
 
                             </button>
+                            <% if (currentUser == null || !currentUser.isAdmin()) { %>
                             <a href="${pageContext.request.contextPath}/student/cart"
                                onclick="if (typeof handleOpenCart === 'function') {
                                            handleOpenCart();
@@ -835,6 +836,7 @@
                                 </span>
 
                             </a>
+                            <% } %>
 
 
                             <!-- ================================== -->
@@ -1365,8 +1367,10 @@
 
         </header>
 
+        <% if (currentUser == null || !currentUser.isAdmin()) { %>
         <%@include file="/WEB-INF/view/student/cart-drawer.jsp" %>
         <%@include file="/WEB-INF/view/student/checkout-modal.jsp" %>
+        <% } %>
 
         <!-- ========================================== -->
         <!-- SIGN IN MODAL                              -->

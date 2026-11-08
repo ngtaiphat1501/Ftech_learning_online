@@ -22,7 +22,7 @@ public class CourseDAO {
 
         List<Course> list = new ArrayList<>();
 
-        String sql = "SELECT c.CourseId, c.Title, c.ThumbnailUrl, "
+        String sql = "SELECT c.CourseId, c.InstructorId, c.Title, c.ThumbnailUrl, "
                 + "c.PricingType, c.ListPriceVnd, c.SalePriceVnd, "
                 + "c.EstimatedHours, u.FullName AS InstructorName, "
                 + "ca.Name AS CategoryName, "
@@ -72,6 +72,10 @@ public class CourseDAO {
 
                     course.setThumbnailUrl(
                             result.getString("ThumbnailUrl")
+                    );
+
+                    course.setInstructorId(
+                            result.getLong("InstructorId")
                     );
 
                     course.setInstructorName(
