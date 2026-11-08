@@ -380,26 +380,38 @@
                 </div>
 
                 <!-- Your Rating Form (Interactive Box) -->
-                <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
-                    <h6 class="text-body fw-bold mb-2">Đánh giá của bạn</h6>
+                <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm" id="userRatingCard">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="text-body fw-bold mb-0">Đánh giá của bạn</h6>
+                        <% if (currentUserId == null) { %>
+                            <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill small" role="button" onclick="openSignInModal()" style="cursor: pointer;">
+                                <i class="bi bi-lock me-1"></i>Đăng nhập để đánh giá
+                            </span>
+                        <% } %>
+                    </div>
+
                     <div class="d-flex align-items-center gap-1 mb-3" id="ratingStarsGroup">
-                        <i class="bi bi-star rating-star-interactive" data-star="1"></i>
-                        <i class="bi bi-star rating-star-interactive" data-star="2"></i>
-                        <i class="bi bi-star rating-star-interactive" data-star="3"></i>
-                        <i class="bi bi-star rating-star-interactive" data-star="4"></i>
-                        <i class="bi bi-star rating-star-interactive" data-star="5"></i>
+                        <i class="bi bi-star rating-star-interactive text-warning" data-star="1" style="cursor: pointer; font-size: 1.3rem;"></i>
+                        <i class="bi bi-star rating-star-interactive text-warning" data-star="2" style="cursor: pointer; font-size: 1.3rem;"></i>
+                        <i class="bi bi-star rating-star-interactive text-warning" data-star="3" style="cursor: pointer; font-size: 1.3rem;"></i>
+                        <i class="bi bi-star rating-star-interactive text-warning" data-star="4" style="cursor: pointer; font-size: 1.3rem;"></i>
+                        <i class="bi bi-star rating-star-interactive text-warning" data-star="5" style="cursor: pointer; font-size: 1.3rem;"></i>
                         <span class="text-secondary small ms-2" id="starLabel">Chọn số sao</span>
                     </div>
 
                     <div class="mb-3">
-                        <textarea class="form-control bg-body border border-secondary border-opacity-25 text-body py-2.5 px-3 rounded-3"
+                        <textarea id="reviewCommentInput" class="form-control bg-body border border-secondary border-opacity-25 text-body py-2.5 px-3 rounded-3"
                                   rows="3"
                                   placeholder="Chia sẻ cảm nhận của bạn về khóa học này (tùy chọn)..."
                                   style="resize: none; font-size: 0.92rem;"></textarea>
                     </div>
 
+                    <div id="reviewAlertMsg" class="d-none alert py-2 small mb-3"></div>
+
                     <div>
-                        <button type="button" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm" onclick="alert('Cảm ơn bạn đã gửi đánh giá!')">
+                        <button type="button" id="btnSubmitReview"
+                                class="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm"
+                                onclick="handleCourseReviewSubmit()">
                             Gửi đánh giá
                         </button>
                     </div>
@@ -681,7 +693,7 @@
                         if (idx < rating) {
                             s.classList.remove("bi-star");
                             s.classList.add("bi-star-fill");
-                        } else {
+                        } else if (idx >= currentRatingValue) {
                             s.classList.remove("bi-star-fill");
                             s.classList.add("bi-star");
                         }
@@ -690,18 +702,134 @@
                 });
 
                 star.addEventListener("click", function () {
+                    <% if (currentUserId == null) { %>
+                        openSignInModal();
+                        return;
+                    <% } %>
                     const rating = parseInt(this.dataset.star, 10);
+                    currentRatingValue = rating;
                     stars.forEach((s, idx) => {
                         if (idx < rating) {
-                            s.classList.add("active");
+                            s.classList.remove("bi-star");
+                            s.classList.add("bi-star-fill");
                         } else {
-                            s.classList.remove("active");
+                            s.classList.remove("bi-star-fill");
+                            s.classList.add("bi-star");
                         }
                     });
+                    if (label) label.textContent = descriptions[rating - 1];
                 });
             });
+
+            starGroup.addEventListener("mouseleave", function () {
+                stars.forEach((s, idx) => {
+                    if (idx < currentRatingValue) {
+                        s.classList.remove("bi-star");
+                        s.classList.add("bi-star-fill");
+                    } else {
+                        s.classList.remove("bi-star-fill");
+                        s.classList.add("bi-star");
+                    }
+                });
+                if (label) {
+                    label.textContent = currentRatingValue > 0 ? descriptions[currentRatingValue - 1] : "Chọn số sao";
+                }
+            });
         }
+
+        <% if (currentUserId == null) { %>
+            const reviewCommentText = document.getElementById("reviewCommentInput");
+            if (reviewCommentText) {
+                reviewCommentText.addEventListener("focus", function (e) {
+                    e.preventDefault();
+                    this.blur();
+                    openSignInModal();
+                });
+            }
+        <% } %>
     });
+
+    let currentRatingValue = 0;
+
+    function openSignInModal() {
+        const el = document.getElementById("signInModal");
+        if (el && typeof bootstrap !== "undefined") {
+            const modal = bootstrap.Modal.getOrCreateInstance(el);
+            modal.show();
+        }
+    }
+
+    async function handleCourseReviewSubmit() {
+        <% if (currentUserId == null) { %>
+            openSignInModal();
+            return;
+        <% } else if (isAdminUser) { %>
+            showReviewFeedback("Tài khoản Quản trị viên không gửi đánh giá khóa học.", "warning");
+            return;
+        <% } else if (isOwnerInstructor) { %>
+            showReviewFeedback("Bạn là giảng viên của khóa học này, không thể tự đánh giá.", "warning");
+            return;
+        <% } else if (!isEnrolled) { %>
+            showReviewFeedback("Bạn cần đăng ký hoặc tham gia khóa học này để có thể gửi đánh giá.", "warning");
+            return;
+        <% } else { %>
+            if (currentRatingValue < 1 || currentRatingValue > 5) {
+                showReviewFeedback("Vui lòng chọn số sao đánh giá (từ 1 đến 5 sao).", "warning");
+                return;
+            }
+
+            const commentInput = document.getElementById("reviewCommentInput");
+            const comment = commentInput ? commentInput.value : "";
+            const submitBtn = document.getElementById("btnSubmitReview");
+            if (submitBtn) submitBtn.disabled = true;
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append("courseId", "<%= course.getId() %>");
+                formData.append("rating", currentRatingValue);
+                formData.append("comment", comment);
+                formData.append("csrfToken", "<%= session.getAttribute("csrfToken") != null ? session.getAttribute("csrfToken") : "" %>");
+                formData.append("format", "json");
+
+                const response = await fetch("${pageContext.request.contextPath}/student/review", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: formData.toString()
+                });
+
+                if (response.ok) {
+                    showReviewFeedback("Cảm ơn bạn đã gửi đánh giá thành công!", "success");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1200);
+                } else if (response.status === 401) {
+                    openSignInModal();
+                } else {
+                    const data = await response.json().catch(() => null);
+                    showReviewFeedback((data && data.message) ? data.message : "Không thể gửi đánh giá. Vui lòng thử lại sau.", "danger");
+                }
+            } catch (err) {
+                console.error("Review submit error:", err);
+                showReviewFeedback("Đã có lỗi xảy ra khi gửi đánh giá.", "danger");
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        <% } %>
+    }
+
+    function showReviewFeedback(msg, type) {
+        const box = document.getElementById("reviewAlertMsg");
+        if (!box) {
+            alert(msg);
+            return;
+        }
+        box.className = "alert alert-" + type + " py-2 small mb-3";
+        box.textContent = msg;
+        box.classList.remove("d-none");
+    }
 </script>
 
 <%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>

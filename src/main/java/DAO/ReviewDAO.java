@@ -13,12 +13,12 @@ public class ReviewDAO {
         String sql="SELECT e.EnrollmentId FROM Enrollments e WITH (UPDLOCK,HOLDLOCK) "
                 + "JOIN Users u ON u.UserId=e.StudentId JOIN Courses co ON co.CourseId=e.CourseId "
                 + "WHERE e.StudentId=? AND e.CourseId=? AND e.AccessStatus='ACTIVE' "
-                + "AND u.Status='ACTIVE' AND e.CompletedAt IS NOT NULL AND co.Status IN ('PUBLISHED','ARCHIVED')";
+                + "AND u.Status='ACTIVE' AND co.Status IN ('PUBLISHED','ARCHIVED')";
         try(PreparedStatement p=c.prepareStatement(sql)) {
             p.setLong(1,userId);p.setLong(2,courseId);
             try(ResultSet rs=p.executeQuery()) {if(rs.next()) return rs.getLong(1);}
         }
-        throw new SecurityException("Chỉ khóa học đã hoàn thành và còn quyền truy cập mới được đánh giá.");
+        throw new SecurityException("Chỉ học viên đã tham gia khóa học này mới có thể gửi đánh giá.");
     }
 
     public CourseReview getOwnReview(long userId,long courseId) throws SQLException {

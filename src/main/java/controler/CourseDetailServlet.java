@@ -63,6 +63,10 @@ public class CourseDetailServlet extends HttpServlet {
                     currentUserId = ((Number) uid).longValue();
                 }
                 currentUser = (User) session.getAttribute("user");
+                if (session.getAttribute("csrfToken") == null) {
+                    session.setAttribute("csrfToken", java.util.UUID.randomUUID().toString());
+                }
+                request.setAttribute("csrfToken", session.getAttribute("csrfToken"));
             }
 
             // Only published courses or visible to owner/admin
