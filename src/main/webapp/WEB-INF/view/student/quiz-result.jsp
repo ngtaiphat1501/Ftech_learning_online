@@ -35,7 +35,27 @@
             <div class="alert <%= "TIMEOUT".equals(attempt.getFinishReason()) ? "alert-warning" : "alert-info" %>">
                 <%= "TIMEOUT".equals(attempt.getFinishReason()) ? "Hết giờ. Hệ thống đã chấm các đáp án được lưu đúng hạn." : "Bạn đã nộp bài thành công." %>
             </div>
+            <% 
+                String certCode = (String) request.getAttribute("certificateCode");
+                if (certCode != null) { 
+            %>
+            <div class="card border-warning bg-warning bg-opacity-10 rounded-4 p-4 my-4 shadow-sm text-start">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="fs-1 text-warning"><i class="bi bi-award-fill"></i></div>
+                    <div class="flex-grow-1">
+                        <h4 class="h5 fw-bold text-success mb-1">Chúc mừng! Bạn đã hoàn thành khóa học!</h4>
+                        <p class="small text-body-secondary mb-0">Bạn đã hoàn thành đủ điều kiện bài học và bài kiểm tra. Chứng chỉ hoàn thành của bạn đã được khởi tạo thành công.</p>
+                    </div>
+                    <div>
+                        <a href="<%= contextPath %>/certificate?code=<%= certCode %>" class="btn btn-warning fw-semibold px-4 rounded-pill shadow-sm">
+                            <i class="bi bi-award me-1"></i> Xem chứng chỉ
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <% } else { %>
             <p class="small text-body-secondary">Điều kiện hoàn thành khóa đã được kiểm tra lại sau khi chấm bài.</p>
+            <% } %>
             <div class="d-flex justify-content-center flex-wrap gap-2">
                 <a class="btn btn-primary" href="<%= contextPath %>/student/quiz?quizId=<%= attempt.getQuizId() %>">Thông tin đề / Làm lại</a>
                 <a class="btn btn-outline-secondary" href="<%= contextPath %>/student/learn?courseId=<%= attempt.getCourseId() %>">Quay lại học</a>

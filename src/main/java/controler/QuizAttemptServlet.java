@@ -5,6 +5,8 @@
 package controler;
 
 import dao.QuizDAO;
+import dao.CertificateDAO;
+import model.Certificate;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -75,6 +77,18 @@ public class QuizAttemptServlet extends HttpServlet {
                 }
                 request.setAttribute("attempt", attempt);
                 request.setAttribute("pageTitle", attempt.getTitle());
+
+                if ("FINISHED".equals(attempt.getStatus())) {
+                    try {
+                        CertificateDAO certDao = new CertificateDAO();
+                        Certificate cert = certDao.issueCertificateIfEligible(attempt.getEnrollmentId(), attempt.getCourseId(), request.getContextPath());
+                        if (cert != null) {
+                            request.setAttribute("certificateCode", cert.getCertificateCode());
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+
                 String view = "FINISHED".equals(attempt.getStatus()) ? "quiz-result.jsp" : "quiz-attempt.jsp";
                 request.getRequestDispatcher("/WEB-INF/view/student/" + view).forward(request, response);
             } else {

@@ -127,6 +127,20 @@ public class ProgressDAO {
                     statement.executeUpdate();
                 }
 
+                String issueCertSql = "INSERT INTO Certificates (EnrollmentId, CertificateCode, Status, IssuedAt, VerificationUrl) "
+                        + "SELECT e.EnrollmentId, "
+                        + "CONCAT('LN-', YEAR(SYSUTCDATETIME()), '-C', e.CourseId, '-', FORMAT(e.EnrollmentId, '00000')), "
+                        + "'VALID', SYSUTCDATETIME(), "
+                        + "CONCAT('/certificate?code=LN-', YEAR(SYSUTCDATETIME()), '-C', e.CourseId, '-', FORMAT(e.EnrollmentId, '00000')) "
+                        + "FROM Enrollments e "
+                        + "WHERE e.EnrollmentId = ? AND e.CompletedAt IS NOT NULL "
+                        + "AND NOT EXISTS (SELECT 1 FROM Certificates c WHERE c.EnrollmentId = e.EnrollmentId)";
+
+                try (PreparedStatement statement = connection.prepareStatement(issueCertSql)) {
+                    statement.setLong(1, enrollmentId);
+                    statement.executeUpdate();
+                }
+
                 connection.commit();
                 return true;
 

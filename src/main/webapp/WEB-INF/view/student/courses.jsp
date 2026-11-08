@@ -30,6 +30,7 @@
 
     String contextPath = request.getContextPath();
     Map<Long, CourseReview> reviews = (Map<Long, CourseReview>) request.getAttribute("reviews");
+    Map<Long, String> certificates = (Map<Long, String>) request.getAttribute("certificates");
 
     int studyingCount = 0;
     int completedCount = 0;
@@ -293,6 +294,15 @@
                             <i class="bi bi-star me-2"></i>Đánh giá khóa học
                             <% } %>
                         </button>
+                        <% } %>
+
+                        <% 
+                            String certCode = (certificates != null && course.isCompleted()) ? certificates.get(course.getCourseId()) : null;
+                            if (certCode != null) {
+                        %>
+                        <a href="<%= contextPath %>/certificate?code=<%= certCode %>" class="btn btn-outline-success w-100 mt-2">
+                            <i class="bi bi-award me-1"></i> Xem chứng chỉ
+                        </a>
                         <% } %>
 
                     </div>
