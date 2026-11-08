@@ -127,6 +127,6 @@ Tất cả các tài khoản thử nghiệm bên dưới đều sử dụng **M�
 
 ---
 
-## 📄 Bản quyền & Đóng góp
-Dự án được xây dựng và phát triển phục vụ học phần đồ án công nghệ phần mềm tại FPT University / Ftech Learning.
+## 📄 Thông tin Project Môn học
+Dự án được xây dựng và phát triển phục vụ Bài tập lớn / Project cuối kỳ môn học Lập trình Web với Java (PRJ Project) tại FPT University.
 Mọi đóng góp và thắc mắc xin vui lòng liên hệ nhóm tác giả qua GitHub Repository.
