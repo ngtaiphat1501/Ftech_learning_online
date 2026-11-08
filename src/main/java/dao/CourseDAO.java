@@ -697,4 +697,34 @@ public class CourseDAO {
         return list;
     }
 
+    public List<Map<String, Object>> getRecentEnrollmentsByInstructor(long instructorId, int limit) throws SQLException {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT TOP (?) e.EnrollmentId, e.CourseId, c.Title AS CourseTitle, "
+                   + "       u.FullName AS StudentName, u.Email AS StudentEmail, "
+                   + "       e.EnrolledAt, e.AccessStatus "
+                   + "FROM dbo.Enrollments e "
+                   + "JOIN dbo.Courses c ON c.CourseId = e.CourseId "
+                   + "JOIN dbo.Users u ON u.UserId = e.StudentId "
+                   + "WHERE c.InstructorId = ? "
+                   + "ORDER BY e.EnrolledAt DESC";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            ps.setLong(2, instructorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("courseId", rs.getLong("CourseId"));
+                    map.put("courseTitle", rs.getString("CourseTitle"));
+                    map.put("studentName", rs.getString("StudentName"));
+                    map.put("studentEmail", rs.getString("StudentEmail"));
+                    map.put("enrolledAt", rs.getTimestamp("EnrolledAt"));
+                    map.put("accessStatus", rs.getString("AccessStatus"));
+                    list.add(map);
+                }
+            }
+        }
+        return list;
+    }
+
 }
