@@ -39,7 +39,7 @@ public class Course implements Serializable {
     private int moduleCount;
     private int lessonCount;
     private int learnerCount;
-    private double averageRating = 5.0;
+    private double averageRating = 0.0;
     private int totalRatings = 0;
 
     private List<Chapter> chapters = new ArrayList<>();

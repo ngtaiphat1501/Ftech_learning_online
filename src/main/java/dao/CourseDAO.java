@@ -529,7 +529,7 @@ public class CourseDAO {
     }
 
     private void loadRatingSummary(Course course) throws SQLException {
-        String sql = "SELECT COALESCE(AVG(CAST(r.Rating AS FLOAT)), 5.0) AS AvgRating, "
+        String sql = "SELECT COALESCE(AVG(CAST(r.Rating AS FLOAT)), 0.0) AS AvgRating, "
                 + "COUNT(r.Rating) AS TotalRatings "
                 + "FROM dbo.CourseReviews r "
                 + "JOIN dbo.Enrollments e ON r.EnrollmentId = e.EnrollmentId "
@@ -540,8 +540,9 @@ public class CourseDAO {
             ps.setLong(1, course.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    course.setAverageRating(Math.round(rs.getDouble("AvgRating") * 10.0) / 10.0);
-                    course.setTotalRatings(rs.getInt("TotalRatings"));
+                    int total = rs.getInt("TotalRatings");
+                    course.setTotalRatings(total);
+                    course.setAverageRating(total > 0 ? (Math.round(rs.getDouble("AvgRating") * 10.0) / 10.0) : 0.0);
                 }
             }
         }
