@@ -42,32 +42,41 @@ public class ProgressServlet extends HttpServlet {
             return;
         }
 
+        boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))
+                || (request.getHeader("Accept") != null && request.getHeader("Accept").contains("application/json"));
+
         String sessionToken = (String) session.getAttribute("csrfToken");
         String requestToken = request.getParameter("csrfToken");
 
         if (sessionToken == null || !sessionToken.equals(requestToken)) {
-            response.sendError(
-                    HttpServletResponse.SC_FORBIDDEN,
-                    "Yêu cầu không hợp lệ. Hãy tải lại trang học."
-            );
+            if (isAjax) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"success\":false,\"error\":\"CSRF\",\"message\":\"Phiên làm việc đã hết hạn. Vui lòng tải lại trang.\"}");
+                return;
+            }
+            response.sendRedirect(request.getContextPath() + "/student/courses?error=" + java.net.URLEncoder.encode("Phiên làm việc đã hết hạn. Vui lòng tải lại trang.", java.nio.charset.StandardCharsets.UTF_8));
             return;
         }
 
         String action = request.getParameter("action");
 
         if (!"save".equals(action) && !"complete".equals(action)) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Thao tác không hợp lệ."
-            );
+            if (isAjax) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"success\":false,\"error\":\"InvalidAction\",\"message\":\"Thao tác không hợp lệ.\"}");
+                return;
+            }
+            response.sendRedirect(request.getContextPath() + "/student/courses");
             return;
         }
 
         long studentId = ((Number) session.getAttribute("userId")).longValue();
 
-        long courseId;
-        long lessonId;
-        int position;
+        long courseId = 0;
+        long lessonId = 0;
+        int position = 0;
 
         try {
             courseId = Long.parseLong(request.getParameter("courseId"));
@@ -75,18 +84,24 @@ public class ProgressServlet extends HttpServlet {
             position = Integer.parseInt(request.getParameter("position"));
 
             if (courseId <= 0 || lessonId <= 0 || position < 0) {
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Dữ liệu tiến độ không hợp lệ."
-                );
+                if (isAjax) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"success\":false,\"error\":\"InvalidData\",\"message\":\"Dữ liệu tiến độ không hợp lệ.\"}");
+                    return;
+                }
+                response.sendRedirect(request.getContextPath() + "/student/courses");
                 return;
             }
 
         } catch (NumberFormatException ex) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Mã khóa học, bài học hoặc vị trí xem không hợp lệ."
-            );
+            if (isAjax) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"success\":false,\"error\":\"InvalidFormat\",\"message\":\"Mã khóa học hoặc bài học không hợp lệ.\"}");
+                return;
+            }
+            response.sendRedirect(request.getContextPath() + "/student/courses");
             return;
         }
 
@@ -102,21 +117,25 @@ public class ProgressServlet extends HttpServlet {
             );
 
             if (!saved) {
-                if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
+                String forbiddenMsg = "Bạn không có quyền cập nhật tiến độ bài này (Tiến độ chỉ áp dụng cho học viên đã ghi danh).";
+                if (isAjax) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.getWriter().write("{\"success\":false,\"error\":\"Forbidden\"}");
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"success\":false,\"error\":\"Forbidden\",\"message\":\"" + forbiddenMsg + "\"}");
                     return;
                 }
-                response.sendError(
-                        HttpServletResponse.SC_FORBIDDEN,
-                        "Bạn không có quyền cập nhật tiến độ bài này."
+                response.sendRedirect(
+                        request.getContextPath()
+                        + "/student/learn?courseId=" + courseId
+                        + "&lessonId=" + lessonId
+                        + "&error=" + java.net.URLEncoder.encode(forbiddenMsg, java.nio.charset.StandardCharsets.UTF_8)
                 );
                 return;
             }
 
-            if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
+            if (isAjax) {
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write("{\"success\":true,\"position\":" + position + "}");
+                response.getWriter().write("{\"success\":true,\"position\":" + position + ",\"message\":\"Cập nhật tiến độ thành công.\"}");
                 return;
             }
 

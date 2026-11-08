@@ -51,6 +51,10 @@
             && videoUrl.matches(
                     "^https://www\\.youtube\\.com/embed/[A-Za-z0-9_-]+$"
             );
+
+    boolean isEnrolled = Boolean.TRUE.equals(request.getAttribute("isEnrolled"));
+    boolean isAdminViewer = Boolean.TRUE.equals(request.getAttribute("isAdminViewer"));
+    boolean isInstructorViewer = Boolean.TRUE.equals(request.getAttribute("isInstructorViewer"));
 %>
 
 <%@include file="/WEB-INF/view/layout/PublicHeader.jsp"%>
@@ -180,6 +184,16 @@
                 Đã lưu tiến độ học tập.
             </div>
 
+            <% } %>
+
+            <% if (!isEnrolled) { %>
+            <div class="alert alert-warning border-0 rounded-4 d-flex align-items-center gap-3 mb-4 shadow-sm" style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.25) !important; color: #fef08a;">
+                <i class="bi bi-shield-lock-fill fs-2 text-warning"></i>
+                <div>
+                    <div class="fw-bold fs-6">Chế độ xem trước dành cho <%= isAdminViewer ? "Quản trị viên (Admin)" : (isInstructorViewer ? "Giảng viên" : "Người quản lý") %></div>
+                    <div class="small opacity-75">Bạn đang theo dõi bài học ở chế độ đặc quyền. Chức năng ghi nhận hoàn thành và lưu tiến độ chỉ áp dụng cho tài khoản Học viên đã đăng ký khóa học.</div>
+                </div>
+            </div>
             <% } %>
 
             <div class="card rounded-4 mb-4">
@@ -611,6 +625,11 @@
     }, 25000);
 
     function autoSaveProgress(callback) {
+        const isEnrolled = <%= isEnrolled ? "true" : "false" %>;
+        if (!isEnrolled) {
+            if (callback) callback();
+            return;
+        }
         const sec = getCurrentVideoSeconds();
         const posInput = document.getElementById('position');
         if (posInput) posInput.value = sec;
@@ -654,11 +673,67 @@
         });
     }
 
+    function showAppAlertModal(title, message, type) {
+        const modalEl = document.getElementById('appAlertModal');
+        if (!modalEl) {
+            alert(message.replace(/<[^>]+>/g, ''));
+            return;
+        }
+        const titleEl = document.getElementById('appAlertModalTitle');
+        const bodyEl = document.getElementById('appAlertModalBody');
+        const iconEl = document.getElementById('appAlertModalIcon');
+
+        if (titleEl) titleEl.innerText = title;
+        if (bodyEl) bodyEl.innerHTML = message;
+        if (iconEl) {
+            if (type === 'warning') iconEl.className = 'bi bi-exclamation-triangle-fill text-warning fs-3';
+            else if (type === 'danger') iconEl.className = 'bi bi-x-circle-fill text-danger fs-3';
+            else if (type === 'info') iconEl.className = 'bi bi-info-circle-fill text-info fs-3';
+            else iconEl.className = 'bi bi-check-circle-fill text-success fs-3';
+        }
+
+        if (window.bootstrap && bootstrap.Modal) {
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+    }
+
+    function showAppToast(title, message, type) {
+        const toastEl = document.getElementById('appToast');
+        if (!toastEl) return;
+        const bodyEl = document.getElementById('appToastBody');
+        if (bodyEl) {
+            let iconHtml = '<i class="bi bi-check-circle-fill text-success fs-5"></i>';
+            if (type === 'danger') iconHtml = '<i class="bi bi-x-circle-fill text-danger fs-5"></i>';
+            else if (type === 'warning') iconHtml = '<i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>';
+            bodyEl.innerHTML = iconHtml + ' <span>' + message + '</span>';
+        }
+        if (window.bootstrap && bootstrap.Toast) {
+            const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3500 });
+            toast.show();
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        const isEnrolled = <%= isEnrolled ? "true" : "false" %>;
+
+        // Check if redirected with ?error=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorParam = urlParams.get('error');
+        if (errorParam) {
+            showAppAlertModal('Thông báo', decodeURIComponent(errorParam), 'warning');
+            const cleanUrl = window.location.pathname + '?' + window.location.search.replace(/([&?]error=[^&]*)/, '').replace(/^&/, '');
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+
         const btnSave = document.getElementById('btnSavePosition');
         if (btnSave) {
             btnSave.addEventListener('click', function(e) {
                 e.preventDefault();
+                if (!isEnrolled) {
+                    showAppAlertModal('Thông báo quyền hạn', 'Bạn đang xem bài học với tư cách <strong><%= isAdminViewer ? "Quản trị viên (Admin)" : (isInstructorViewer ? "Giảng viên" : "Người quản lý") %></strong>.<br><br>Tính năng lưu vị trí video chỉ áp dụng cho <strong>Học viên đã đăng ký khóa học</strong>.', 'info');
+                    return;
+                }
                 btnSave.disabled = true;
                 btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang lưu...';
                 autoSaveProgress(function() {
@@ -668,17 +743,82 @@
             });
         }
 
-        const completeBtn = document.getElementById('btnCompleteLesson');
-        if (completeBtn) {
-            completeBtn.addEventListener('click', function() {
+        const progressForm = document.getElementById('progressForm');
+        if (progressForm) {
+            progressForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                if (!isEnrolled) {
+                    showAppAlertModal('Thông báo quyền hạn', 'Bạn đang xem bài học với tư cách <strong><%= isAdminViewer ? "Quản trị viên (Admin)" : (isInstructorViewer ? "Giảng viên" : "Người quản lý") %></strong>.<br><br>Tính năng <em>Đánh dấu hoàn thành</em> chỉ áp dụng cho <strong>Học viên đã ghi danh khóa học</strong>.', 'warning');
+                    return;
+                }
+
+                const completeBtn = document.getElementById('btnCompleteLesson');
+                if (completeBtn) {
+                    completeBtn.disabled = true;
+                    completeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang cập nhật...';
+                }
+
                 const sec = getCurrentVideoSeconds();
                 const posInput = document.getElementById('position');
                 if (posInput) posInput.value = sec;
+
+                const courseId = '<%= courseId %>';
+                const lessonId = '<%= selectedLesson.getId() %>';
+                const csrfToken = '<%= escape((String) session.getAttribute("csrfToken")) %>';
+
+                const params = new URLSearchParams();
+                params.append('courseId', courseId);
+                params.append('lessonId', lessonId);
+                params.append('position', sec);
+                params.append('action', 'complete');
+                params.append('csrfToken', csrfToken);
+
+                fetch('<%= contextPath %>/student/progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: params.toString()
+                })
+                .then(async function(res) {
+                    let data = {};
+                    try {
+                        data = await res.json();
+                    } catch(err) {}
+
+                    if (res.ok && data.success !== false) {
+                        if (completeBtn) {
+                            completeBtn.className = 'btn btn-success';
+                            completeBtn.disabled = true;
+                            completeBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i> Bài học đã hoàn thành';
+                        }
+                        showAppToast('Thành công', 'Đã đánh dấu hoàn thành bài học!', 'success');
+                    } else {
+                        if (completeBtn) {
+                            completeBtn.disabled = false;
+                            completeBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i> Đánh dấu hoàn thành';
+                        }
+                        const msg = (data && data.message) ? data.message : 'Bạn không có quyền cập nhật tiến độ bài này (Tiến độ chỉ áp dụng cho học viên đã ghi danh).';
+                        showAppAlertModal('Thông báo lỗi', msg, 'warning');
+                    }
+                })
+                .catch(function(err) {
+                    if (completeBtn) {
+                        completeBtn.disabled = false;
+                        completeBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i> Đánh dấu hoàn thành';
+                    }
+                    showAppAlertModal('Lỗi kết nối', 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.', 'danger');
+                });
             });
         }
     });
 
     window.addEventListener('beforeunload', function() {
+        const isEnrolled = <%= isEnrolled ? "true" : "false" %>;
+        if (!isEnrolled) return;
         const sec = getCurrentVideoSeconds();
         const courseId = '<%= courseId %>';
         const lessonId = '<%= selectedLesson.getId() %>';
@@ -697,5 +837,38 @@
 })();
 </script>
 <% } %>
+
+<!-- Popup Modal Thong Bao Loi / Quyen Han (Khong nhay trang) -->
+<div class="modal fade" id="appAlertModal" tabindex="-1" aria-labelledby="appAlertModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4" style="background: #1e222d; color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+      <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
+        <h5 class="modal-title d-flex align-items-center gap-2" id="appAlertModalLabel">
+          <i id="appAlertModalIcon" class="bi bi-exclamation-triangle-fill text-warning fs-3"></i>
+          <span id="appAlertModalTitle" class="fw-bold">Thông báo</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4" id="appAlertModalBody" style="line-height: 1.6; font-size: 0.95rem;">
+      </div>
+      <div class="modal-footer border-top border-secondary border-opacity-25 pt-3">
+        <button type="button" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+  <div id="appToast" class="toast align-items-center text-white bg-dark border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body d-flex align-items-center gap-2" id="appToastBody">
+        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+        <span>Thành công!</span>
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
 
 <%@include file="/WEB-INF/view/layout/publicFooter.jsp"%>

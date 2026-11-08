@@ -131,6 +131,9 @@ public class LearningServlet extends HttpServlet {
                     request.setAttribute("lessons", lessons);
                     request.setAttribute("pageTitle", "Nội dung khóa học");
                     request.setAttribute("activeMenu", "myCourses");
+                    request.setAttribute("isEnrolled", enrollmentId > 0);
+                    request.setAttribute("isAdminViewer", isAdmin);
+                    request.setAttribute("isInstructorViewer", isInstructorOwner);
 
                     request.getRequestDispatcher(
                             "/WEB-INF/view/student/learning.jsp"
@@ -186,6 +189,9 @@ public class LearningServlet extends HttpServlet {
             request.setAttribute("nextLesson", nextLesson);
             request.setAttribute("pageTitle", courseTitle);
             request.setAttribute("activeMenu", "myCourses");
+            request.setAttribute("isEnrolled", enrollmentId > 0);
+            request.setAttribute("isAdminViewer", isAdmin);
+            request.setAttribute("isInstructorViewer", isInstructorOwner);
             if (enrollmentId > 0) {
                 QuizDAO quizDAO = new QuizDAO();
                 request.setAttribute(
