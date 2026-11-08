@@ -536,14 +536,15 @@
                             <i class="bi bi-shield-check me-1"></i>Trang quản trị duyệt khóa
                         </a>
                     <% } else if (isOwnerInstructor) { %>
+                        <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>"
+                           class="btn btn-success w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 text-white">
+                            <i class="bi bi-play-circle-fill fs-5"></i>
+                            <span>Vào xem phòng học & Thảo luận</span>
+                        </a>
                         <a href="${pageContext.request.contextPath}/instructor/curriculum?courseId=<%= course.getId() %>"
                            class="btn btn-primary w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2">
                             <i class="bi bi-pencil-square fs-5"></i>
                             <span>Quản lý giáo trình (Khóa của bạn)</span>
-                        </a>
-                        <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>"
-                           class="btn btn-outline-secondary w-100 py-2 rounded-3 small">
-                            <i class="bi bi-play-circle me-1"></i>Vào xem phòng học
                         </a>
                     <% } else if (isEnrolled) { %>
                         <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>"

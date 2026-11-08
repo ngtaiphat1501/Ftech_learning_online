@@ -463,6 +463,16 @@
                 background-color: var(--ftech-card-bg) !important;
                 color: var(--ftech-text-main) !important;
             }
+            [data-bs-theme="dark"] .btn-outline-secondary {
+                color: #e2e8f0 !important;
+                border-color: rgba(255, 255, 255, 0.28) !important;
+            }
+            [data-bs-theme="dark"] .btn-outline-secondary:hover {
+                color: #ffffff !important;
+                background-color: rgba(255, 255, 255, 0.12) !important;
+                border-color: rgba(255, 255, 255, 0.45) !important;
+            }
+
             [data-bs-theme="light"] .bg-dark-subtle {
                 background-color: var(--ftech-dropdown-hover) !important;
             }
@@ -1128,14 +1138,13 @@
                                     <img
                                         src="<%= currentUser.getAvatarUrl()%>"
 
-                                        alt="Avatar"
+                                        alt=""
 
                                         class="rounded-circle"
 
-                                        style="
-                                        width:100%;
-                                        height:100%;
-                                        object-fit:cover;">
+                                        style="width:100%;height:100%;object-fit:cover;"
+                                        onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='block';">
+                                    <i class="bi bi-person-fill fs-5" style="display:none;"></i>
 
 
                                     <% } else { %>
