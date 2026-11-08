@@ -253,7 +253,7 @@
             <article class="card course-card h-100 rounded-4 overflow-hidden">
 
                 <div class="position-relative">
-
+                    <a href="<%= contextPath %>/course?id=<%= course.getId() %>" class="d-block text-decoration-none">
                     <% if (hasImage) { %>
 
                     <img src="<%= escape(imageUrl) %>"
@@ -268,6 +268,7 @@
                     </div>
 
                     <% } %>
+                    </a>
 
                     <span class="badge rounded-pill position-absolute top-0 start-0 m-2 <%= free ? "text-bg-success" : "text-bg-primary" %>">
                         <%= free ? "Miễn phí" : "Có phí" %>
@@ -283,7 +284,9 @@
                     </div>
 
                     <h3 class="fw-bold course-title mb-2">
-                        <%= escape(course.getTitle()) %>
+                        <a href="<%= contextPath %>/course?id=<%= course.getId() %>" class="text-decoration-none text-reset">
+                            <%= escape(course.getTitle()) %>
+                        </a>
                     </h3>
 
                     <p class="text-body-secondary small mb-2">
@@ -353,20 +356,28 @@
 
                         <% } %>
 
-                        <% if (free) { %>
-                        <a href="<%= contextPath %>/student/enroll?courseId=<%= course.getId() %>"
-                           class="btn btn-outline-success w-100 rounded-3 fw-semibold">
-                            Đăng ký học ngay
-                            <i class="bi bi-mortarboard ms-1"></i>
-                        </a>
-                        <% } else { %>
-                        <button type="button"
-                                class="btn btn-primary w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
-                                onclick="if(typeof addCourseToCart === 'function'){ addCourseToCart(<%= course.getId() %>); } else { window.location.href='<%= contextPath %>/student/cart?action=add&courseId=<%= course.getId() %>'; }">
-                            <i class="bi bi-cart-plus"></i>
-                            <span>Thêm vào giỏ</span>
-                        </button>
-                        <% } %>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="<%= contextPath %>/course?id=<%= course.getId() %>"
+                               class="btn btn-outline-secondary text-light w-100 rounded-3 fw-semibold btn-sm d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Xem chi tiết</span>
+                            </a>
+
+                            <% if (free) { %>
+                            <a href="<%= contextPath %>/student/enroll?courseId=<%= course.getId() %>"
+                               class="btn btn-outline-success w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <span>Đăng ký học ngay</span>
+                                <i class="bi bi-mortarboard"></i>
+                            </a>
+                            <% } else { %>
+                            <button type="button"
+                                    class="btn btn-primary w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                                    onclick="if(typeof addCourseToCart === 'function'){ addCourseToCart(<%= course.getId() %>); } else { window.location.href='<%= contextPath %>/student/cart?action=add&courseId=<%= course.getId() %>'; }">
+                                <i class="bi bi-cart-plus"></i>
+                                <span>Thêm vào giỏ</span>
+                            </button>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
             </article>

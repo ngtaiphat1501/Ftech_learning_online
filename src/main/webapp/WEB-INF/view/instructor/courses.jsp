@@ -461,6 +461,23 @@
 
                                 </a>
 
+<a href="<%= context%>/instructor/quiz?courseId=<%= course.getId()%>"
+                                   class="btn
+                                          btn-sm
+                                          btn-outline-warning
+                                          rounded-pill">
+
+                                    <i class="bi
+                                              bi-patch-question
+                                              me-1">
+                                    </i>
+
+                                    Đề thi
+
+                                </a>
+
+                                
+
 
                                 <!-- ========================= -->
                                 <!-- DRAFT -->

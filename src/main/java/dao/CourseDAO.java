@@ -8,6 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Course;
+import model.Chapter;
+import model.Lesson;
+import model.CourseReview;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 public class CourseDAO {
 
@@ -95,6 +100,14 @@ public class CourseDAO {
 
                     course.setLessonCount(
                             result.getInt("LessonCount")
+                    );
+
+                    course.setAverageRating(
+                            result.getDouble("AverageRating")
+                    );
+
+                    course.setReviewCount(
+                            result.getLong("ReviewCount")
                     );
 
                     list.add(course);
@@ -448,4 +461,209 @@ public class CourseDAO {
             }
         }
     }
+
+    public Course getCourseDetail(long courseId) throws SQLException {
+        String sql = "SELECT c.CourseId, c.CategoryId, c.InstructorId, c.Slug, c.Title, c.Subtitle, "
+                + "c.Description, c.LearningObjectives, c.Requirements, c.TargetAudience, "
+                + "c.ThumbnailUrl, c.IntroVideoUrl, c.Level, c.Language, c.EstimatedHours, "
+                + "c.PricingType, c.ListPriceVnd, c.SalePriceVnd, c.Status, "
+                + "u.FullName AS InstructorName, u.Headline AS InstructorHeadline, "
+                + "u.Bio AS InstructorBio, u.AvatarUrl AS InstructorAvatar, "
+                + "ca.Name AS CategoryName, "
+                + "(SELECT COUNT(*) FROM dbo.Chapters ch WHERE ch.CourseId = c.CourseId) AS ModuleCount, "
+                + "(SELECT COUNT(*) FROM dbo.Lessons l WHERE l.CourseId = c.CourseId) AS LessonCount, "
+                + "(SELECT COUNT(*) FROM dbo.Enrollments e WHERE e.CourseId = c.CourseId) AS LearnerCount "
+                + "FROM dbo.Courses c "
+                + "JOIN dbo.Users u ON c.InstructorId = u.UserId "
+                + "JOIN dbo.Categories ca ON c.CategoryId = ca.CategoryId "
+                + "WHERE c.CourseId = ?";
+
+        Course course = null;
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, courseId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    course = new Course();
+                    course.setId(rs.getLong("CourseId"));
+                    course.setCategoryId(rs.getLong("CategoryId"));
+                    course.setInstructorId(rs.getLong("InstructorId"));
+                    course.setSlug(rs.getString("Slug"));
+                    course.setTitle(rs.getString("Title"));
+                    course.setSubtitle(rs.getString("Subtitle"));
+                    course.setDescription(rs.getString("Description"));
+                    course.setLearningObjectives(rs.getString("LearningObjectives"));
+                    course.setRequirements(rs.getString("Requirements"));
+                    course.setTargetAudience(rs.getString("TargetAudience"));
+                    course.setThumbnailUrl(rs.getString("ThumbnailUrl"));
+                    course.setIntroVideoUrl(rs.getString("IntroVideoUrl"));
+                    course.setLevel(rs.getString("Level"));
+                    course.setLanguage(rs.getString("Language"));
+                    course.setEstimatedHours(rs.getBigDecimal("EstimatedHours"));
+                    course.setPricingType(rs.getString("PricingType"));
+                    course.setListPrice(rs.getBigDecimal("ListPriceVnd"));
+                    course.setSalePrice(rs.getBigDecimal("SalePriceVnd"));
+                    course.setStatus(rs.getString("Status"));
+
+                    course.setInstructorName(rs.getString("InstructorName"));
+                    course.setInstructorHeadline(rs.getString("InstructorHeadline"));
+                    course.setInstructorBio(rs.getString("InstructorBio"));
+                    course.setInstructorAvatar(rs.getString("InstructorAvatar"));
+                    course.setCategoryName(rs.getString("CategoryName"));
+                    course.setModuleCount(rs.getInt("ModuleCount"));
+                    course.setLessonCount(rs.getInt("LessonCount"));
+                    course.setLearnerCount(rs.getInt("LearnerCount"));
+                }
+            }
+        }
+
+        if (course != null) {
+            loadRatingSummary(course);
+            course.setChapters(getCourseChaptersWithLessons(courseId));
+        }
+
+        return course;
+    }
+
+    private void loadRatingSummary(Course course) throws SQLException {
+        String sql = "SELECT COALESCE(AVG(CAST(r.Rating AS FLOAT)), 5.0) AS AvgRating, "
+                + "COUNT(r.Rating) AS TotalRatings "
+                + "FROM dbo.CourseReviews r "
+                + "JOIN dbo.Enrollments e ON r.EnrollmentId = e.EnrollmentId "
+                + "WHERE e.CourseId = ? AND r.IsHidden = 0";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, course.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    course.setAverageRating(Math.round(rs.getDouble("AvgRating") * 10.0) / 10.0);
+                    course.setTotalRatings(rs.getInt("TotalRatings"));
+                }
+            }
+        }
+    }
+
+    public List<Chapter> getCourseChaptersWithLessons(long courseId) throws SQLException {
+        Map<Long, Chapter> chapterMap = new LinkedHashMap<>();
+
+        String sql = "SELECT ch.ChapterId, ch.CourseId, ch.Title AS ChapterTitle, ch.Description AS ChapterDesc, ch.SortOrder AS ChapterOrder, "
+                + "l.LessonId, l.Title AS LessonTitle, l.VideoUrl, l.DurationSeconds, l.SortOrder AS LessonOrder, "
+                + "l.IsPreview, l.IsRequired "
+                + "FROM dbo.Chapters ch "
+                + "LEFT JOIN dbo.Lessons l ON ch.ChapterId = l.ChapterId "
+                + "WHERE ch.CourseId = ? "
+                + "ORDER BY ch.SortOrder ASC, l.SortOrder ASC";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, courseId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long chapterId = rs.getLong("ChapterId");
+                    Chapter chapter = chapterMap.get(chapterId);
+                    if (chapter == null) {
+                        chapter = new Chapter(
+                                chapterId,
+                                rs.getLong("CourseId"),
+                                rs.getString("ChapterTitle"),
+                                rs.getString("ChapterDesc"),
+                                rs.getInt("ChapterOrder")
+                        );
+                        chapterMap.put(chapterId, chapter);
+                    }
+
+                    long lessonId = rs.getLong("LessonId");
+                    if (lessonId > 0) {
+                        Lesson lesson = new Lesson(
+                                lessonId,
+                                chapterId,
+                                courseId,
+                                rs.getString("LessonTitle"),
+                                rs.getString("VideoUrl"),
+                                (Integer) rs.getObject("DurationSeconds"),
+                                rs.getInt("LessonOrder"),
+                                rs.getBoolean("IsPreview"),
+                                rs.getBoolean("IsRequired")
+                        );
+                        chapter.addLesson(lesson);
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>(chapterMap.values());
+    }
+
+    public List<CourseReview> getCourseReviews(long courseId) throws SQLException {
+        List<CourseReview> reviews = new ArrayList<>();
+        String sql = "SELECT r.EnrollmentId, r.Rating, r.Comment, r.CreatedAt, "
+                + "u.FullName AS StudentName, u.AvatarUrl AS StudentAvatar "
+                + "FROM dbo.CourseReviews r "
+                + "JOIN dbo.Enrollments e ON r.EnrollmentId = e.EnrollmentId "
+                + "JOIN dbo.Users u ON e.StudentId = u.UserId "
+                + "WHERE e.CourseId = ? AND r.IsHidden = 0 "
+                + "ORDER BY r.CreatedAt DESC";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, courseId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    CourseReview review = new CourseReview(
+                            rs.getLong("EnrollmentId"),
+                            rs.getInt("Rating"),
+                            rs.getString("Comment"),
+                            rs.getTimestamp("CreatedAt"),
+                            rs.getString("StudentName"),
+                            rs.getString("StudentAvatar")
+                    );
+                    reviews.add(review);
+                }
+            }
+        }
+        return reviews;
+    }
+
+    public boolean isUserEnrolled(long userId, long courseId) throws SQLException {
+        String sql = "SELECT 1 FROM dbo.Enrollments WHERE StudentId = ? AND CourseId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, courseId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public boolean isCourseInUserCart(long userId, long courseId) throws SQLException {
+        String sql = "SELECT 1 FROM dbo.CartItems ci "
+                + "JOIN dbo.Carts c ON ci.CartId = c.CartId "
+                + "WHERE c.StudentId = ? AND ci.CourseId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, courseId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public Course getCourseDetail(Connection conn, long courseId) throws SQLException {
+        return getCourseDetail(courseId);
+    }
+
+    public List<Chapter> getCourseChaptersWithLessons(Connection conn, long courseId) throws SQLException {
+        return getCourseChaptersWithLessons(courseId);
+    }
+
 }

@@ -752,8 +752,8 @@
                             </li>
 
 
+                            <% if (currentUserId != null) { %>
                             <li class="nav-item">
-
                                 <a
                                     class="
                                     nav-link
@@ -762,32 +762,13 @@
                                     ${activeMenu == 'myCourses'
                                       ? 'active bg-primary-subtle text-primary-emphasis'
                                       : ''}"
-
                                     href="${pageContext.request.contextPath}/student/courses">
-
                                     Khóa học của tôi
-
                                 </a>
-
                             </li>
-                            <li class="nav-item">
 
-                                <a
-                                    class="
-                                    nav-link
-                                    rounded-3
-                                    px-3
-                                    ${activeMenu == 'orders'
-                                      ? 'active bg-primary-subtle text-primary-emphasis'
-                                      : ''}"
 
-                                    href="${pageContext.request.contextPath}/student/orders">
-
-                                    Lịch sử đơn hàng
-
-                                </a>
-
-                            </li>
+                            <% } %>
 
                         </ul>
 
@@ -1323,23 +1304,33 @@
                                         align-items-center
                                         gap-3
                                         py-2"
+                                        href="${pageContext.request.contextPath}/profile">
+                                        <i class="bi bi-person-circle text-primary fs-5"></i>
+                                        <span>Hồ sơ cá nhân</span>
+                                    </a>
 
+                                    <a
+                                        class="
+                                        dropdown-item
+                                        d-flex
+                                        align-items-center
+                                        gap-3
+                                        py-2"
                                         href="${pageContext.request.contextPath}/student/courses">
+                                        <i class="bi bi-mortarboard text-secondary fs-5"></i>
+                                        <span>Khóa học của tôi</span>
+                                    </a>
 
-
-                                        <i
-                                            class="
-                                            bi
-                                            bi-mortarboard
-                                            text-secondary
-                                            fs-5">
-                                        </i>
-
-
-                                        <span>
-                                            Khóa học của tôi
-                                        </span>
-
+                                    <a
+                                        class="
+                                        dropdown-item
+                                        d-flex
+                                        align-items-center
+                                        gap-3
+                                        py-2"
+                                        href="${pageContext.request.contextPath}/student/orders">
+                                        <i class="bi bi-receipt text-info fs-5"></i>
+                                        <span>Lịch sử đơn hàng</span>
                                     </a>
 
 

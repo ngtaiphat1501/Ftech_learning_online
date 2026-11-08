@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "StudentCourseServlet",
-        urlPatterns = {"/student/courses"})
+        urlPatterns = {"/student/courses", "/student/dashboard"})
 public class StudentCourseServlet extends HttpServlet {
 
     @Override

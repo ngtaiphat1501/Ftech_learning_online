@@ -1,17 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-public class DiscussionPost {
-    private java.util.List<DiscussionPost> replies = new java.util.ArrayList<>();
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DiscussionPost implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private List<DiscussionPost> replies = new ArrayList<>();
     private boolean instructor;
     private String replyToName;
     private long id;
     private long parentId;
+    private long lessonId;
+    private String lessonTitle;
+    private long courseId;
+    private String courseTitle;
     private long authorId;
     private String authorName;
+    private String authorEmail;
+    private String authorAvatar;
     private String body;
     private String createdAt;
     private boolean deleted;
@@ -33,6 +42,38 @@ public class DiscussionPost {
         this.parentId = parentId;
     }
 
+    public long getLessonId() {
+        return lessonId;
+    }
+
+    public void setLessonId(long lessonId) {
+        this.lessonId = lessonId;
+    }
+
+    public String getLessonTitle() {
+        return lessonTitle;
+    }
+
+    public void setLessonTitle(String lessonTitle) {
+        this.lessonTitle = lessonTitle;
+    }
+
+    public long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(long courseId) {
+        this.courseId = courseId;
+    }
+
+    public String getCourseTitle() {
+        return courseTitle;
+    }
+
+    public void setCourseTitle(String courseTitle) {
+        this.courseTitle = courseTitle;
+    }
+
     public long getAuthorId() {
         return authorId;
     }
@@ -47,6 +88,22 @@ public class DiscussionPost {
 
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+
+    public String getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public void setAuthorEmail(String authorEmail) {
+        this.authorEmail = authorEmail;
+    }
+
+    public String getAuthorAvatar() {
+        return authorAvatar;
+    }
+
+    public void setAuthorAvatar(String authorAvatar) {
+        this.authorAvatar = authorAvatar;
     }
 
     public String getBody() {
@@ -80,8 +137,13 @@ public class DiscussionPost {
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
-    public java.util.List<DiscussionPost> getReplies() {
+
+    public List<DiscussionPost> getReplies() {
         return replies;
+    }
+
+    public void setReplies(List<DiscussionPost> replies) {
+        this.replies = replies;
     }
 
     public boolean isInstructor() {

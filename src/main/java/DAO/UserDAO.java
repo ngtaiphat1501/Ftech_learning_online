@@ -198,4 +198,130 @@ public class UserDAO {
         user.setBalanceVnd(bal != null ? bal : BigDecimal.ZERO);
         return user;
     }
+
+    public List<User> getAllUsersForAdmin(String search, String roleFilter, String statusFilter) throws SQLException {
+        List<User> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT DISTINCT u.UserId, u.Email, u.PasswordHash, u.FullName, u.Headline, u.Bio, u.AvatarUrl, u.Status, u.BalanceVnd ")
+           .append("FROM dbo.Users u ");
+
+        boolean hasRole = roleFilter != null && !roleFilter.isBlank() && !"ALL".equalsIgnoreCase(roleFilter);
+        if (hasRole) {
+            sql.append("INNER JOIN dbo.UserRoles ur ON u.UserId = ur.UserId AND ur.RoleCode = ? ");
+        }
+
+        List<Object> params = new ArrayList<>();
+        if (hasRole) {
+            params.add(roleFilter.trim().toUpperCase());
+        }
+
+        List<String> conditions = new ArrayList<>();
+        if (search != null && !search.isBlank()) {
+            conditions.add("(u.Email LIKE ? OR u.FullName LIKE ?)");
+            params.add("%" + search.trim() + "%");
+            params.add("%" + search.trim() + "%");
+        }
+        if (statusFilter != null && !statusFilter.isBlank() && !"ALL".equalsIgnoreCase(statusFilter)) {
+            conditions.add("u.Status = ?");
+            params.add(statusFilter.trim().toUpperCase());
+        }
+
+        if (!conditions.isEmpty()) {
+            sql.append("WHERE ").append(String.join(" AND ", conditions)).append(" ");
+        }
+
+        sql.append("ORDER BY u.UserId ASC");
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = mapUser(rs);
+                    user.setRoles(getRolesByUserId(conn, user.getUserId()));
+                    list.add(user);
+                }
+            }
+        }
+        return list;
+    }
+
+    public boolean updateUserRoles(long userId, List<String> newRoles) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = DBContext.beginTransaction();
+
+            // 1. Remove old roles
+            String deleteSql = "DELETE FROM dbo.UserRoles WHERE UserId = ?";
+            try (PreparedStatement psDel = conn.prepareStatement(deleteSql)) {
+                psDel.setLong(1, userId);
+                psDel.executeUpdate();
+            }
+
+            // 2. Insert new roles
+            if (newRoles != null && !newRoles.isEmpty()) {
+                String insertSql = "INSERT INTO dbo.UserRoles (UserId, RoleCode) VALUES (?, ?)";
+                try (PreparedStatement psIns = conn.prepareStatement(insertSql)) {
+                    for (String role : newRoles) {
+                        if (role != null && !role.isBlank()) {
+                            psIns.setLong(1, userId);
+                            psIns.setString(2, role.trim().toUpperCase());
+                            psIns.addBatch();
+                        }
+                    }
+                    psIns.executeBatch();
+                }
+            }
+
+            conn.commit();
+            return true;
+        } catch (SQLException ex) {
+            if (conn != null) conn.rollback();
+            throw ex;
+        } finally {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
+    }
+
+    public boolean updateUserStatus(long userId, String status) throws SQLException {
+        String sql = "UPDATE dbo.Users SET Status = ? WHERE UserId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status.trim().toUpperCase());
+            ps.setLong(2, userId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updateProfile(long userId, String fullName, String headline, String bio, String avatarUrl) throws SQLException {
+        String sql = "UPDATE dbo.Users "
+                   + "SET FullName = ?, Headline = ?, Bio = ?, AvatarUrl = ?, UpdatedAt = SYSUTCDATETIME() "
+                   + "WHERE UserId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, fullName != null ? fullName.trim() : "");
+            ps.setString(2, headline != null ? headline.trim() : null);
+            ps.setString(3, bio != null ? bio.trim() : null);
+            ps.setString(4, avatarUrl != null ? avatarUrl.trim() : null);
+            ps.setLong(5, userId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updatePassword(long userId, String newPasswordHash) throws SQLException {
+        String sql = "UPDATE dbo.Users SET PasswordHash = ?, UpdatedAt = SYSUTCDATETIME() WHERE UserId = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPasswordHash);
+            ps.setLong(2, userId);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }
