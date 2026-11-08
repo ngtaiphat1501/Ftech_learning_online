@@ -102,10 +102,21 @@ public class ProgressServlet extends HttpServlet {
             );
 
             if (!saved) {
+                if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("{\"success\":false,\"error\":\"Forbidden\"}");
+                    return;
+                }
                 response.sendError(
                         HttpServletResponse.SC_FORBIDDEN,
                         "Bạn không có quyền cập nhật tiến độ bài này."
                 );
+                return;
+            }
+
+            if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"success\":true,\"position\":" + position + "}");
                 return;
             }
 

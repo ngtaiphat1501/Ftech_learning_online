@@ -88,11 +88,21 @@
                 <% if (youtubeVideo) { %>
 
                 <div class="ratio ratio-16x9 bg-black">
-                    <iframe src="<%= escape(videoUrl) %>?start=<%= selectedLesson.getLastPositionSeconds() %>"
+                    <iframe id="lessonVideoIframe"
+                            src="<%= escape(videoUrl) %>?enablejsapi=1&start=<%= selectedLesson.getLastPositionSeconds() %>"
                             title="<%= escape(selectedLesson.getTitle()) %>"
-                            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen>
                     </iframe>
+                </div>
+
+                <% } else if (videoUrl != null && !videoUrl.isBlank()) { %>
+
+                <div class="ratio ratio-16x9 bg-black">
+                    <video id="html5VideoPlayer" controls class="w-100 h-100">
+                        <source src="<%= escape(videoUrl) %>">
+                        Trình duyệt không hỗ trợ xem video trực tiếp.
+                    </video>
                 </div>
 
                 <% } else { %>
@@ -175,33 +185,27 @@
             <div class="card rounded-4 mb-4">
                 <div class="card-body p-4">
 
-                    <h3 class="h5 fw-bold mb-3">
-                        <i class="bi bi-bookmark-check me-2"></i>
-                        Tiến độ bài học
-                    </h3>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                        <h3 class="h5 fw-bold mb-0">
+                            <i class="bi bi-bookmark-check me-2"></i>Tiến độ bài học
+                        </h3>
+                        <span id="autoSaveIndicator" class="badge bg-secondary-subtle text-secondary small fw-normal">
+                            <i class="bi bi-clock me-1"></i> Tự động đồng bộ video
+                        </span>
+                    </div>
 
-                    <form action="<%= contextPath %>/student/progress"
-                          method="post">
+                    <form id="progressForm" action="<%= contextPath %>/student/progress" method="post">
 
-                        <input type="hidden"
-                               name="courseId"
-                               value="<%= courseId %>">
+                        <input type="hidden" name="courseId" value="<%= courseId %>">
+                        <input type="hidden" name="lessonId" value="<%= selectedLesson.getId() %>">
+                        <input type="hidden" name="csrfToken" value="<%= escape((String) session.getAttribute("csrfToken")) %>">
 
-                        <input type="hidden"
-                               name="lessonId"
-                               value="<%= selectedLesson.getId() %>">
-
-                        <input type="hidden"
-                               name="csrfToken"
-                               value="<%= escape((String) session.getAttribute("csrfToken")) %>">
-
-                        <label for="position" class="form-label">
-                            Vị trí xem muốn lưu, tính bằng giây
-                        </label>
-
-                        <div class="row g-3 align-items-end">
-
+                        <div class="row g-3 align-items-end mb-2">
                             <div class="col-sm-5">
+                                <label for="position" class="form-label small text-secondary">
+                                    Giây video hiện tại:
+                                    <span id="currentTimeFormatted" class="fw-semibold text-primary ms-1"></span>
+                                </label>
                                 <input type="number"
                                        id="position"
                                        name="position"
@@ -213,42 +217,35 @@
                                        required>
                             </div>
 
-                            <div class="col-sm-7">
-                                <button type="submit"
-                                        name="action"
-                                        value="save"
+                            <div class="col-sm-7 d-flex align-items-center flex-wrap gap-2">
+                                <button type="button"
+                                        id="btnSavePosition"
                                         class="btn btn-outline-primary">
-                                    <i class="bi bi-bookmark me-2"></i>
-                                    Lưu vị trí
+                                    <i class="bi bi-bookmark me-1"></i>
+                                    Lưu vị trí hiện tại
                                 </button>
+                                <span id="saveStatusToast" class="small text-success fw-medium" style="display:none;">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Đã lưu!
+                                </span>
                             </div>
-
                         </div>
 
-                        <div class="form-text mb-4">
-                            Ví dụ: xem tới phút thứ 5 thì nhập 300.
-                            Vị trí video chưa được lưu tự động.
+                        <div class="form-text mb-4 text-secondary">
+                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Hệ thống tự động bắt đúng giây bạn đang xem trên video. Bạn có thể bấm <strong>Lưu vị trí hiện tại</strong> hoặc hệ thống sẽ tự động lưu khi bạn dừng video.
                         </div>
 
                         <% if (selectedLesson.isCompleted()) { %>
-
-                        <button type="button"
-                                class="btn btn-success"
-                                disabled>
-                            <i class="bi bi-check-circle me-2"></i>
-                            Bài học đã hoàn thành
+                        <button type="button" class="btn btn-success" disabled>
+                            <i class="bi bi-check-circle me-2"></i> Bài học đã hoàn thành
                         </button>
-
                         <% } else { %>
-
                         <button type="submit"
                                 name="action"
                                 value="complete"
-                                class="btn btn-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            Đánh dấu hoàn thành
+                                class="btn btn-success"
+                                id="btnCompleteLesson">
+                            <i class="bi bi-check-circle me-2"></i> Đánh dấu hoàn thành
                         </button>
-
                         <% } %>
 
                     </form>
@@ -535,5 +532,170 @@
     <% } %>
 
 </main>
+
+<% if (selectedLesson != null) { %>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+(function() {
+    let ytPlayer = null;
+    let isPlaying = false;
+    let lastSavedSecond = <%= selectedLesson.getLastPositionSeconds() %>;
+
+    window.onYouTubeIframeAPIReady = function() {
+        const iframe = document.getElementById('lessonVideoIframe');
+        if (iframe && window.YT) {
+            ytPlayer = new YT.Player('lessonVideoIframe', {
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+    };
+
+    function onPlayerStateChange(event) {
+        if (!window.YT) return;
+        if (event.data === YT.PlayerState.PLAYING) {
+            isPlaying = true;
+        } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+            isPlaying = false;
+            // Auto save when user pauses or finishes video
+            autoSaveProgress();
+        }
+    }
+
+    function getCurrentVideoSeconds() {
+        if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+            try {
+                const t = Math.floor(ytPlayer.getCurrentTime());
+                if (!isNaN(t) && t >= 0) return t;
+            } catch(e) {}
+        }
+        const html5 = document.getElementById('html5VideoPlayer');
+        if (html5 && !isNaN(html5.currentTime)) {
+            return Math.floor(html5.currentTime);
+        }
+        const posInput = document.getElementById('position');
+        if (posInput && posInput.value) {
+            return parseInt(posInput.value, 10) || 0;
+        }
+        return 0;
+    }
+
+    function formatTime(totalSec) {
+        const m = Math.floor(totalSec / 60);
+        const s = totalSec % 60;
+        return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    // Auto-update position input box and formatted time every 1s
+    setInterval(function() {
+        const sec = getCurrentVideoSeconds();
+        const posInput = document.getElementById('position');
+        const formatted = document.getElementById('currentTimeFormatted');
+        if (posInput && document.activeElement !== posInput) {
+            posInput.value = sec;
+        }
+        if (formatted) {
+            formatted.textContent = '(' + formatTime(sec) + ')';
+        }
+    }, 1000);
+
+    // Auto-save periodically every 25 seconds while watching
+    setInterval(function() {
+        if (isPlaying) {
+            const sec = getCurrentVideoSeconds();
+            if (Math.abs(sec - lastSavedSecond) >= 10) {
+                autoSaveProgress();
+            }
+        }
+    }, 25000);
+
+    function autoSaveProgress(callback) {
+        const sec = getCurrentVideoSeconds();
+        const posInput = document.getElementById('position');
+        if (posInput) posInput.value = sec;
+
+        const courseId = '<%= courseId %>';
+        const lessonId = '<%= selectedLesson.getId() %>';
+        const csrfToken = '<%= escape((String) session.getAttribute("csrfToken")) %>';
+
+        const params = new URLSearchParams();
+        params.append('courseId', courseId);
+        params.append('lessonId', lessonId);
+        params.append('position', sec);
+        params.append('action', 'save');
+        params.append('csrfToken', csrfToken);
+
+        fetch('<%= contextPath %>/student/progress', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: params.toString()
+        }).then(function(res) {
+            if (res.ok) {
+                lastSavedSecond = sec;
+                const toast = document.getElementById('saveStatusToast');
+                if (toast) {
+                    toast.style.display = 'inline';
+                    toast.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Đã lưu ' + formatTime(sec);
+                    setTimeout(function() { toast.style.display = 'none'; }, 3000);
+                }
+                const indicator = document.getElementById('autoSaveIndicator');
+                if (indicator) {
+                    indicator.className = 'badge bg-success-subtle text-success small fw-normal';
+                    indicator.innerHTML = '<i class="bi bi-cloud-check me-1"></i> Đã lưu: ' + formatTime(sec);
+                }
+            }
+            if (callback) callback();
+        }).catch(function(err) {
+            if (callback) callback();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnSave = document.getElementById('btnSavePosition');
+        if (btnSave) {
+            btnSave.addEventListener('click', function(e) {
+                e.preventDefault();
+                btnSave.disabled = true;
+                btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang lưu...';
+                autoSaveProgress(function() {
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = '<i class="bi bi-bookmark me-1"></i> Lưu vị trí hiện tại';
+                });
+            });
+        }
+
+        const completeBtn = document.getElementById('btnCompleteLesson');
+        if (completeBtn) {
+            completeBtn.addEventListener('click', function() {
+                const sec = getCurrentVideoSeconds();
+                const posInput = document.getElementById('position');
+                if (posInput) posInput.value = sec;
+            });
+        }
+    });
+
+    window.addEventListener('beforeunload', function() {
+        const sec = getCurrentVideoSeconds();
+        const courseId = '<%= courseId %>';
+        const lessonId = '<%= selectedLesson.getId() %>';
+        const csrfToken = '<%= escape((String) session.getAttribute("csrfToken")) %>';
+        const params = new URLSearchParams();
+        params.append('courseId', courseId);
+        params.append('lessonId', lessonId);
+        params.append('position', sec);
+        params.append('action', 'save');
+        params.append('csrfToken', csrfToken);
+        if (navigator.sendBeacon) {
+            const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+            navigator.sendBeacon('<%= contextPath %>/student/progress', blob);
+        }
+    });
+})();
+</script>
+<% } %>
 
 <%@include file="/WEB-INF/view/layout/publicFooter.jsp"%>
