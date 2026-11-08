@@ -2903,36 +2903,4 @@
                     }
             );
 
-            // =====================================
-            // THEME TOGGLE HANDLER (Dark / Light)
-            // =====================================
-            document.addEventListener("DOMContentLoaded", function() {
-                var themeBtn = document.getElementById("themeToggle");
-                if (themeBtn) {
-                    var icon = themeBtn.querySelector("i");
-                    function applyThemeIcon(theme) {
-                        if (!icon) return;
-                        if (theme === "light") {
-                            icon.className = "bi bi-moon-stars text-primary";
-                            themeBtn.setAttribute("title", "Chuyển sang giao diện tối (Dark mode)");
-                        } else {
-                            icon.className = "bi bi-brightness-high text-warning";
-                            themeBtn.setAttribute("title", "Chuyển sang giao diện sáng (Light mode)");
-                        }
-                    }
-
-                    var currentTheme = document.documentElement.getAttribute("data-bs-theme") || "dark";
-                    applyThemeIcon(currentTheme);
-
-                    themeBtn.addEventListener("click", function() {
-                        var active = document.documentElement.getAttribute("data-bs-theme") || "dark";
-                        var next = active === "dark" ? "light" : "dark";
-                        document.documentElement.setAttribute("data-bs-theme", next);
-                        document.documentElement.dataset.bsTheme = next;
-                        localStorage.setItem("ftech_theme", next);
-                        document.cookie = "ftech_theme=" + next + ";path=/;max-age=31536000";
-                        applyThemeIcon(next);
-                    });
-                }
-            });
         </script>

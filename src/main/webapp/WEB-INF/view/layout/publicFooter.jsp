@@ -121,15 +121,18 @@
     html.dataset.bsTheme = currentTheme;
     syncThemeIcon(currentTheme);
 
-    // 2. Bắt sự kiện click để bật tắt Sáng / Tối
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        const isDark = (html.getAttribute('data-bs-theme') || html.dataset.bsTheme) === 'dark';
-        const newTheme = isDark ? 'light' : 'dark';
+    // 2. Bắt sự kiện click để bật tắt Sáng / Tối (bảo vệ tránh bind trùng)
+    if (themeBtn && !themeBtn.dataset.themeBound) {
+      themeBtn.dataset.themeBound = 'true';
+      themeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const active = html.getAttribute('data-bs-theme') || html.dataset.bsTheme || 'dark';
+        const newTheme = active === 'dark' ? 'light' : 'dark';
         
         html.setAttribute('data-bs-theme', newTheme);
         html.dataset.bsTheme = newTheme;
         localStorage.setItem('ftech_theme', newTheme);
+        document.cookie = 'ftech_theme=' + newTheme + ';path=/;max-age=31536000';
         syncThemeIcon(newTheme);
 
         // Bắn sự kiện để các biểu đồ Chart.js và thành phần giao diện khác cập nhật lại nếu cần
