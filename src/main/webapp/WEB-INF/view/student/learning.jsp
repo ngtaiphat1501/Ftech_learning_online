@@ -505,6 +505,7 @@
                     </div>
                     <% if (quizzes != null && !quizzes.isEmpty()) { %>
                     <% for (QuizInfo quiz : quizzes) { %>
+                    <% if (isEnrolled) { %>
                     <a class="list-group-item list-group-item-action py-3"
                        href="<%= contextPath %>/student/quiz?quizId=<%= quiz.getQuizId() %>">
                         <div class="d-flex gap-2 align-items-start">
@@ -529,6 +530,24 @@
                             </div>
                         </div>
                     </a>
+                    <% } else if (isInstructorViewer) { %>
+                    <a class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center"
+                       href="<%= contextPath %>/instructor/quiz?courseId=<%= courseId %>">
+                        <div class="d-flex gap-2 align-items-center">
+                            <i class="bi bi-pencil-square text-primary"></i>
+                            <span class="fw-semibold"><%= escape(quiz.getTitle()) %></span>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary small">Quản lý đề</span>
+                    </a>
+                    <% } else { %>
+                    <div class="list-group-item py-3 d-flex justify-content-between align-items-center">
+                        <div class="d-flex gap-2 align-items-center">
+                            <i class="bi bi-pencil-square text-secondary"></i>
+                            <span class="fw-semibold"><%= escape(quiz.getTitle()) %></span>
+                        </div>
+                        <span class="badge bg-secondary-subtle text-secondary small">Xem trước</span>
+                    </div>
+                    <% } %>
                     <% } %>
                     <% } else { %>
                     <div class="list-group-item text-body-secondary py-3">Khóa học chưa có bài kiểm tra.</div>
@@ -841,13 +860,13 @@
 <!-- Popup Modal Thong Bao Loi / Quyen Han (Khong nhay trang) -->
 <div class="modal fade" id="appAlertModal" tabindex="-1" aria-labelledby="appAlertModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg rounded-4" style="background: #1e222d; color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+    <div class="modal-content border-0 shadow-lg rounded-4" style="background: var(--ftech-card-bg, var(--bs-card-bg)); color: var(--bs-body-color); border: 1px solid var(--ftech-card-border, var(--bs-border-color)) !important;">
       <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
         <h5 class="modal-title d-flex align-items-center gap-2" id="appAlertModalLabel">
           <i id="appAlertModalIcon" class="bi bi-exclamation-triangle-fill text-warning fs-3"></i>
           <span id="appAlertModalTitle" class="fw-bold">Thông báo</span>
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body py-4" id="appAlertModalBody" style="line-height: 1.6; font-size: 0.95rem;">
       </div>
@@ -860,13 +879,13 @@
 
 <!-- Floating Toast Notification -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-  <div id="appToast" class="toast align-items-center text-white bg-dark border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+  <div id="appToast" class="toast align-items-center bg-body-tertiary text-body border rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
       <div class="toast-body d-flex align-items-center gap-2" id="appToastBody">
         <i class="bi bi-check-circle-fill text-success fs-5"></i>
         <span>Thành công!</span>
       </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
 </div>

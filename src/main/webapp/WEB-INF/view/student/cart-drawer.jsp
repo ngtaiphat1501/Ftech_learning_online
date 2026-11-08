@@ -3,20 +3,20 @@
     String initialCartCsrf = (session != null) ? util.CartCsrf.getOrCreate(session) : "";
 %>
 
-<div class="offcanvas offcanvas-end text-bg-dark border-start border-secondary border-opacity-25 shadow-lg"
+<div class="offcanvas offcanvas-end bg-body text-body border-start border-secondary border-opacity-25 shadow-lg"
      tabindex="-1"
      id="cartDrawer"
      aria-labelledby="cartDrawerTitle"
-     style="--bs-offcanvas-width: 440px; background-color: #12141a !important;">
+     style="--bs-offcanvas-width: 440px;">
 
     <!-- HEADER: Matching Design -->
     <div class="offcanvas-header border-bottom border-secondary border-opacity-25 position-relative justify-content-center py-3">
         <div class="text-center">
             <i class="bi bi-cart3 text-primary fs-3 d-block mb-1"></i>
-            <h5 class="offcanvas-title fw-bold text-white fs-5" id="cartDrawerTitle">Cart</h5>
+            <h5 class="offcanvas-title fw-bold text-body fs-5" id="cartDrawerTitle">Giỏ hàng</h5>
         </div>
         <button type="button"
-                class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                class="btn-close position-absolute top-0 end-0 m-3"
                 data-bs-dismiss="offcanvas"
                 aria-label="Đóng">
         </button>
@@ -34,12 +34,12 @@
     </div>
 
     <!-- FOOTER CỦA DRAWER -->
-    <div class="border-top border-secondary border-opacity-25 p-3 mt-auto bg-dark-subtle" style="background-color: #161821 !important;">
+    <div class="border-top border-secondary border-opacity-25 p-3 mt-auto bg-body-tertiary">
         <!-- Total Row -->
         <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="text-white fw-semibold fs-6">Total</span>
+            <span class="text-body fw-semibold fs-6">Tổng cộng</span>
             <div class="text-end">
-                <span id="cartDrawerTotal" class="fw-bold fs-5 text-white">0đ</span>
+                <span id="cartDrawerTotal" class="fw-bold fs-5 text-body">0đ</span>
                 <del id="cartDrawerListTotal" class="text-secondary small ms-2 d-none"></del>
                 <span id="cartDrawerDiscountBadge" class="badge bg-success-subtle text-success border border-success-subtle ms-1 d-none" style="font-size: 0.72rem;"></span>
             </div>

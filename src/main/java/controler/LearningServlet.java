@@ -199,7 +199,8 @@ public class LearningServlet extends HttpServlet {
                         quizDAO.getCourseQuizzes(studentId, courseId)
                 );
             } else {
-                request.setAttribute("quizzes", new java.util.ArrayList<>());
+                QuizDAO quizDAO = new QuizDAO();
+                request.setAttribute("quizzes", quizDAO.getQuizList(courseId));
             }
 
             if (selectedLesson != null) {

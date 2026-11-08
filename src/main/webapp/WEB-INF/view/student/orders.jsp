@@ -30,26 +30,26 @@
         padding-bottom: 5rem;
     }
     .order-card {
-        background-color: #151821 !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background-color: var(--ftech-card-bg, var(--bs-card-bg)) !important;
+        border: 1px solid var(--ftech-card-border, var(--bs-border-color)) !important;
         border-radius: 1.25rem !important;
         overflow: hidden;
         transition: transform 0.15s ease, border-color 0.15s ease;
     }
     .order-card:hover {
-        border-color: rgba(99, 102, 241, 0.35) !important;
+        border-color: var(--bs-primary) !important;
     }
     .order-card-header {
-        background-color: rgba(255, 255, 255, 0.02);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background-color: var(--ftech-social-bg, var(--bs-tertiary-bg));
+        border-bottom: 1px solid var(--ftech-card-border, var(--bs-border-color));
         padding: 1.15rem 1.5rem;
     }
     .order-card-body {
         padding: 1.25rem 1.5rem;
     }
     .order-card-footer {
-        background-color: rgba(255, 255, 255, 0.015);
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        background-color: var(--ftech-social-bg, var(--bs-tertiary-bg));
+        border-top: 1px solid var(--ftech-card-border, var(--bs-border-color));
         padding: 1rem 1.5rem;
     }
     .order-course-thumb {
@@ -132,12 +132,12 @@
     <!-- Orders List -->
     <% if (orders == null || orders.isEmpty()) { %>
         <!-- Empty State -->
-        <div class="text-center py-5 rounded-4 border border-secondary border-opacity-25" style="background-color: #151821;">
+        <div class="text-center py-5 rounded-4 border border-secondary border-opacity-25" class="text-center py-5 rounded-4 border border-secondary border-opacity-25 bg-body-tertiary">
             <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center mb-3"
                  style="width: 76px; height: 76px; border: 1px solid rgba(255,255,255,0.1);">
                 <i class="bi bi-receipt-cutoff fs-1 text-secondary"></i>
             </div>
-            <h5 class="text-white fw-bold mb-1">Chưa có đơn hàng nào</h5>
+            <h5 class="fw-bold mb-1 text-body">Chưa có đơn hàng nào</h5>
             <p class="text-secondary small mb-4" style="max-width: 420px; margin: 0 auto;">
                 Bạn chưa thực hiện giao dịch nào ở mục này. Hãy lựa chọn khóa học yêu thích và bắt đầu hành trình nâng cao kỹ năng!
             </p>
@@ -164,7 +164,7 @@
                             </div>
                             <div class="border-start border-secondary border-opacity-25 ps-3 d-none d-sm-block">
                                 <span class="text-secondary small d-block">Thời gian:</span>
-                                <span class="text-white small">
+                                <span class="text-body small">
                                     <%= order.getCreatedAt() != null ? order.getCreatedAt().format(dtf) : "Vừa xong" %>
                                 </span>
                             </div>
@@ -206,8 +206,8 @@
                                             </div>
                                         <% } %>
                                         <div class="flex-grow-1 min-w-0">
-                                            <h6 class="text-white fw-semibold mb-1 text-truncate" title="<%= item.getCourseTitleSnapshot() %>">
-                                                <a href="${pageContext.request.contextPath}/course?id=<%= item.getCourseId() %>" class="text-white text-decoration-none hover-primary">
+                                            <h6 class="fw-semibold mb-1 text-truncate text-body" title="<%= item.getCourseTitleSnapshot() %>">
+                                                <a href="${pageContext.request.contextPath}/course?id=<%= item.getCourseId() %>" class="text-body text-decoration-none hover-primary">
                                                     <%= item.getCourseTitleSnapshot() %>
                                                 </a>
                                             </h6>
@@ -236,7 +236,7 @@
                     <div class="order-card-footer d-flex align-items-center justify-content-between flex-wrap gap-3">
                         <div class="d-flex align-items-baseline gap-2">
                             <span class="text-secondary small">Tổng thanh toán:</span>
-                            <span class="fw-bold text-white fs-5"><%= currency.format(order.getTotalVnd()) %>đ</span>
+                            <span class="fw-bold text-body fs-5"><%= currency.format(order.getTotalVnd()) %>đ</span>
                             <% if (order.getDiscountVnd().compareTo(java.math.BigDecimal.ZERO) > 0) { %>
                                 <span class="badge bg-success bg-opacity-25 text-success small ms-1">
                                     Đã giảm <%= currency.format(order.getDiscountVnd()) %>đ

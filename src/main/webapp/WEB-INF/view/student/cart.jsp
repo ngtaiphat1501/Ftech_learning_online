@@ -37,14 +37,15 @@
         padding-bottom: 5rem;
     }
     .cart-item-card {
-        background-color: #151821 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background-color: var(--ftech-card-bg, var(--bs-card-bg)) !important;
+        border: 1px solid var(--ftech-card-border, var(--bs-border-color)) !important;
         border-radius: 1.25rem !important;
         padding: 1.25rem 1.5rem !important;
         transition: transform 0.15s ease, border-color 0.15s ease;
+        color: var(--bs-body-color);
     }
     .cart-item-card:hover {
-        border-color: rgba(255, 255, 255, 0.2) !important;
+        border-color: var(--bs-primary) !important;
     }
     .cart-checkout-btn {
         background-color: #4f46e5 !important;
@@ -76,12 +77,12 @@
 
     <% if (cartItems == null || cartItems.isEmpty()) { %>
         <!-- Empty Cart -->
-        <div class="text-center py-5 rounded-4 border border-secondary border-opacity-25" style="background-color: #151821;">
+        <div class="text-center py-5 rounded-4 border border-secondary border-opacity-25" class="text-center py-5 rounded-4 border border-secondary border-opacity-25 bg-body-tertiary">
             <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center mb-3"
                  style="width: 76px; height: 76px; border: 1px solid rgba(255,255,255,0.1);">
                 <i class="bi bi-cart-x fs-1 text-secondary"></i>
             </div>
-            <h4 class="text-white fw-bold mb-2">Giỏ hàng của bạn đang trống</h4>
+            <h4 class="fw-bold mb-2 text-body">Giỏ hàng của bạn đang trống</h4>
             <p class="text-secondary small mb-4" style="max-width: 420px; margin: 0 auto;">
                 Hãy khám phá các khóa học phù hợp với mục tiêu và lộ trình phát triển kỹ năng của bạn.
             </p>
@@ -116,13 +117,13 @@
 
                     <!-- Course Title & Pricing -->
                     <div class="flex-grow-1 min-w-0">
-                        <h6 class="text-white fw-semibold mb-1 text-truncate fs-6" title="<%= item.getTitle() %>">
-                            <a href="${pageContext.request.contextPath}/course?id=<%= item.getCourseId() %>" class="text-white text-decoration-none">
+                        <h6 class="fw-semibold mb-1 text-truncate fs-6 text-body" title="<%= item.getTitle() %>">
+                            <a href="${pageContext.request.contextPath}/course?id=<%= item.getCourseId() %>" class="text-body text-decoration-none">
                                 <%= item.getTitle() %>
                             </a>
                         </h6>
                         <div class="d-flex align-items-baseline flex-wrap gap-2">
-                            <span class="fw-bold text-white fs-6">
+                            <span class="fw-bold text-body fs-6">
                                 <%= currency.format(price) %>đ
                             </span>
                             <% if (discountPercent > 0) { %>

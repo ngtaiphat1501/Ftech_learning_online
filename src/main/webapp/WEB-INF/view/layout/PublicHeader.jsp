@@ -161,6 +161,13 @@
       data-bs-theme="dark">
 
     <head>
+        <script>
+            (function() {
+                var savedTheme = localStorage.getItem('ftech_theme') || 'dark';
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                document.documentElement.dataset.bsTheme = savedTheme;
+            })();
+        </script>
 
         <meta charset="UTF-8">
 
@@ -340,309 +347,175 @@
 
 
             /* =================================== */
+            /* THEME DESIGN SYSTEM                 */
+            /* =================================== */
+            :root, [data-bs-theme="dark"] {
+                --ftech-nav-bg: rgba(11, 15, 25, 0.88);
+                --ftech-nav-border: rgba(255, 255, 255, 0.08);
+                --ftech-card-bg: #111726;
+                --ftech-card-border: rgba(255, 255, 255, 0.08);
+                --ftech-input-bg: #0b0f19;
+                --ftech-input-border: rgba(255, 255, 255, 0.14);
+                --ftech-text-main: #f8fafc;
+                --ftech-text-sub: #94a3b8;
+                --ftech-dropdown-bg: #131b2e;
+                --ftech-dropdown-hover: rgba(255, 255, 255, 0.07);
+                --ftech-social-bg: #1e293b;
+            }
+            [data-bs-theme="light"] {
+                --ftech-nav-bg: rgba(255, 255, 255, 0.94);
+                --ftech-nav-border: rgba(0, 0, 0, 0.08);
+                --ftech-card-bg: #ffffff;
+                --ftech-card-border: rgba(0, 0, 0, 0.08);
+                --ftech-input-bg: #f8fafc;
+                --ftech-input-border: rgba(0, 0, 0, 0.16);
+                --ftech-text-main: #0f172a;
+                --ftech-text-sub: #64748b;
+                --ftech-dropdown-bg: #ffffff;
+                --ftech-dropdown-hover: #f1f5f9;
+                --ftech-social-bg: #f1f5f9;
+            }
+
+            .ftech-navbar {
+                background-color: var(--ftech-nav-bg) !important;
+                border-bottom: 1px solid var(--ftech-nav-border) !important;
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                transition: background-color 0.25s ease, border-color 0.25s ease;
+            }
+
+            [data-bs-theme="light"] body {
+                background-color: #f8fafc;
+                color: #0f172a;
+            }
+            [data-bs-theme="dark"] body {
+                background-color: #0b0f19;
+                color: #e2e8f0;
+            }
+            [data-bs-theme="light"] .card {
+                background-color: #ffffff;
+                border-color: rgba(0, 0, 0, 0.08);
+                color: #0f172a;
+            }
+            [data-bs-theme="dark"] .card {
+                background-color: #111726;
+                border-color: rgba(255, 255, 255, 0.08);
+                color: #f1f5f9;
+            }
+
+            /* =================================== */
             /* AUTH DROPDOWN                       */
             /* =================================== */
 
             .auth-dropdown-menu {
-
-                min-width:
-                    290px;
-
-                background-color:
-                    #171a21 !important;
-
-                border:
-                    1px solid
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.12
-                    ) !important;
-
-                border-radius:
-                    1rem !important;
-
-                box-shadow:
-                    0 15px 35px
-                    rgba(
-                    0,
-                    0,
-                    0,
-                    0.6
-                    ) !important;
-
-                padding:
-                    0.75rem !important;
+                min-width: 290px;
+                background-color: var(--ftech-dropdown-bg) !important;
+                border: 1px solid var(--ftech-card-border) !important;
+                border-radius: 1rem !important;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+                padding: 0.75rem !important;
             }
 
-
-            .auth-dropdown-menu
-            .dropdown-item {
-
-                border-radius:
-                    0.65rem;
-
-                color:
-                    #e2e8f0;
-
-                transition:
-                    all 0.2s ease;
-
-                font-size:
-                    0.95rem;
+            .auth-dropdown-menu .dropdown-item {
+                border-radius: 0.65rem;
+                color: var(--ftech-text-main);
+                transition: all 0.2s ease;
+                font-size: 0.95rem;
             }
 
-
-            .auth-dropdown-menu
-            .dropdown-item:hover {
-
-                background-color:
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.08
-                    );
-
-                color:
-                    #fff;
+            .auth-dropdown-menu .dropdown-item:hover {
+                background-color: var(--ftech-dropdown-hover);
+                color: var(--bs-primary);
             }
-
 
             /* =================================== */
             /* AUTH MODAL                          */
             /* =================================== */
 
             .auth-modal-dialog {
-
-                max-width:
-                    450px;
+                max-width: 450px;
             }
-
 
             .auth-modal-content {
-
-                background-color:
-                    #151820 !important;
-
-                border:
-                    1px solid
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.12
-                    ) !important;
-
-                border-radius:
-                    1.25rem !important;
-
-                box-shadow:
-                    0 25px 60px
-                    rgba(
-                    0,
-                    0,
-                    0,
-                    0.8
-                    ) !important;
+                background-color: var(--ftech-card-bg) !important;
+                border: 1px solid var(--ftech-card-border) !important;
+                border-radius: 1.25rem !important;
+                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25) !important;
+                color: var(--ftech-text-main) !important;
             }
-
 
             .btn-social {
-
-                background-color:
-                    #1f232d;
-
-                border:
-                    1px solid
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.12
-                    );
-
-                color:
-                    #f1f5f9;
-
-                border-radius:
-                    0.75rem;
-
-                padding:
-                    0.65rem 1rem;
-
-                font-weight:
-                    500;
-
-                font-size:
-                    0.95rem;
-
-                transition:
-                    all 0.2s;
+                background-color: var(--ftech-social-bg);
+                border: 1px solid var(--ftech-card-border);
+                color: var(--ftech-text-main);
+                border-radius: 0.75rem;
+                padding: 0.65rem 1rem;
+                font-weight: 500;
+                font-size: 0.95rem;
+                transition: all 0.2s;
             }
-
 
             .btn-social:hover {
-
-                background-color:
-                    #272c38;
-
-                border-color:
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.25
-                    );
-
-                color:
-                    #ffffff;
+                background-color: var(--ftech-input-bg);
+                border-color: var(--ftech-card-border);
+                color: var(--bs-primary);
             }
-
 
             .auth-input {
-
-                background-color:
-                    #101218 !important;
-
-                border:
-                    1px solid
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.16
-                    ) !important;
-
-                color:
-                    #f8fafc !important;
-
-                border-radius:
-                    0.75rem !important;
-
-                padding:
-                    0.65rem 0.9rem !important;
-
-                font-size:
-                    0.95rem;
+                background-color: var(--ftech-input-bg) !important;
+                border: 1px solid var(--ftech-input-border) !important;
+                color: var(--ftech-text-main) !important;
+                border-radius: 0.75rem !important;
+                padding: 0.65rem 0.9rem !important;
+                font-size: 0.95rem;
             }
-
 
             .auth-input:focus {
-
-                border-color:
-                    #3b82f6 !important;
-
-                box-shadow:
-                    0 0 0 3px
-                    rgba(
-                    59,
-                    130,
-                    246,
-                    0.25
-                    ) !important;
+                border-color: #3b82f6 !important;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
             }
-
 
             .auth-divider {
-
-                display:
-                    flex;
-
-                align-items:
-                    center;
-
-                text-align:
-                    center;
-
-                color:
-                    #64748b;
-
-                font-size:
-                    0.8rem;
-
-                font-weight:
-                    600;
-
-                margin:
-                    1.25rem 0;
+                display: flex;
+                align-items: center;
+                text-align: center;
+                color: var(--ftech-text-sub);
+                font-size: 0.8rem;
+                font-weight: 600;
+                margin: 1.25rem 0;
             }
-
 
             .auth-divider::before,
             .auth-divider::after {
-
-                content:
-                    '';
-
-                flex:
-                    1;
-
-                border-bottom:
-                    1px solid
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.1
-                    );
+                content: '';
+                flex: 1;
+                border-bottom: 1px solid var(--ftech-card-border);
             }
-
 
             .auth-divider:not(:empty)::before {
-
-                margin-right:
-                    .75em;
+                margin-right: .75em;
             }
-
 
             .auth-divider:not(:empty)::after {
-
-                margin-left:
-                    .75em;
+                margin-left: .75em;
             }
-
 
             /* =================================== */
             /* CAPTCHA                             */
             /* =================================== */
 
             .captcha-question {
-
-                min-width:
-                    115px;
-
-                background-color:
-                    #1f232d !important;
-
-                border:
-                    1px solid
-                    rgba(
-                    255,
-                    255,
-                    255,
-                    0.16
-                    ) !important;
-
-                color:
-                    #facc15 !important;
-
-                font-weight:
-                    700;
-
-                justify-content:
-                    center;
-
-                border-radius:
-                    0.75rem 0 0 0.75rem !important;
+                min-width: 115px;
+                background-color: var(--ftech-social-bg) !important;
+                border: 1px solid var(--ftech-input-border) !important;
+                color: #eab308 !important;
+                font-weight: 700;
+                justify-content: center;
+                border-radius: 0.75rem 0 0 0.75rem !important;
             }
 
-
             .captcha-input {
-
-                border-radius:
-                    0 0.75rem 0.75rem 0 !important;
+                border-radius: 0 0.75rem 0.75rem 0 !important;
             }
 
         </style>
@@ -665,10 +538,10 @@
                 class="
                 navbar
                 navbar-expand-lg
-                bg-body
-                border-bottom
+                ftech-navbar
+                sticky-top
                 px-3
-                py-3">
+                py-2.5">
 
 
                 <div class="container-fluid">
@@ -974,7 +847,7 @@
                                     d-inline-flex
                                     align-items-center
                                     justify-content-center
-                                    text-light
+                                    text-body
                                     shadow-sm"
 
                                     id="guestDropdown"

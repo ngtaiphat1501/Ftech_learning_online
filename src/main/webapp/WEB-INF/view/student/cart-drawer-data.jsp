@@ -49,7 +49,7 @@
             <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; border: 1px solid rgba(255,255,255,0.1);">
                 <i class="bi bi-cart-x fs-2 text-secondary"></i>
             </div>
-            <h6 class="text-white fw-bold">Giỏ hàng của bạn đang trống</h6>
+            <h6 class="text-body fw-bold">Giỏ hàng của bạn đang trống</h6>
             <p class="text-secondary small mt-1 mb-3">Hãy chọn những khóa học phù hợp với định hướng của bạn.</p>
             <a href="${pageContext.request.contextPath}/courses" class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 fw-medium">
                 Khám phá khóa học
@@ -63,7 +63,7 @@
                 BigDecimal savings = item.getSavingsVnd();
                 int discountPercent = item.getDiscountPercentage();
             %>
-                <div class="card bg-dark border border-secondary border-opacity-25 rounded-3 shadow-sm" style="transition: transform 0.15s ease;">
+                <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-3 shadow-sm" style="transition: transform 0.15s ease;">
                     <div class="card-body p-2.5 d-flex align-items-center gap-3">
                         <%-- Thumbnail --%>
                         <% if (item.getThumbnailUrl() != null && !item.getThumbnailUrl().isBlank()) { %>
@@ -80,11 +80,11 @@
 
                         <%-- Course Info & Pricing --%>
                         <div class="flex-grow-1" style="min-width: 0;">
-                            <h6 class="text-white fw-semibold mb-1 text-truncate" style="font-size: 0.88rem;" title="<%= escapeHtml(item.getTitle()) %>">
+                            <h6 class="text-body fw-semibold mb-1 text-truncate" style="font-size: 0.88rem;" title="<%= escapeHtml(item.getTitle()) %>">
                                 <%= escapeHtml(item.getTitle()) %>
                             </h6>
                             <div class="d-flex align-items-center flex-wrap gap-2">
-                                <span class="fw-bold text-white" style="font-size: 0.92rem;">
+                                <span class="fw-bold text-body" style="font-size: 0.92rem;">
                                     <%= currency.format(price) %>đ
                                 </span>
                                 <% if (discountPercent > 0) { %>

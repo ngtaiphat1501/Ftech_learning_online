@@ -42,48 +42,49 @@
         position: sticky;
         top: 90px;
         z-index: 10;
-        background-color: #151821 !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background-color: var(--ftech-card-bg, var(--bs-card-bg)) !important;
+        border: 1px solid var(--ftech-card-border, var(--bs-border-color)) !important;
         border-radius: 1.25rem !important;
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+        color: var(--bs-body-color) !important;
     }
     .outline-accordion .accordion-item {
-        background-color: #171a22 !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background-color: var(--ftech-card-bg, var(--bs-card-bg)) !important;
+        border: 1px solid var(--ftech-card-border, var(--bs-border-color)) !important;
         border-radius: 0.85rem !important;
         margin-bottom: 0.75rem;
         overflow: hidden;
     }
     .outline-accordion .accordion-button {
-        background-color: #171a22 !important;
-        color: #f1f5f9 !important;
+        background-color: var(--ftech-card-bg, var(--bs-card-bg)) !important;
+        color: var(--bs-body-color) !important;
         font-weight: 600;
         box-shadow: none !important;
         padding: 1rem 1.25rem;
     }
     .outline-accordion .accordion-button:not(.collapsed) {
-        background-color: #1f232d !important;
-        color: #60a5fa !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background-color: var(--ftech-social-bg, var(--bs-tertiary-bg)) !important;
+        color: var(--bs-primary) !important;
+        border-bottom: 1px solid var(--ftech-card-border, var(--bs-border-color));
     }
     .outline-accordion .accordion-body {
         padding: 0;
-        background-color: #13151c;
+        background-color: var(--ftech-input-bg, var(--bs-body-bg));
     }
     .lesson-item-row {
         padding: 0.85rem 1.25rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid var(--ftech-card-border, var(--bs-border-color));
         transition: background 0.15s ease;
     }
     .lesson-item-row:last-child {
         border-bottom: none;
     }
     .lesson-item-row:hover {
-        background-color: rgba(255, 255, 255, 0.03);
+        background-color: var(--ftech-dropdown-hover, rgba(125, 125, 125, 0.05));
     }
     .review-card {
-        background-color: #171a22;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background-color: var(--ftech-card-bg, var(--bs-card-bg));
+        border: 1px solid var(--ftech-card-border, var(--bs-border-color));
         border-radius: 1rem;
         padding: 1.25rem;
     }
