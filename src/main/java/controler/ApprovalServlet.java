@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "ApprovalServlet", urlPatterns = {
         "/admin/approvals",
@@ -110,12 +111,19 @@ public class ApprovalServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/view/admin/approval-detail.jsp").forward(request, response);
 
             } else {
-                // List pending courses
-                List<Course> pendingCourses = approvalDAO.getPendingCourses(conn);
-                request.setAttribute("courses", pendingCourses);
+                String status = request.getParameter("status");
+                if (status == null || status.isBlank()) {
+                    status = "PENDING_APPROVAL";
+                }
+                List<Course> filteredCourses = approvalDAO.getCoursesByStatus(conn, status);
+                Map<String, Integer> statusCounts = approvalDAO.getCourseStatusCounts(conn);
+
+                request.setAttribute("courses", filteredCourses);
+                request.setAttribute("selectedStatus", status);
+                request.setAttribute("statusCounts", statusCounts);
                 request.setAttribute("activeMenu", "admin");
                 request.setAttribute("adminTab", "approvals");
-                request.setAttribute("pageTitle", "Duyệt khóa học - Admin Ftech");
+                request.setAttribute("pageTitle", "Duyệt & Quản lý khóa học - Admin Ftech");
 
                 request.getRequestDispatcher("/WEB-INF/view/admin/approvals.jsp").forward(request, response);
             }

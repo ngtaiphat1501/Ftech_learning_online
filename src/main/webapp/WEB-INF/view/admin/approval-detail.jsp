@@ -38,20 +38,41 @@
             <div class="d-flex align-items-center gap-2 small text-secondary">
                 <span>Giảng viên: <strong class="text-white"><%= course != null ? course.getInstructorName() : "N/A" %></strong></span>
                 <span>•</span>
-                <span>Trạng thái hiện tại: <span class="badge bg-warning text-dark"><%= course != null ? course.getStatus() : "" %></span></span>
+                <span>Trạng thái hiện tại: 
+                    <% String stDetail = course != null ? course.getStatus() : ""; %>
+                    <% if ("PENDING_APPROVAL".equalsIgnoreCase(stDetail)) { %>
+                        <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                    <% } else if ("DRAFT".equalsIgnoreCase(stDetail)) { %>
+                        <span class="badge bg-secondary-subtle text-light border border-secondary">Bản nháp (DRAFT)</span>
+                    <% } else if ("PUBLISHED".equalsIgnoreCase(stDetail)) { %>
+                        <span class="badge bg-success">Đã xuất bản (PUBLISHED)</span>
+                    <% } else { %>
+                        <span class="badge bg-dark-subtle text-light"><%= stDetail %></span>
+                    <% } %>
+                </span>
             </div>
         </div>
 
-        <div class="d-flex gap-2">
-            <!-- Reject Button -->
-            <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#rejectModal">
-                <i class="bi bi-x-circle me-1"></i>Từ chối duyệt
-            </button>
+        <div class="d-flex align-items-center gap-2">
+            <% if ("PENDING_APPROVAL".equalsIgnoreCase(course != null ? course.getStatus() : "")) { %>
+                <!-- Reject Button -->
+                <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                    <i class="bi bi-x-circle me-1"></i>Từ chối duyệt
+                </button>
 
-            <!-- Approve Button -->
-            <button type="button" class="btn btn-success rounded-pill px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#approveModal">
-                <i class="bi bi-check-circle me-1"></i>Phê duyệt & Xuất bản
-            </button>
+                <!-- Approve Button -->
+                <button type="button" class="btn btn-success rounded-pill px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#approveModal">
+                    <i class="bi bi-check-circle me-1"></i>Phê duyệt & Xuất bản
+                </button>
+            <% } else if ("DRAFT".equalsIgnoreCase(course != null ? course.getStatus() : "")) { %>
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary px-3 py-2 rounded-pill">
+                    <i class="bi bi-info-circle me-1"></i>Khóa học đang ở trạng thái Bản nháp (Giảng viên chưa gửi duyệt)
+                </span>
+            <% } else if ("PUBLISHED".equalsIgnoreCase(course != null ? course.getStatus() : "")) { %>
+                <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">
+                    <i class="bi bi-check-circle me-1"></i>Khóa học đã xuất bản hoạt động
+                </span>
+            <% } %>
         </div>
     </div>
 

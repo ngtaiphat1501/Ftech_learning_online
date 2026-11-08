@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ApprovalDAO {
 
@@ -55,6 +57,81 @@ public class ApprovalDAO {
             }
         }
         return list;
+    }
+
+    public List<Course> getCoursesByStatus(Connection conn, String status) throws SQLException {
+        List<Course> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT c.CourseId, c.Title, c.Slug, c.Subtitle AS Headline, c.ThumbnailUrl, c.PricingType, "
+          + "       c.ListPriceVnd, c.SalePriceVnd, c.Status, c.Level, c.CreatedAt, "
+          + "       u.UserId AS InstructorId, u.FullName AS InstructorName, u.Email AS InstructorEmail, "
+          + "       cat.Name AS CategoryName, "
+          + "       (SELECT COUNT(*) FROM dbo.Chapters ch WHERE ch.CourseId = c.CourseId) AS ChapterCount, "
+          + "       (SELECT COUNT(*) FROM dbo.Lessons l JOIN dbo.Chapters ch ON l.ChapterId = ch.ChapterId WHERE ch.CourseId = c.CourseId) AS LessonCount "
+          + "FROM dbo.Courses c "
+          + "JOIN dbo.Users u ON c.InstructorId = u.UserId "
+          + "LEFT JOIN dbo.Categories cat ON c.CategoryId = cat.CategoryId "
+        );
+
+        boolean filterStatus = (status != null && !status.isBlank() && !"ALL".equalsIgnoreCase(status));
+        if (filterStatus) {
+            sql.append("WHERE c.Status = ? ");
+        }
+        sql.append("ORDER BY c.CourseId DESC");
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            if (filterStatus) {
+                ps.setString(1, status.trim().toUpperCase());
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Course c = new Course();
+                    c.setCourseId(rs.getLong("CourseId"));
+                    c.setTitle(rs.getString("Title"));
+                    c.setSlug(rs.getString("Slug"));
+                    c.setHeadline(rs.getString("Headline"));
+                    c.setThumbnailUrl(rs.getString("ThumbnailUrl"));
+                    c.setPricingType(rs.getString("PricingType"));
+                    c.setListPriceVnd(rs.getBigDecimal("ListPriceVnd"));
+                    c.setSalePriceVnd(rs.getBigDecimal("SalePriceVnd"));
+                    c.setStatus(rs.getString("Status"));
+                    c.setLevel(rs.getString("Level"));
+                    c.setInstructorId(rs.getLong("InstructorId"));
+                    c.setInstructorName(rs.getString("InstructorName"));
+                    c.setCategoryName(rs.getString("CategoryName"));
+                    c.setLessonCount(rs.getInt("LessonCount"));
+
+                    Timestamp ts = rs.getTimestamp("CreatedAt");
+                    if (ts != null) {
+                        c.setCreatedAt(ts.toLocalDateTime());
+                    }
+                    list.add(c);
+                }
+            }
+        }
+        return list;
+    }
+
+    public Map<String, Integer> getCourseStatusCounts(Connection conn) throws SQLException {
+        Map<String, Integer> counts = new HashMap<>();
+        counts.put("PENDING_APPROVAL", 0);
+        counts.put("DRAFT", 0);
+        counts.put("PUBLISHED", 0);
+        counts.put("ALL", 0);
+
+        String sql = "SELECT Status, COUNT(*) AS Total FROM dbo.Courses GROUP BY Status";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            int all = 0;
+            while (rs.next()) {
+                String s = rs.getString("Status");
+                int total = rs.getInt("Total");
+                counts.put(s, total);
+                all += total;
+            }
+            counts.put("ALL", all);
+        }
+        return counts;
     }
 
     public List<CourseApprovalEvent> getApprovalHistory(Connection conn, long courseId) throws SQLException {
