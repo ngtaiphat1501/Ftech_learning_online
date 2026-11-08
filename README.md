@@ -115,6 +115,15 @@ mvn clean package -DskipTests
 
 Truy cập ứng dụng tại: `http://localhost:8080/GroupASM`
 
+### 5. Triển khai Tự động bằng Docker (Tùy chọn Nâng cao)
+Hệ thống đã được cấu hình sẵn **Multi-stage Dockerfile** và **Docker Compose**. Nếu máy đã cài Docker Desktop, bạn có thể khởi chạy toàn bộ Web Server và SQL Server chỉ với 1 câu lệnh duy nhất:
+```bash
+docker compose up -d --build
+```
+- Web App sẽ tự động chạy tại: `http://localhost:8080`
+- CSDL SQL Server 2022 tự động khởi tạo và kết nối qua mạng nội bộ Docker.
+- Để dừng hệ thống: `docker compose down`
+
 ---
 
 ## 🔑 Tài khoản Kiểm thử Dựng sẵn (Demo Accounts)
