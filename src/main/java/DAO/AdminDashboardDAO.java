@@ -155,4 +155,64 @@ public class AdminDashboardDAO {
         }
         return list;
     }
+
+    public List<Map<String, Object>> getMonthlyRevenue(Connection conn, int year) throws SQLException {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT MONTH(o.CreatedAt) AS [Month], "
+                   + "       COALESCE(SUM(o.TotalVnd), 0) AS Revenue, "
+                   + "       COUNT(o.OrderId) AS OrderCount "
+                   + "FROM dbo.Orders o "
+                   + "WHERE o.Status = 'PAID' AND YEAR(o.CreatedAt) = ? "
+                   + "GROUP BY MONTH(o.CreatedAt) "
+                   + "ORDER BY [Month]";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, year);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("month", rs.getInt("Month"));
+                    map.put("revenue", rs.getBigDecimal("Revenue"));
+                    map.put("orderCount", rs.getInt("OrderCount"));
+                    list.add(map);
+                }
+            }
+        }
+        return list;
+    }
+
+    public List<Map<String, Object>> getCategoryRevenue(Connection conn) throws SQLException {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT ca.Name AS CategoryName, "
+                   + "       COALESCE(SUM(oi.PayableVnd), 0) AS Revenue, "
+                   + "       COUNT(oi.OrderItemId) AS TotalSold "
+                   + "FROM dbo.OrderItems oi "
+                   + "JOIN dbo.Orders o ON o.OrderId = oi.OrderId AND o.Status = 'PAID' "
+                   + "JOIN dbo.Courses c ON c.CourseId = oi.CourseId "
+                   + "JOIN dbo.Categories ca ON ca.CategoryId = c.CategoryId "
+                   + "GROUP BY ca.Name "
+                   + "ORDER BY Revenue DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("categoryName", rs.getString("CategoryName"));
+                map.put("revenue", rs.getBigDecimal("Revenue"));
+                map.put("totalSold", rs.getInt("TotalSold"));
+                list.add(map);
+            }
+        }
+        return list;
+    }
+
+    public Map<String, Integer> getOrderStatusDistribution(Connection conn) throws SQLException {
+        Map<String, Integer> map = new HashMap<>();
+        String sql = "SELECT Status, COUNT(*) AS Total FROM dbo.Orders GROUP BY Status";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getString("Status"), rs.getInt("Total"));
+            }
+        }
+        return map;
+    }
 }

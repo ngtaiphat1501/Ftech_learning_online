@@ -215,6 +215,30 @@
         long balVal = balVnd != null ? balVnd.longValue() : 0L;
         int totalStuVal = totalStu != null ? totalStu : 0;
         int pubCountVal = pubCount != null ? pubCount : 0;
+
+        StringBuilder cTitlesSb = new StringBuilder("[");
+        StringBuilder cRevsSb = new StringBuilder("[");
+        StringBuilder cStudentsSb = new StringBuilder("[");
+        if (courses != null && !courses.isEmpty()) {
+            for (int i = 0; i < courses.size(); i++) {
+                Course c = courses.get(i);
+                if (i > 0) {
+                    cTitlesSb.append(",");
+                    cRevsSb.append(",");
+                    cStudentsSb.append(",");
+                }
+                String t = c.getTitle();
+                if (t != null && t.length() > 28) {
+                    t = t.substring(0, 28) + "...";
+                }
+                cTitlesSb.append("\"").append(t != null ? t.replace('"', '\'') : "").append("\"");
+                cRevsSb.append(c.getRevenueVnd() != null ? c.getRevenueVnd().longValue() : 0L);
+                cStudentsSb.append(c.getEnrollmentCount());
+            }
+        }
+        cTitlesSb.append("]");
+        cRevsSb.append("]");
+        cStudentsSb.append("]");
     %>
 
     <!-- KPI STATS CARDS -->
@@ -275,6 +299,47 @@
             </div>
         </div>
     </div>
+
+    <!-- INSTRUCTOR REVENUE ANALYTICS ROW -->
+    <% if (courses != null && !courses.isEmpty()) { %>
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-xl-8">
+            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            <i class="bi bi-bar-chart-line text-success me-2"></i>Doanh thu từng khóa học
+                        </h5>
+                        <p class="text-body-secondary small mb-0">So sánh doanh thu thực nhận giữa các khóa học của bạn</p>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                        Doanh thu khóa
+                    </span>
+                </div>
+                <div style="position: relative; height: 280px; width: 100%;">
+                    <canvas id="instructorRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 h-100">
+                <div class="mb-3">
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-pie-chart text-primary me-2"></i>Tỷ trọng đóng góp
+                    </h5>
+                    <p class="text-body-secondary small mb-0">Cơ cấu doanh thu theo từng khóa học</p>
+                </div>
+                <div style="position: relative; height: 220px; width: 100%; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="instructorShareChart"></canvas>
+                </div>
+                <div class="text-center mt-3 small text-body-secondary">
+                    Tổng số khóa có doanh thu: <strong class="text-body-emphasis"><%= courses != null ? courses.stream().filter(c -> c.getRevenueVnd() != null && c.getRevenueVnd().compareTo(java.math.BigDecimal.ZERO) > 0).count() : 0 %></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
 
     <%
         if (courses == null
@@ -852,5 +917,112 @@
 
 
 </main>
+
+<script src="${pageContext.request.contextPath}/assets/js/chart.min.js"></script>
+<script>
+    if (typeof Chart === 'undefined') {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js';
+        document.head.appendChild(s);
+    }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cLabels = <%= cTitlesSb.toString() %>;
+    const cRevenues = <%= cRevsSb.toString() %>;
+
+    // 1. Instructor Bar Chart
+    const ctxBar = document.getElementById('instructorRevenueChart');
+    if (ctxBar && typeof Chart !== 'undefined' && cLabels.length > 0) {
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: cLabels,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: cRevenues,
+                    backgroundColor: 'rgba(25, 135, 84, 0.75)',
+                    borderColor: '#198754',
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) {
+                                return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed.x) + ' đ';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: {
+                            callback: function (val) {
+                                if (val >= 1000000) return (val / 1000000) + 'M';
+                                if (val >= 1000) return (val / 1000) + 'k';
+                                return val;
+                            }
+                        }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Instructor Share Doughnut Chart
+    const ctxShare = document.getElementById('instructorShareChart');
+    if (ctxShare && typeof Chart !== 'undefined' && cLabels.length > 0) {
+        const hasRev = cRevenues.some(r => r > 0);
+        new Chart(ctxShare, {
+            type: 'doughnut',
+            data: {
+                labels: hasRev ? cLabels : ['Chưa có doanh thu'],
+                datasets: [{
+                    data: hasRev ? cRevenues : [1],
+                    backgroundColor: [
+                        '#198754',
+                        '#0d6efd',
+                        '#ffc107',
+                        '#0dcaf0',
+                        '#6f42c1',
+                        '#fd7e14'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 10, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) {
+                                if (!hasRev) return 'Chưa có doanh thu';
+                                return ' ' + ctx.label + ': ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed) + ' đ';
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+    }
+});
+</script>
 
 <%@ include file="/WEB-INF/view/layout/publicFooter.jsp" %>

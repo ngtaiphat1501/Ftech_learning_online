@@ -123,7 +123,7 @@ public class User implements Serializable {
             return false;
         }
         for (String r : roles) {
-            if (role.equalsIgnoreCase(r)) {
+            if (r != null && role.trim().equalsIgnoreCase(r.trim())) {
                 return true;
             }
         }

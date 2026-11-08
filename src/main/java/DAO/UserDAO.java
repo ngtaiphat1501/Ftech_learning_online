@@ -177,7 +177,10 @@ public class UserDAO {
             ps.setLong(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    roles.add(rs.getString("RoleCode"));
+                    String rc = rs.getString("RoleCode");
+                    if (rc != null) {
+                        roles.add(rc.trim());
+                    }
                 }
             }
         }

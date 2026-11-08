@@ -32,7 +32,24 @@ public class DevLoginServlet extends HttpServlet {
 
         request.changeSessionId();
 
-        session.setAttribute("userId", TEST_USER_ID);
+        long targetUserId = TEST_USER_ID;
+        String paramId = request.getParameter("userId");
+        if (paramId != null && !paramId.isBlank()) {
+            try {
+                targetUserId = Long.parseLong(paramId.trim());
+            } catch (Exception ignored) {}
+        }
+
+        session.setAttribute("userId", targetUserId);
+        try {
+            dao.UserDAO uDao = new dao.UserDAO();
+            model.User u = uDao.findById(targetUserId);
+            if (u != null) {
+                session.setAttribute("user", u);
+                session.setAttribute("fullName", u.getFullName());
+                session.setAttribute("roles", u.getRoles());
+            }
+        } catch (Exception ignored) {}
 
         response.sendRedirect(
                 request.getContextPath() + "/"

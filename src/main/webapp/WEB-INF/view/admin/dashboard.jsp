@@ -26,6 +26,57 @@
     int pendingOrders = (stats != null && stats.get("pendingOrders") != null) ? (Integer) stats.get("pendingOrders") : 0;
     int reviewOrders = (stats != null && stats.get("reviewOrders") != null) ? (Integer) stats.get("reviewOrders") : 0;
     int totalEnrollments = (stats != null && stats.get("totalEnrollments") != null) ? (Integer) stats.get("totalEnrollments") : 0;
+
+    List<Map<String, Object>> monthlyRevList = (List<Map<String, Object>>) request.getAttribute("monthlyRevenue");
+    List<Map<String, Object>> catRevList = (List<Map<String, Object>>) request.getAttribute("categoryRevenue");
+    Map<String, Integer> orderDistMap = (Map<String, Integer>) request.getAttribute("orderStatusDistribution");
+    Integer selYear = (Integer) request.getAttribute("selectedYear");
+    if (selYear == null) selYear = 2026;
+
+    long[] monthRevArr = new long[12];
+    int[] monthOrdersArr = new int[12];
+    if (monthlyRevList != null) {
+        for (Map<String, Object> m : monthlyRevList) {
+            int mo = (Integer) m.get("month");
+            if (mo >= 1 && mo <= 12) {
+                BigDecimal r = (BigDecimal) m.get("revenue");
+                monthRevArr[mo - 1] = r != null ? r.longValue() : 0L;
+                Integer oc = (Integer) m.get("orderCount");
+                monthOrdersArr[mo - 1] = oc != null ? oc : 0;
+            }
+        }
+    }
+
+    StringBuilder catNamesSb = new StringBuilder("[");
+    StringBuilder catRevsSb = new StringBuilder("[");
+    if (catRevList != null && !catRevList.isEmpty()) {
+        for (int i = 0; i < catRevList.size(); i++) {
+            Map<String, Object> c = catRevList.get(i);
+            String cName = (String) c.get("categoryName");
+            BigDecimal cRev = (BigDecimal) c.get("revenue");
+            if (i > 0) {
+                catNamesSb.append(",");
+                catRevsSb.append(",");
+            }
+            catNamesSb.append("\"").append(cName != null ? cName.replace('"', '\'') : "Khác").append("\"");
+            catRevsSb.append(cRev != null ? cRev.longValue() : 0L);
+        }
+    }
+    catNamesSb.append("]");
+    catRevsSb.append("]");
+
+    StringBuilder mRevSb = new StringBuilder("[");
+    StringBuilder mOrdSb = new StringBuilder("[");
+    for (int i = 0; i < 12; i++) {
+        if (i > 0) {
+            mRevSb.append(",");
+            mOrdSb.append(",");
+        }
+        mRevSb.append(monthRevArr[i]);
+        mOrdSb.append(monthOrdersArr[i]);
+    }
+    mRevSb.append("]");
+    mOrdSb.append("]");
 %>
 
 <%@include file="/WEB-INF/view/layout/PublicHeader.jsp" %>
@@ -126,6 +177,47 @@
                 <div class="h3 fw-bold text-white mb-1"><%= totalInstructors %></div>
                 <div class="small text-secondary">
                     Chuyên gia sáng tạo nội dung
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Analytics & Charts Row -->
+    <div class="row g-4 mb-4">
+        <!-- Monthly Revenue & Orders Chart -->
+        <div class="col-12 col-xl-8">
+            <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 shadow-sm p-3 p-md-4 h-100">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <h5 class="fw-bold text-white mb-1">
+                            <i class="bi bi-graph-up text-success me-2"></i>Biểu đồ Doanh thu &amp; Đơn hàng theo tháng (<%= selYear %>)
+                        </h5>
+                        <p class="text-secondary small mb-0">Biến động doanh thu thực nhận (PAID) và tổng lượt giao dịch thành công theo từng tháng</p>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                        <i class="bi bi-broadcast me-1"></i>Thời gian thực
+                    </span>
+                </div>
+                <div style="position: relative; height: 320px; width: 100%;">
+                    <canvas id="adminRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Revenue Breakdown Chart -->
+        <div class="col-12 col-xl-4">
+            <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 shadow-sm p-3 p-md-4 h-100">
+                <div class="mb-3">
+                    <h5 class="fw-bold text-white mb-1">
+                        <i class="bi bi-pie-chart text-info me-2"></i>Cơ cấu theo Danh mục
+                    </h5>
+                    <p class="text-secondary small mb-0">Tỷ trọng doanh thu theo từng nhóm chủ đề</p>
+                </div>
+                <div style="position: relative; height: 260px; width: 100%; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="adminCategoryChart"></canvas>
+                </div>
+                <div class="text-center mt-2 small text-secondary">
+                    Tổng danh mục tạo doanh thu: <strong class="text-white"><%= catRevList != null ? catRevList.size() : 0 %></strong>
                 </div>
             </div>
         </div>
@@ -237,5 +329,151 @@
         </div>
     </div>
 </main>
+
+<script src="${pageContext.request.contextPath}/assets/js/chart.min.js"></script>
+<script>
+    if (typeof Chart === 'undefined') {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js';
+        document.head.appendChild(s);
+    }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+    const revenueData = <%= mRevSb.toString() %>;
+    const ordersData = <%= mOrdSb.toString() %>;
+
+    // 1. Admin Monthly Revenue Chart
+    const ctxRev = document.getElementById('adminRevenueChart');
+    if (ctxRev && typeof Chart !== 'undefined') {
+        new Chart(ctxRev, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Số đơn PAID',
+                        data: ordersData,
+                        borderColor: '#0dcaf0',
+                        backgroundColor: '#0dcaf0',
+                        borderWidth: 2,
+                        tension: 0.35,
+                        yAxisID: 'yOrders',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Doanh thu (VNĐ)',
+                        data: revenueData,
+                        backgroundColor: 'rgba(25, 135, 84, 0.65)',
+                        borderColor: '#198754',
+                        borderWidth: 1.5,
+                        borderRadius: 6,
+                        yAxisID: 'yRevenue'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#adb5bd', font: { size: 12 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                if (context.dataset.yAxisID === 'yRevenue') {
+                                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' đ';
+                                } else {
+                                    return 'Số đơn: ' + context.parsed.y + ' đơn';
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: { color: '#adb5bd' }
+                    },
+                    yRevenue: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: {
+                            color: '#adb5bd',
+                            callback: function (val) {
+                                if (val >= 1000000) return (val / 1000000) + 'M';
+                                if (val >= 1000) return (val / 1000) + 'k';
+                                return val;
+                            }
+                        }
+                    },
+                    yOrders: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#0dcaf0', stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Admin Category Revenue Chart
+    const ctxCat = document.getElementById('adminCategoryChart');
+    if (ctxCat && typeof Chart !== 'undefined') {
+        const catLabels = <%= catNamesSb.toString() %>;
+        const catData = <%= catRevsSb.toString() %>;
+        
+        new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: catLabels.length > 0 ? catLabels : ['Chưa có dữ liệu'],
+                datasets: [{
+                    data: catData.length > 0 ? catData : [1],
+                    backgroundColor: [
+                        '#0d6efd',
+                        '#198754',
+                        '#ffc107',
+                        '#0dcaf0',
+                        '#d63384',
+                        '#fd7e14'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#212529'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#adb5bd', boxWidth: 12, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const val = context.parsed;
+                                return ' ' + context.label + ': ' + new Intl.NumberFormat('vi-VN').format(val) + ' đ';
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+    }
+});
+</script>
 
 <%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>

@@ -71,9 +71,18 @@ public class AdminDashboardServlet extends HttpServlet {
             List<Order> recentOrders = dashboardDAO.getRecentOrders(conn, 6);
             List<Course> topCourses = dashboardDAO.getTopEnrolledCourses(conn, 5);
 
+            int currentYear = java.time.LocalDate.now().getYear();
+            List<Map<String, Object>> monthlyRevenue = dashboardDAO.getMonthlyRevenue(conn, currentYear);
+            List<Map<String, Object>> categoryRevenue = dashboardDAO.getCategoryRevenue(conn);
+            Map<String, Integer> orderStatusDistribution = dashboardDAO.getOrderStatusDistribution(conn);
+
             request.setAttribute("stats", stats);
             request.setAttribute("recentOrders", recentOrders);
             request.setAttribute("topCourses", topCourses);
+            request.setAttribute("monthlyRevenue", monthlyRevenue);
+            request.setAttribute("categoryRevenue", categoryRevenue);
+            request.setAttribute("orderStatusDistribution", orderStatusDistribution);
+            request.setAttribute("selectedYear", currentYear);
             request.setAttribute("activeMenu", "admin");
             request.setAttribute("adminTab", "dashboard");
             request.setAttribute("pageTitle", "Tổng quan Quản trị - Learnora LMS");
