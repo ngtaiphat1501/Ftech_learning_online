@@ -23,6 +23,16 @@
 <%
     Course course
             = (Course) request.getAttribute("course");
+    if (course == null) {
+        java.util.List<model.Course> coursesList = (java.util.List<model.Course>) request.getAttribute("courses");
+        if (coursesList != null && !coursesList.isEmpty()) {
+            course = coursesList.get(0);
+        } else {
+            course = new model.Course();
+            course.setTitle("Khoá học của tôi");
+            course.setStatus("DRAFT");
+        }
+    }
 
     List<CurriculumChapter> chapters
             = (List<CurriculumChapter>)

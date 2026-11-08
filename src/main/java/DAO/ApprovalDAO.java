@@ -16,7 +16,7 @@ public class ApprovalDAO {
 
     public List<Course> getPendingCourses(Connection conn) throws SQLException {
         List<Course> list = new ArrayList<>();
-        String sql = "SELECT c.CourseId, c.Title, c.Slug, c.Headline, c.ThumbnailUrl, c.PricingType, "
+        String sql = "SELECT c.CourseId, c.Title, c.Slug, c.Subtitle AS Headline, c.ThumbnailUrl, c.PricingType, "
                    + "       c.ListPriceVnd, c.SalePriceVnd, c.Status, c.Level, c.CreatedAt, "
                    + "       u.UserId AS InstructorId, u.FullName AS InstructorName, u.Email AS InstructorEmail, "
                    + "       cat.Name AS CategoryName, "
