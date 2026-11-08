@@ -786,72 +786,35 @@
                             mt-lg-0">
 
 
-                            <!-- Search -->
+                            <!-- Search Form -->
 
-                            <div
-                                class="
-                                input-group
-                                flex-grow-1"
+                            <form action="${pageContext.request.contextPath}/courses" method="GET"
+                                  class="flex-grow-1 m-0" style="min-width: 260px; max-width: 480px;">
 
-                                style="
-                                min-width:
-                                300px;">
+                                <div class="input-group">
 
+                                    <button type="submit"
+                                            class="input-group-text bg-body-tertiary border-0 text-secondary"
+                                            style="cursor: pointer;" title="Tìm kiếm">
+                                        <i class="bi bi-search"></i>
+                                    </button>
 
-                                <span
-                                    class="
-                                    input-group-text
-                                    bg-body-tertiary
-                                    border-0">
+                                    <input type="search"
+                                           name="keyword"
+                                           class="form-control bg-body-tertiary border-0 shadow-none"
+                                           placeholder="Tìm kiếm khóa học..."
+                                           aria-label="Tìm kiếm khóa học"
+                                           value="<%= request.getParameter("keyword") != null ? request.getParameter("keyword") : "" %>"
+                                           id="searchInput">
 
+                                    <span class="input-group-text bg-body-tertiary border-0 d-none d-md-flex gap-1">
+                                        <kbd>Ctrl</kbd>
+                                        <kbd>K</kbd>
+                                    </span>
 
-                                    <i
-                                        class="
-                                        bi
-                                        bi-search">
-                                    </i>
+                                </div>
 
-                                </span>
-
-
-                                <input
-                                    type="search"
-
-                                    class="
-                                    form-control
-                                    bg-body-tertiary
-                                    border-0
-                                    shadow-none"
-
-                                    placeholder="Search"
-
-                                    aria-label="Search"
-
-                                    id="searchInput">
-
-
-                                <span
-                                    class="
-                                    input-group-text
-                                    bg-body-tertiary
-                                    border-0
-                                    d-none
-                                    d-md-flex
-                                    gap-1">
-
-
-                                    <kbd>
-                                        Ctrl
-                                    </kbd>
-
-
-                                    <kbd>
-                                        K
-                                    </kbd>
-
-                                </span>
-
-                            </div>
+                            </form>
 
 
                             <!-- Theme -->

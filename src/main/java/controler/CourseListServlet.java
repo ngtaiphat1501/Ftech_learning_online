@@ -23,6 +23,12 @@ public class CourseListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String keyword = request.getParameter("keyword");
+        if (keyword == null || keyword.isBlank()) {
+            keyword = request.getParameter("q");
+        }
+        if (keyword == null || keyword.isBlank()) {
+            keyword = request.getParameter("search");
+        }
         String categoryValue = request.getParameter("categoryId");
         String pricingType = request.getParameter("pricingType");
 
