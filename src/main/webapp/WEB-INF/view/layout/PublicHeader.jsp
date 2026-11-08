@@ -948,22 +948,7 @@
                                 </span>
 
                             </a>
-                            <button
-                                type="button"
-                                class="
-                                btn
-                                btn-icon
-                                rounded-circle
-                                bg-body-tertiary
-                                border-0
-                                d-inline-flex
-                                align-items-center
-                                justify-content-center"
-                                aria-label="Cài đặt & Tài khoản"
-                                title="Cài đặt & Tài khoản"
-                                onclick="const ud = document.getElementById('userDropdown') || document.getElementById('guestDropdown'); if(ud) { const d = bootstrap.Dropdown.getOrCreateInstance(ud); d.toggle(); }">
-                                <i class="bi bi-gear"></i>
-                            </button>
+
 
                             <!-- ================================== -->
                             <!-- USER AUTH                           -->
@@ -1429,12 +1414,7 @@
                                     <% } %>
 
 
-                                    <a
-                                        class="dropdown-item d-flex align-items-center gap-3 py-2"
-                                        href="${pageContext.request.contextPath}/profile">
-                                        <i class="bi bi-gear text-secondary fs-5"></i>
-                                        <span>Cài đặt tài khoản</span>
-                                    </a>
+
 
                                     <hr
                                         class="
