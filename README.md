@@ -1,5 +1,9 @@
 # 🎓 Ftech Learning Online - Hệ thống Quản trị & Học trực tuyến (LMS)
 
+> 🏫 **Trường Đại học FPT - Phân hiệu Cần Thơ**  
+> 📖 **Bài tập lớn / Project cuối kỳ môn học: Lập trình Web với Java (PRJ301 / PRJ Project)**
+
+[![University](https://img.shields.io/badge/%C4%90%E1%BA%A1i%20h%E1%BB%8Dc%20FPT-Ph%C3%A2n%20hi%E1%BB%87u%20C%E1%BA%A7n%20Th%C6%A1-FF5722.svg)](https://cantho.fpt.edu.vn/)
 [![Java](https://img.shields.io/badge/Java-Jakarta%20EE%2010-orange.svg)](https://jakarta.ee/)
 [![Server](https://img.shields.io/badge/Apache%20Tomcat-10.1-blue.svg)](https://tomcat.apache.org/)
 [![Database](https://img.shields.io/badge/MS%20SQL%20Server-2019%2B-red.svg)](https://www.microsoft.com/sql-server/)
@@ -127,6 +131,9 @@ Tất cả các tài khoản thử nghiệm bên dưới đều sử dụng **M�
 
 ---
 
-## 📄 Thông tin Project Môn học
-Dự án được xây dựng và phát triển phục vụ Bài tập lớn / Project cuối kỳ môn học Lập trình Web với Java (PRJ Project) tại FPT University.
+## 🏫 Thông tin Project Môn học
+- **Cơ sở đào tạo**: Trường Đại học FPT - Phân hiệu Cần Thơ
+- **Môn học**: Lập trình Web với Java (PRJ301 / PRJ Project)
+- **Học kỳ / Năm học**: Fall 2026
+
 Mọi đóng góp và thắc mắc xin vui lòng liên hệ nhóm tác giả qua GitHub Repository.
