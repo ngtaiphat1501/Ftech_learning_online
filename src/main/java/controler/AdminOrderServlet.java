@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Order;
 import model.User;
+import util.ExcelUtil;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -19,7 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(name = "AdminOrderServlet", urlPatterns = {"/admin/orders", "/admin/order", "/admin/payment/reconcile"})
+@WebServlet(name = "AdminOrderServlet", urlPatterns = {"/admin/orders", "/admin/order", "/admin/payment/reconcile", "/admin/orders/export"})
 public class AdminOrderServlet extends HttpServlet {
 
     private final OrderDAO orderDAO = new OrderDAO();
@@ -68,6 +69,22 @@ public class AdminOrderServlet extends HttpServlet {
 
         String statusFilter = request.getParameter("status");
         String search = request.getParameter("q");
+        String action = request.getParameter("action");
+        String servletPath = request.getServletPath();
+
+        // Bonus: Excel Export
+        if ("export".equalsIgnoreCase(action) || "/admin/orders/export".equalsIgnoreCase(servletPath)) {
+            try (Connection conn = DBContext.getConnection()) {
+                List<Order> orders = orderDAO.getAllOrdersForAdmin(conn, statusFilter, search);
+                response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                response.setHeader("Content-Disposition", "attachment; filename=\"Learnora_Orders_" + System.currentTimeMillis() + ".xlsx\"");
+                ExcelUtil.exportOrders(orders, response.getOutputStream());
+                return;
+            } catch (SQLException ex) {
+                getServletContext().log("Excel export error", ex);
+                throw new ServletException("Lỗi hệ thống khi xuất file Excel đơn hàng.", ex);
+            }
+        }
 
         try (Connection conn = DBContext.getConnection()) {
             List<Order> orders = orderDAO.getAllOrdersForAdmin(conn, statusFilter, search);

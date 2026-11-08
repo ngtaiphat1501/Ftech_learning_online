@@ -79,6 +79,14 @@
 
         </span>
 
+        <div class="mt-3">
+            <a href="<%= context %>/instructor/students?action=export&courseId=<%= course.getId() %>"
+               class="btn btn-success d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-sm">
+                <i class="bi bi-file-earmark-excel-fill fs-5"></i>
+                <span>Xuất danh sách học viên Excel (.xlsx)</span>
+            </a>
+        </div>
+
     </div>
 
 

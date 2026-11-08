@@ -18,6 +18,14 @@ public class LogoutServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
+
+        // Xóa Cookie ghi nhớ khi chủ động Đăng xuất
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("rememberedUser", "");
+        cookie.setMaxAge(0);
+        String cookiePath = request.getContextPath().isEmpty() ? "/" : request.getContextPath();
+        cookie.setPath(cookiePath);
+        response.addCookie(cookie);
+
         response.sendRedirect(request.getContextPath() + "/");
     }
 

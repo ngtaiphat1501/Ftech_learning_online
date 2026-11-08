@@ -131,6 +131,23 @@ public class LoginServlet extends HttpServlet {
             session.removeAttribute("registerError");
             session.removeAttribute("loginEmail");
 
+            // Cookies: Remember Me (PRJ301 Evaluation Criteria)
+            String rememberMe = request.getParameter("rememberMe");
+            String cookiePath = request.getContextPath().isEmpty() ? "/" : request.getContextPath();
+            if ("true".equalsIgnoreCase(rememberMe) || "on".equalsIgnoreCase(rememberMe) || "1".equals(rememberMe)) {
+                jakarta.servlet.http.Cookie userCookie = new jakarta.servlet.http.Cookie("rememberedUser", java.net.URLEncoder.encode(user.getEmail(), java.nio.charset.StandardCharsets.UTF_8));
+                userCookie.setMaxAge(60 * 60); // 60 phút (3600 giây) nếu không có tương tác
+                session.setMaxInactiveInterval(60 * 60);
+                userCookie.setPath(cookiePath);
+                userCookie.setHttpOnly(true);
+                response.addCookie(userCookie);
+            } else {
+                jakarta.servlet.http.Cookie userCookie = new jakarta.servlet.http.Cookie("rememberedUser", "");
+                userCookie.setMaxAge(0);
+                userCookie.setPath(cookiePath);
+                response.addCookie(userCookie);
+            }
+
             // Không cần CAPTCHA nữa sau khi login
             clearCaptcha(session);
 

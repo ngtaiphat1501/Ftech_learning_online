@@ -51,6 +51,11 @@
                 Theo dõi giao dịch, xử lý thanh toán bất thường, đối soát và tự động mở quyền học cho học viên khi chuyển sang PAID.
             </p>
         </div>
+        <div>
+            <a href="${pageContext.request.contextPath}/admin/orders/export" class="btn btn-success d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold rounded-3 shadow-sm">
+                <i class="bi bi-file-earmark-excel-fill fs-5"></i> Xuất Báo Cáo Excel (.xlsx)
+            </a>
+        </div>
     </div>
 
     <!-- Overview Stats Cards -->

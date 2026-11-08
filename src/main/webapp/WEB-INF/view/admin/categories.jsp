@@ -20,11 +20,22 @@
             </p>
         </div>
 
-        <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm d-flex align-items-center gap-2"
-                data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-            <i class="bi bi-plus-circle"></i>
-            <span>Thêm danh mục</span>
-        </button>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <a href="${pageContext.request.contextPath}/admin/category?action=template" class="btn btn-outline-success rounded-pill px-3 fw-semibold shadow-sm d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-arrow-down"></i>
+                <span>Tải mẫu Excel</span>
+            </a>
+            <button type="button" class="btn btn-success rounded-pill px-3 fw-semibold shadow-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#importCategoryModal">
+                <i class="bi bi-file-earmark-excel"></i>
+                <span>Nhập từ Excel (.xlsx)</span>
+            </button>
+            <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                <i class="bi bi-plus-circle"></i>
+                <span>Thêm danh mục</span>
+            </button>
+        </div>
     </div>
 
     <!-- Table of Categories -->
@@ -219,5 +230,46 @@
         modal.show();
     }
 </script>
+
+<!-- Modal Import Categories from Excel -->
+<div class="modal fade" id="importCategoryModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border border-secondary border-opacity-25 rounded-4 shadow-lg">
+            <form action="${pageContext.request.contextPath}/admin/category" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="import">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 p-4">
+                    <h5 class="modal-title fw-bold" id="importModalLabel">
+                        <i class="bi bi-file-earmark-excel text-success me-2"></i>Nhập Danh mục từ File Excel
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 d-flex flex-column gap-3">
+                    <p class="text-secondary small mb-1">
+                        Tải lên file Excel (<code class="text-info">.xlsx</code>) chứa danh sách danh mục theo cấu trúc chuẩn. Bạn có thể tải mẫu Excel chuẩn trước nếu chưa có.
+                    </p>
+                    <div class="p-3 rounded-3 bg-secondary bg-opacity-10 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between">
+                        <div class="small text-secondary">
+                            <i class="bi bi-info-circle text-info me-1"></i>Chưa có file mẫu?
+                        </div>
+                        <a href="${pageContext.request.contextPath}/admin/category?action=template" class="btn btn-sm btn-outline-info rounded-pill px-3">
+                            <i class="bi bi-download me-1"></i>Tải file mẫu
+                        </a>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold text-secondary">Chọn file Excel (.xlsx) <span class="text-danger">*</span></label>
+                        <input type="file" name="excelFile" accept=".xlsx" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary border-opacity-25 p-3">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4 fw-semibold d-flex align-items-center gap-2">
+                        <i class="bi bi-upload"></i>
+                        <span>Bắt đầu nhập dữ liệu</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>

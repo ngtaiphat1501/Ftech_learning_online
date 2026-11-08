@@ -3,21 +3,30 @@ package controler;
 import dao.CategoryDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 import model.Category;
 import model.User;
+import util.ExcelUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "CategoryServlet", urlPatterns = {"/admin/category", "/admin/categories"})
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,      // 1 MB
+        maxFileSize = 10 * 1024 * 1024,       // 10 MB
+        maxRequestSize = 20 * 1024 * 1024     // 20 MB
+)
 public class CategoryServlet extends HttpServlet {
 
     private final CategoryDAO categoryDAO = new CategoryDAO();
@@ -63,6 +72,16 @@ public class CategoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (!checkAdmin(request, response)) return;
+
+        String action = request.getParameter("action");
+
+        // Bonus: Download Excel Import Template
+        if ("template".equalsIgnoreCase(action)) {
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=\"Mau_Nhap_Danh_Muc.xlsx\"");
+            ExcelUtil.generateCategoryTemplate(response.getOutputStream());
+            return;
+        }
 
         try {
             List<Category> categories = categoryDAO.getAllForAdmin();
@@ -137,6 +156,34 @@ public class CategoryServlet extends HttpServlet {
 
                     categoryDAO.delete(id);
                     response.sendRedirect(request.getContextPath() + "/admin/category?msg=" + urlEncode("Đã xóa danh mục thành công!"));
+                    break;
+                }
+
+                case "import": {
+                    Part filePart = request.getPart("excelFile");
+                    if (filePart == null || filePart.getSize() == 0) {
+                        response.sendRedirect(request.getContextPath() + "/admin/category?error=" + urlEncode("Vui lòng chọn một file Excel (.xlsx) để tải lên."));
+                        return;
+                    }
+
+                    try (InputStream in = filePart.getInputStream()) {
+                        List<Category> imported = ExcelUtil.importCategories(in);
+                        if (imported.isEmpty()) {
+                            response.sendRedirect(request.getContextPath() + "/admin/category?error=" + urlEncode("File Excel không có dữ liệu hoặc sai cấu trúc mẫu."));
+                            return;
+                        }
+
+                        int count = 0;
+                        for (Category cat : imported) {
+                            try {
+                                if (categoryDAO.create(cat)) {
+                                    count++;
+                                }
+                            } catch (SQLException ignored) {
+                            }
+                        }
+                        response.sendRedirect(request.getContextPath() + "/admin/category?msg=" + urlEncode("Đã nhập thành công " + count + " danh mục từ file Excel!"));
+                    }
                     break;
                 }
 
