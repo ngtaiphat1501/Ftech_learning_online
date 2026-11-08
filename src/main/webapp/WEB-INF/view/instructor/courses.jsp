@@ -206,6 +206,77 @@
 
 
     <%
+        java.math.BigDecimal totalRev = (java.math.BigDecimal) request.getAttribute("totalRevenue");
+        java.math.BigDecimal balVnd = (java.math.BigDecimal) request.getAttribute("balanceVnd");
+        Integer totalStu = (Integer) request.getAttribute("totalStudents");
+        Integer pubCount = (Integer) request.getAttribute("publishedCount");
+
+        long totalRevVal = totalRev != null ? totalRev.longValue() : 0L;
+        long balVal = balVnd != null ? balVnd.longValue() : 0L;
+        int totalStuVal = totalStu != null ? totalStu : 0;
+        int pubCountVal = pubCount != null ? pubCount : 0;
+    %>
+
+    <!-- KPI STATS CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                    <div class="rounded-4 bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                        <i class="bi bi-cash-stack fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-body-secondary small fw-medium">Tổng doanh thu bán</div>
+                        <div class="fs-4 fw-bold text-success"><%= String.format("%,d đ", totalRevVal) %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                    <div class="rounded-4 bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                        <i class="bi bi-wallet2 fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-body-secondary small fw-medium">Số dư ví giảng viên</div>
+                        <div class="fs-4 fw-bold text-primary"><%= String.format("%,d đ", balVal) %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                    <div class="rounded-4 bg-info-subtle text-info p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-body-secondary small fw-medium">Tổng lượt học viên</div>
+                        <div class="fs-4 fw-bold text-body-emphasis"><%= totalStuVal %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                    <div class="rounded-4 bg-warning-subtle text-warning p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                        <i class="bi bi-journal-check fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-body-secondary small fw-medium">Khóa học mở bán</div>
+                        <div class="fs-4 fw-bold text-body-emphasis"><%= pubCountVal %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%
         if (courses == null
                 || courses.isEmpty()) {
     %>
@@ -281,6 +352,10 @@
 
                         <th class="py-3">
                             Học viên
+                        </th>
+
+                        <th class="py-3">
+                            Doanh thu
                         </th>
 
                         <th class="py-3
@@ -410,6 +485,12 @@
 
                             <%= course.getEnrollmentCount()%>
 
+                        </td>
+
+                        <td>
+                            <span class="text-success fw-bold">
+                                <%= course.getRevenueVnd() != null ? String.format("%,d đ", course.getRevenueVnd().longValue()) : "0 đ" %>
+                            </span>
                         </td>
 
 

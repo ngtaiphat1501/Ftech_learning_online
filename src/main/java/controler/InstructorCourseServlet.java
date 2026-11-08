@@ -111,7 +111,37 @@ public class InstructorCourseServlet extends HttpServlet {
             List<Course> courses
                     = dao.getByInstructorId(instructorId);
 
+            BigDecimal totalRevenue = BigDecimal.ZERO;
+            int totalStudents = 0;
+            int publishedCount = 0;
+
+            if (courses != null) {
+                for (Course c : courses) {
+                    if (c.getRevenueVnd() != null) {
+                        totalRevenue = totalRevenue.add(c.getRevenueVnd());
+                    }
+                    totalStudents += c.getEnrollmentCount();
+                    if ("PUBLISHED".equalsIgnoreCase(c.getStatus())) {
+                        publishedCount++;
+                    }
+                }
+            }
+
+            BigDecimal balanceVnd = BigDecimal.ZERO;
+            try {
+                dao.UserDAO userDAO = new dao.UserDAO();
+                model.User instructorUser = userDAO.findById(instructorId);
+                if (instructorUser != null && instructorUser.getBalanceVnd() != null) {
+                    balanceVnd = instructorUser.getBalanceVnd();
+                }
+            } catch (Exception ignored) {
+            }
+
             request.setAttribute("courses", courses);
+            request.setAttribute("totalRevenue", totalRevenue);
+            request.setAttribute("totalStudents", totalStudents);
+            request.setAttribute("publishedCount", publishedCount);
+            request.setAttribute("balanceVnd", balanceVnd);
 
             request.getRequestDispatcher(
                     "/WEB-INF/view/instructor/courses.jsp"

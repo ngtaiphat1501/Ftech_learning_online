@@ -154,7 +154,8 @@ public class CourseDAO {
                 + "(SELECT COUNT(*) FROM Lessons l "
                 + "WHERE l.CourseId = c.CourseId) AS LessonCount, "
                 + "(SELECT COUNT(*) FROM dbo.Enrollments e "
-                + "WHERE e.CourseId = c.CourseId) AS EnrollmentCount "
+                + "WHERE e.CourseId = c.CourseId) AS EnrollmentCount, "
+                + "ISNULL((SELECT SUM(oi.PayableVnd) FROM dbo.OrderItems oi JOIN dbo.Orders o ON o.OrderId = oi.OrderId AND o.Status = 'PAID' WHERE oi.CourseId = c.CourseId), 0) AS RevenueVnd "
                 + "FROM Courses c "
                 + "JOIN Users u ON c.InstructorId = u.UserId "
                 + "JOIN Categories ca ON c.CategoryId = ca.CategoryId "
@@ -183,6 +184,7 @@ public class CourseDAO {
                     course.setLessonCount(result.getInt("LessonCount"));
                     course.setStatus(result.getString("Status"));
                     course.setEnrollmentCount(result.getInt("EnrollmentCount"));
+                    course.setRevenueVnd(result.getBigDecimal("RevenueVnd"));
 
                     list.add(course);
                 }

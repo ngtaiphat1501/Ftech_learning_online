@@ -41,6 +41,7 @@ public class Course implements Serializable {
     private int learnerCount;
     private double averageRating = 0.0;
     private int totalRatings = 0;
+    private BigDecimal revenueVnd = BigDecimal.ZERO;
 
     private List<Chapter> chapters = new ArrayList<>();
 
@@ -320,6 +321,14 @@ public class Course implements Serializable {
 
     public void setLearnerCount(int learnerCount) {
         this.learnerCount = learnerCount;
+    }
+
+    public BigDecimal getRevenueVnd() {
+        return revenueVnd != null ? revenueVnd : BigDecimal.ZERO;
+    }
+
+    public void setRevenueVnd(BigDecimal revenueVnd) {
+        this.revenueVnd = revenueVnd;
     }
 
     public int getEnrollmentCount() {
