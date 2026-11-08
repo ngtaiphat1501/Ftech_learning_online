@@ -115,7 +115,7 @@
                         <div><div class="fw-bold">Instructor</div><div class="small text-body-secondary">Ftech Studio</div></div>
                     </div>
                     <div class="course-studio-nav-title">KHÔNG GIAN GIẢNG VIÊN</div>
-                    <a class="course-studio-nav" href="<%= context %>/instructor/courses">
+                    <a class="course-studio-nav" href="<%= context %>/instructor/dashboard">
                         <i class="bi bi-grid-1x2-fill"></i> Tổng quan
                     </a>
                     <a class="course-studio-nav active" aria-current="page" href="<%= context %>/instructor/courses">

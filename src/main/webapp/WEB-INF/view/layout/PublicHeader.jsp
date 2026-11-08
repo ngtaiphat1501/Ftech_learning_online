@@ -1357,7 +1357,7 @@
                                         gap-3
                                         py-2"
 
-                                        href="${pageContext.request.contextPath}/instructor/courses">
+                                        href="${pageContext.request.contextPath}/instructor/dashboard">
 
 
                                         <i
