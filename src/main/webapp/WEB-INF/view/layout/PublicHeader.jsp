@@ -202,13 +202,13 @@
             .ftech-meteor {
                 position: absolute;
 
-                width: 2px;
+                width: 1.5px;
                 height: var(--meteor-length);
 
                 background: linear-gradient(
                     to bottom,
                     rgba(255, 255, 255, 0),
-                    rgba(255, 255, 255, 0.95)
+                    rgba(255, 255, 255, 0.8)
                     );
 
                 border-radius: 999px;
@@ -221,8 +221,8 @@
 
                 filter:
                     drop-shadow(
-                    0 0 5px
-                    rgba(120, 170, 255, 0.8)
+                    0 0 3px
+                    rgba(120, 170, 255, 0.6)
                     );
 
                 animation:
@@ -243,8 +243,8 @@
                 bottom: 0;
                 left: 50%;
 
-                width: 4px;
-                height: 4px;
+                width: 3px;
+                height: 3px;
 
                 transform:
                     translateX(-50%);
@@ -254,8 +254,32 @@
                 background: #fff;
 
                 box-shadow:
-                    0 0 6px #fff,
-                    0 0 12px rgba(96, 165, 250, 0.8);
+                    0 0 4px #fff,
+                    0 0 8px rgba(96, 165, 250, 0.6);
+            }
+
+            /* Giao diện sáng: đổi sao băng sang tông xanh tím đậm hơn để nổi trên nền trắng */
+            [data-bs-theme="light"] .ftech-meteor {
+                background: linear-gradient(
+                    to bottom,
+                    rgba(99, 102, 241, 0),
+                    rgba(99, 102, 241, 0.45) 55%,
+                    rgba(79, 70, 229, 0.9)
+                    );
+
+                filter:
+                    drop-shadow(
+                    0 0 3px
+                    rgba(99, 102, 241, 0.45)
+                    );
+            }
+
+            [data-bs-theme="light"] .ftech-meteor::before {
+                background: #4f46e5;
+
+                box-shadow:
+                    0 0 4px rgba(79, 70, 229, 0.85),
+                    0 0 10px rgba(129, 140, 248, 0.65);
             }
 
             @keyframes ftech-meteor-fall {
@@ -786,33 +810,73 @@
                             mt-lg-0">
 
 
-                            <!-- Search Form -->
+                            <!-- Search -->
 
-                            <form action="${pageContext.request.contextPath}/courses" method="GET"
-                                  class="flex-grow-1 m-0" style="min-width: 260px; max-width: 480px;">
+                            <form action="${pageContext.request.contextPath}/courses"
+                                  method="get"
+                                  role="search"
+                                  class="input-group flex-grow-1"
+                                  style="min-width: 300px;">
 
-                                <div class="input-group">
 
-                                    <button type="submit"
-                                            class="input-group-text bg-body-tertiary border-0 text-secondary"
-                                            style="cursor: pointer;" title="Tìm kiếm">
-                                        <i class="bi bi-search"></i>
-                                    </button>
+                                <button type="submit"
+                                        class="input-group-text bg-body-tertiary border-0 text-body"
+                                        aria-label="Tìm kiếm">
 
-                                    <input type="search"
-                                           name="keyword"
-                                           class="form-control bg-body-tertiary border-0 shadow-none"
-                                           placeholder="Tìm kiếm khóa học..."
-                                           aria-label="Tìm kiếm khóa học"
-                                           value="<%= request.getParameter("keyword") != null ? request.getParameter("keyword") : "" %>"
-                                           id="searchInput">
 
-                                    <span class="input-group-text bg-body-tertiary border-0 d-none d-md-flex gap-1">
-                                        <kbd>Ctrl</kbd>
-                                        <kbd>K</kbd>
-                                    </span>
+                                    <i
+                                        class="
+                                        bi
+                                        bi-search">
+                                    </i>
 
-                                </div>
+                                </button>
+
+
+                                <input
+                                    type="search"
+
+                                    class="
+                                    form-control
+                                    bg-body-tertiary
+                                    border-0
+                                    shadow-none"
+
+                                    placeholder="Tìm khóa học..."
+
+                                    aria-label="Tìm khóa học"
+
+                                    id="searchInput"
+
+                                    name="keyword"
+
+                                    maxlength="100"
+
+                                    autocomplete="off"
+
+                                    value="<%= request.getAttribute("keyword") == null ? "" : String.valueOf(request.getAttribute("keyword")).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;") %>">
+
+
+                                <span
+                                    class="
+                                    input-group-text
+                                    bg-body-tertiary
+                                    border-0
+                                    d-none
+                                    d-md-flex
+                                    gap-1">
+
+
+                                    <kbd>
+                                        Ctrl
+                                    </kbd>
+
+
+                                    <kbd>
+                                        K
+                                    </kbd>
+
+                                </span>
 
                             </form>
 
@@ -2835,8 +2899,8 @@
 
                         const meteorCount =
                                 window.innerWidth < 768
-                                ? 20
-                                : 50;
+                                ? 12
+                                : 30;
 
                         for (
                                 let i = 0;
@@ -2863,9 +2927,9 @@
                                     - 40;
 
                             const length =
-                                    50
+                                    30
                                     + Math.random()
-                                    * 100;
+                                    * 60;
 
                             const duration =
                                     3

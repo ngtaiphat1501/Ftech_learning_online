@@ -139,7 +139,18 @@ public class QuestionServlet extends HttpServlet {
         }
 
         try (Connection conn = DBContext.getConnection()) {
-            long targetInstructorId = user.isAdmin() ? -1 : user.getUserId();
+            long targetInstructorId = user.getUserId();
+            if (user.isAdmin() && quizId > 0) {
+                String sql = "SELECT c.InstructorId FROM dbo.Quizzes q JOIN dbo.Courses c ON q.CourseId = c.CourseId WHERE q.QuizId = ?";
+                try (var ps = conn.prepareStatement(sql)) {
+                    ps.setLong(1, quizId);
+                    try (var rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            targetInstructorId = rs.getLong("InstructorId");
+                        }
+                    }
+                }
+            }
 
             if ("create".equalsIgnoreCase(action)) {
                 String content = request.getParameter("content");
@@ -234,8 +245,7 @@ public class QuestionServlet extends HttpServlet {
 
     private BigDecimal parseBigDecimal(String val, BigDecimal def) {
         try {
-            if (val == null || val.isBlank()) return def;
-            return new BigDecimal(val.trim().replace(',', '.'));
+            return new BigDecimal(val.trim());
         } catch (Exception e) {
             return def;
         }

@@ -16,13 +16,10 @@
     }
     Boolean isEnrolled = (Boolean) request.getAttribute("isEnrolled");
     Boolean isInCart = (Boolean) request.getAttribute("isInCart");
-    Boolean isCompleted = (Boolean) request.getAttribute("isCompleted");
-    CourseReview userReview = (CourseReview) request.getAttribute("userReview");
     List<CourseReview> reviews = (List<CourseReview>) request.getAttribute("reviews");
 
     if (isEnrolled == null) isEnrolled = false;
     if (isInCart == null) isInCart = false;
-    if (isCompleted == null) isCompleted = false;
 
     NumberFormat currency = NumberFormat.getNumberInstance(Locale.forLanguageTag("vi-VN"));
     currency.setMaximumFractionDigits(0);
@@ -362,71 +359,31 @@
                     </div>
                 </div>
 
-                <% if ("1".equals(request.getParameter("reviewSaved"))) { %>
-                <div class="alert alert-success rounded-4 mb-4" role="status">
-                    <i class="bi bi-check-circle me-2"></i>Đã lưu đánh giá khóa học của bạn thành công!
-                </div>
-                <% } %>
-
-                <% if (currentUserId == null) { %>
-                <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm text-center">
-                    <p class="text-secondary mb-2">Bạn cần đăng nhập và hoàn thành khóa học để có thể gửi đánh giá.</p>
-                    <div>
-                        <a href="${pageContext.request.contextPath}/?authModal=signin" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập ngay
-                        </a>
-                    </div>
-                </div>
-                <% } else if (!isEnrolled) { %>
-                <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm text-center">
-                    <p class="text-secondary mb-0"><i class="bi bi-info-circle me-1"></i> Bạn cần ghi danh và hoàn thành khóa học để gửi đánh giá.</p>
-                </div>
-                <% } else if (!isCompleted) { %>
+                <!-- Your Rating Form (Interactive Box) -->
                 <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div>
-                            <h6 class="text-white fw-bold mb-1"><i class="bi bi-mortarboard text-primary me-2"></i>Bạn đang theo học khóa học này</h6>
-                            <p class="text-secondary small mb-0">Hãy hoàn thành các bài học và bài kiểm tra bắt buộc để mở khóa Đánh giá và nhận Chứng chỉ nhé!</p>
-                        </div>
-                        <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getCourseId() %>" class="btn btn-primary btn-sm rounded-pill px-3">
-                            <i class="bi bi-play-circle me-1"></i> Vào học tiếp
-                        </a>
-                    </div>
-                </div>
-                <% } else { %>
-                <!-- Working Review Form for Completed Enrolled Student -->
-                <form method="POST" action="${pageContext.request.contextPath}/student/review" class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
-                    <input type="hidden" name="courseId" value="<%= course.getCourseId() %>">
-                    <input type="hidden" name="csrfToken" value="<%= session.getAttribute("csrfToken") != null ? session.getAttribute("csrfToken") : "" %>">
-                    <input type="hidden" name="redirectUrl" value="${pageContext.request.contextPath}/course?id=<%= course.getCourseId() %>">
-                    <input type="hidden" name="rating" id="reviewRatingInput" value="<%= (userReview != null && userReview.isExisting()) ? userReview.getRating() : 5 %>">
-
-                    <h6 class="text-white fw-bold mb-2">
-                        <%= (userReview != null && userReview.isExisting()) ? "Cập nhật đánh giá của bạn" : "Đánh giá của bạn về khóa học" %>
-                    </h6>
+                    <h6 class="text-white fw-bold mb-2">Đánh giá của bạn</h6>
                     <div class="d-flex align-items-center gap-1 mb-3" id="ratingStarsGroup">
-                        <% int currentRating = (userReview != null && userReview.isExisting()) ? userReview.getRating() : 5; %>
-                        <% for (int s = 1; s <= 5; s++) { %>
-                            <i class="bi <%= s <= currentRating ? "bi-star-fill active text-warning" : "bi-star text-secondary" %> rating-star-interactive cursor-pointer fs-4" data-star="<%= s %>"></i>
-                        <% } %>
-                        <span class="text-secondary small ms-2" id="starLabel"><%= currentRating %>/5 sao</span>
+                        <i class="bi bi-star rating-star-interactive" data-star="1"></i>
+                        <i class="bi bi-star rating-star-interactive" data-star="2"></i>
+                        <i class="bi bi-star rating-star-interactive" data-star="3"></i>
+                        <i class="bi bi-star rating-star-interactive" data-star="4"></i>
+                        <i class="bi bi-star rating-star-interactive" data-star="5"></i>
+                        <span class="text-secondary small ms-2" id="starLabel">Chọn số sao</span>
                     </div>
 
                     <div class="mb-3">
-                        <textarea name="comment" class="form-control bg-body-tertiary border border-secondary border-opacity-25 text-white py-2.5 px-3 rounded-3"
-                                  rows="3" maxlength="2000"
-                                  placeholder="Chia sẻ cảm nhận của bạn về khóa học này..."
-                                  style="resize: none; font-size: 0.92rem;"><%= (userReview != null && userReview.getComment() != null) ? userReview.getComment() : "" %></textarea>
+                        <textarea class="form-control bg-body-tertiary border border-secondary border-opacity-25 text-white py-2.5 px-3 rounded-3"
+                                  rows="3"
+                                  placeholder="Chia sẻ cảm nhận của bạn về khóa học này (tùy chọn)..."
+                                  style="resize: none; font-size: 0.92rem;"></textarea>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-secondary small">Tối đa 2.000 ký tự.</span>
-                        <button type="submit" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm">
-                            <%= (userReview != null && userReview.isExisting()) ? "Lưu thay đổi" : "Gửi đánh giá" %>
+                    <div>
+                        <button type="button" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm" onclick="alert('Cảm ơn bạn đã gửi đánh giá!')">
+                            Gửi đánh giá
                         </button>
                     </div>
-                </form>
-                <% } %>
+                </div>
 
                 <!-- Reviews List or Empty State -->
                 <% if (reviews == null || reviews.isEmpty()) { %>
@@ -675,23 +632,32 @@
         if (starGroup) {
             const stars = starGroup.querySelectorAll(".rating-star-interactive");
             const label = document.getElementById("starLabel");
-            const ratingInput = document.getElementById("reviewRatingInput");
             const descriptions = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Tuyệt vời"];
 
             stars.forEach(star => {
-                star.addEventListener("click", function () {
+                star.addEventListener("mouseover", function () {
                     const rating = parseInt(this.dataset.star, 10);
-                    if (ratingInput) ratingInput.value = rating;
                     stars.forEach((s, idx) => {
                         if (idx < rating) {
-                            s.classList.remove("bi-star", "text-secondary");
-                            s.classList.add("bi-star-fill", "active", "text-warning");
+                            s.classList.remove("bi-star");
+                            s.classList.add("bi-star-fill");
                         } else {
-                            s.classList.remove("bi-star-fill", "active", "text-warning");
-                            s.classList.add("bi-star", "text-secondary");
+                            s.classList.remove("bi-star-fill");
+                            s.classList.add("bi-star");
                         }
                     });
-                    if (label) label.textContent = rating + "/5 sao - " + descriptions[rating - 1];
+                    if (label) label.textContent = descriptions[rating - 1];
+                });
+
+                star.addEventListener("click", function () {
+                    const rating = parseInt(this.dataset.star, 10);
+                    stars.forEach((s, idx) => {
+                        if (idx < rating) {
+                            s.classList.add("active");
+                        } else {
+                            s.classList.remove("active");
+                        }
+                    });
                 });
             });
         }

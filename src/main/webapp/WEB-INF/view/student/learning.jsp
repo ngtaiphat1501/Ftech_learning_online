@@ -82,28 +82,6 @@
     <div class="row g-4">
 
         <div class="col-lg-8 col-xl-9">
-            <% 
-                String certCode = (String) request.getAttribute("certificateCode");
-                if (certCode != null) { 
-            %>
-            <div class="alert alert-success d-flex align-items-center justify-content-between p-3 rounded-4 mb-4 flex-wrap gap-2 shadow-sm border-0 bg-success bg-opacity-10 text-success-emphasis">
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-award-fill text-warning fs-2"></i>
-                    <div>
-                        <strong class="d-block">Chúc mừng! Bạn đã hoàn thành khóa học này.</strong>
-                        <span class="small text-body-secondary">Chứng chỉ hoàn thành của bạn đã sẵn sàng. Bạn cũng có thể gửi đánh giá cho khóa học.</span>
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="<%= contextPath %>/certificate?code=<%= certCode %>" class="btn btn-warning btn-sm fw-semibold rounded-pill px-3 shadow-sm">
-                        <i class="bi bi-award me-1"></i> Xem chứng chỉ
-                    </a>
-                    <a href="<%= contextPath %>/student/courses#course-<%= courseId %>" class="btn btn-outline-success btn-sm rounded-pill px-3">
-                        <i class="bi bi-star me-1"></i> Đánh giá
-                    </a>
-                </div>
-            </div>
-            <% } %>
 
             <div class="card rounded-4 overflow-hidden mb-4">
 

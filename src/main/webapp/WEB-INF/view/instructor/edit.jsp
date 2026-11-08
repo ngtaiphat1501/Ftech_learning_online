@@ -1,5 +1,5 @@
 <%@ page pageEncoding="UTF-8" %>
-<%@ page import="model.Course" %>
+<%@ page import="model.Course, model.Category, java.util.List" %>
 
 <%!
     private String esc(Object input) {
@@ -108,15 +108,24 @@
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold">
-                                Category ID
+                                Danh mục
                             </label>
 
-                            <input type="number"
-                                   class="form-control"
-                                   name="categoryId"
-                                   required
-                                   min="1"
-                                   value="<%= course.getCategoryId() %>">
+                            <select class="form-select"
+                                    name="categoryId"
+                                    required>
+                                <%
+                                    List<Category> categories = (List<Category>) request.getAttribute("categories");
+                                    if (categories != null) {
+                                        for (Category cat : categories) {
+                                            boolean selected = cat.getId() == course.getCategoryId();
+                                %>
+                                <option value="<%= cat.getId() %>" <%= selected ? "selected" : "" %>><%= esc(cat.getName()) %></option>
+                                <%
+                                        }
+                                    }
+                                %>
+                            </select>
 
                         </div>
 

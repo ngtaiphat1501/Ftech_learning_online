@@ -1,5 +1,6 @@
 package controler;
 
+import dao.CategoryDAO;
 import dao.CourseDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
+import model.Category;
 import model.Course;
 
 @WebServlet(
@@ -43,6 +45,11 @@ public class InstructorCourseServlet extends HttpServlet {
             CourseDAO dao = new CourseDAO();
 
             if ("create".equals(view)) {
+
+                request.setAttribute(
+                        "categories",
+                        new CategoryDAO().getList()
+                );
 
                 request.getRequestDispatcher(
                         "/WEB-INF/view/instructor/create.jsp"
@@ -87,6 +94,11 @@ public class InstructorCourseServlet extends HttpServlet {
                 request.setAttribute(
                         "course",
                         course
+                );
+
+                request.setAttribute(
+                        "categories",
+                        new CategoryDAO().getList()
                 );
 
                 request.getRequestDispatcher(
@@ -182,6 +194,15 @@ public class InstructorCourseServlet extends HttpServlet {
 
                 long categoryId
                         = Long.parseLong(categoryIdText);
+
+                Category category
+                        = new CategoryDAO().getById(categoryId);
+
+                if (category == null || !category.isActive()) {
+                    throw new IllegalArgumentException(
+                            "Danh muc khong ton tai hoac da bi an"
+                    );
+                }
 
                 BigDecimal listPrice;
 
@@ -288,6 +309,15 @@ public class InstructorCourseServlet extends HttpServlet {
 
                 long categoryId
                         = Long.parseLong(categoryIdText);
+
+                Category category
+                        = new CategoryDAO().getById(categoryId);
+
+                if (category == null || !category.isActive()) {
+                    throw new IllegalArgumentException(
+                            "Danh muc khong ton tai hoac da bi an"
+                    );
+                }
 
                 BigDecimal listPrice;
 
@@ -480,6 +510,18 @@ public class InstructorCourseServlet extends HttpServlet {
                     "error",
                     ex.getMessage()
             );
+
+            try {
+                request.setAttribute(
+                        "categories",
+                        new CategoryDAO().getList()
+                );
+            } catch (SQLException sqlEx) {
+                throw new ServletException(
+                        "Khong the tai danh muc",
+                        sqlEx
+                );
+            }
 
             request.getRequestDispatcher(
                     "/WEB-INF/view/instructor/create.jsp"

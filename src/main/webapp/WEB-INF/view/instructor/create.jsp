@@ -1,4 +1,5 @@
 <%@ page pageEncoding="UTF-8" %>
+<%@ page import="java.util.List, model.Category" %>
 <%!
     // Escape text rendered from form parameters or server error messages.
     private String esc(Object input) {
@@ -165,11 +166,23 @@
                                         <div class="course-create-help">Tự gợi ý từ tên khóa học; viết thường, không dấu, dùng dấu gạch ngang. Slug phải duy nhất.</div>
                                     </div>
                                     <div class="col-12">
-                                        <label class="course-create-label" for="categoryId">Mã danh mục (CategoryId) <span class="course-create-required">*</span></label>
-                                        <input class="form-control" type="number" id="categoryId" name="categoryId"
-                                               min="1" step="1" inputmode="numeric" required placeholder="Nhập ID danh mục có trong database"
-                                               value="<%= field(request, "categoryId", "") %>">
-                                        <div class="course-create-help">Chọn ID đã tồn tại trong bảng Categories. Khi có CategoryDAO, có thể thay ô này bằng dropdown danh mục.</div>
+                                        <label class="course-create-label" for="categoryId">Danh mục <span class="course-create-required">*</span></label>
+                                        <select class="form-select" id="categoryId" name="categoryId" required>
+                                            <option value="">-- Chọn danh mục --</option>
+                                            <%
+                                                List<Category> categories = (List<Category>) request.getAttribute("categories");
+                                                String selectedCategory = request.getParameter("categoryId");
+                                                if (categories != null) {
+                                                    for (Category cat : categories) {
+                                                        boolean selected = String.valueOf(cat.getId()).equals(selectedCategory);
+                                            %>
+                                            <option value="<%= cat.getId() %>" <%= selected ? "selected" : "" %>><%= esc(cat.getName()) %></option>
+                                            <%
+                                                    }
+                                                }
+                                            %>
+                                        </select>
+                                        <div class="course-create-help">Danh mục được lấy từ bảng Categories (chỉ hiển thị danh mục đang hoạt động).</div>
                                     </div>
                                     <div class="col-12">
                                         <label class="course-create-label" for="description">Mô tả khóa học <span class="course-create-required">*</span></label>

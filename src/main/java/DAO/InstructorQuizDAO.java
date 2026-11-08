@@ -16,7 +16,6 @@ import java.util.List;
 public class InstructorQuizDAO {
 
     public boolean checkCourseOwnership(Connection conn, long courseId, long instructorId) throws SQLException {
-        if (instructorId <= 0) return true;
         String sql = "SELECT 1 FROM dbo.Courses WHERE CourseId = ? AND InstructorId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, courseId);
@@ -28,7 +27,6 @@ public class InstructorQuizDAO {
     }
 
     public boolean checkQuizOwnership(Connection conn, long quizId, long instructorId) throws SQLException {
-        if (instructorId <= 0) return true;
         String sql = "SELECT 1 FROM dbo.Quizzes q "
                    + "JOIN dbo.Courses c ON q.CourseId = c.CourseId "
                    + "WHERE q.QuizId = ? AND c.InstructorId = ?";
@@ -42,7 +40,6 @@ public class InstructorQuizDAO {
     }
 
     public boolean checkQuestionOwnership(Connection conn, long questionId, long instructorId) throws SQLException {
-        if (instructorId <= 0) return true;
         String sql = "SELECT 1 FROM dbo.Questions qn "
                    + "JOIN dbo.Quizzes q ON qn.QuizId = q.QuizId "
                    + "JOIN dbo.Courses c ON q.CourseId = c.CourseId "
@@ -154,28 +151,6 @@ public class InstructorQuizDAO {
                               int duration, int maxAttempts, BigDecimal passingScore, boolean isRequired, int sortOrder) throws SQLException {
         if (!checkCourseOwnership(conn, courseId, instructorId)) {
             return false;
-        }
-
-        // Auto-resolve sortOrder if duplicate or <= 0 to avoid UQ_Quizzes_CourseId_SortOrder violation
-        String checkSortSql = "SELECT 1 FROM dbo.Quizzes WHERE CourseId = ? AND SortOrder = ?";
-        boolean isTaken = false;
-        try (PreparedStatement psCheck = conn.prepareStatement(checkSortSql)) {
-            psCheck.setLong(1, courseId);
-            psCheck.setInt(2, sortOrder);
-            try (ResultSet rsCheck = psCheck.executeQuery()) {
-                isTaken = rsCheck.next();
-            }
-        }
-        if (isTaken || sortOrder <= 0) {
-            String maxSortSql = "SELECT ISNULL(MAX(SortOrder), 0) + 1 FROM dbo.Quizzes WHERE CourseId = ?";
-            try (PreparedStatement psMax = conn.prepareStatement(maxSortSql)) {
-                psMax.setLong(1, courseId);
-                try (ResultSet rsMax = psMax.executeQuery()) {
-                    if (rsMax.next()) {
-                        sortOrder = rsMax.getInt(1);
-                    }
-                }
-            }
         }
 
         String sql = "INSERT INTO dbo.Quizzes (CourseId, Title, Description, DurationMinutes, MaxAttempts, PassingScore, IsRequired, SortOrder) "
@@ -322,7 +297,9 @@ public class InstructorQuizDAO {
         if (!checkQuizOwnership(conn, quizId, instructorId)) {
             return false;
         }
-        // Note: Allow adding questions even if attempts exist in demo mode
+        if (hasQuizAttempts(conn, quizId)) {
+            throw new IllegalStateException("Đề kiểm tra này đã có học viên làm bài thi, không được thêm câu hỏi mới.");
+        }
         if (optionContents == null || optionContents.size() < 2) {
             throw new IllegalArgumentException("Mỗi câu hỏi phải có ít nhất 2 phương án lựa chọn.");
         }

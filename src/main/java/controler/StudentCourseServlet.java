@@ -6,7 +6,6 @@ package controler;
 
 import dao.StudentCourseDAO;
 import dao.ReviewDAO;
-import dao.CertificateDAO;
 import java.util.UUID;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -60,7 +59,6 @@ public class StudentCourseServlet extends HttpServlet {
             );
 
             request.setAttribute("reviews", new ReviewDAO().getOwnReviews(studentId));
-            request.setAttribute("certificates", new CertificateDAO().getCertificateCodesForStudent(studentId));
 
             request.setAttribute("pageTitle", "Khóa học của tôi");
             request.setAttribute("activeMenu", "myCourses");

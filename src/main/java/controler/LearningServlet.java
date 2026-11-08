@@ -6,8 +6,6 @@ package controler;
 
 import dao.DiscussionDAO;
 import dao.QuizDAO;
-import dao.CertificateDAO;
-import model.Certificate;
 import java.util.UUID;
 import dao.LearningDAO;
 import java.io.IOException;
@@ -182,15 +180,6 @@ public class LearningServlet extends HttpServlet {
                         "discussionPosts",
                         discussionDAO.getPosts(studentId, selectedLesson.getId())
                 );
-            }
-
-            try {
-                CertificateDAO certDao = new CertificateDAO();
-                Certificate cert = certDao.issueCertificateIfEligible(enrollmentId, courseId, request.getContextPath());
-                if (cert != null) {
-                    request.setAttribute("certificateCode", cert.getCertificateCode());
-                }
-            } catch (Exception ignored) {
             }
 
             request.getRequestDispatcher(

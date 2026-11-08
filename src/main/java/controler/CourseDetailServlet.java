@@ -1,7 +1,6 @@
 package controler;
 
 import dao.CourseDAO;
-import dao.ReviewDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,13 +14,11 @@ import model.User;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 @WebServlet(name = "CourseDetailServlet", urlPatterns = {"/course", "/course/"})
 public class CourseDetailServlet extends HttpServlet {
 
     private final CourseDAO courseDAO = new CourseDAO();
-    private final ReviewDAO reviewDAO = new ReviewDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -66,9 +63,6 @@ public class CourseDetailServlet extends HttpServlet {
                     currentUserId = ((Number) uid).longValue();
                 }
                 currentUser = (User) session.getAttribute("user");
-                if (session.getAttribute("csrfToken") == null) {
-                    session.setAttribute("csrfToken", UUID.randomUUID().toString());
-                }
             }
 
             // Only published courses or visible to owner/admin
@@ -80,19 +74,10 @@ public class CourseDetailServlet extends HttpServlet {
 
             boolean isEnrolled = false;
             boolean isInCart = false;
-            boolean isCompleted = false;
-            CourseReview userReview = null;
 
             if (currentUserId != null) {
                 isEnrolled = courseDAO.isUserEnrolled(currentUserId, courseId);
                 isInCart = courseDAO.isCourseInUserCart(currentUserId, courseId);
-                if (isEnrolled) {
-                    try {
-                        userReview = reviewDAO.getOwnReview(currentUserId, courseId);
-                        isCompleted = (userReview != null && userReview.isEligible());
-                    } catch (Exception ignored) {
-                    }
-                }
             }
 
             List<CourseReview> reviews = courseDAO.getCourseReviews(courseId);
@@ -100,10 +85,8 @@ public class CourseDetailServlet extends HttpServlet {
             request.setAttribute("course", course);
             request.setAttribute("isEnrolled", isEnrolled);
             request.setAttribute("isInCart", isInCart);
-            request.setAttribute("isCompleted", isCompleted);
-            request.setAttribute("userReview", userReview);
             request.setAttribute("reviews", reviews);
-            request.setAttribute("pageTitle", course.getTitle() + " - Learnora");
+            request.setAttribute("pageTitle", course.getTitle() + " - Ftech");
             request.setAttribute("activeMenu", "courses");
 
             request.getRequestDispatcher("/WEB-INF/view/public/course-detail.jsp")
@@ -111,7 +94,7 @@ public class CourseDetailServlet extends HttpServlet {
 
         } catch (SQLException ex) {
             getServletContext().log("CourseDetailServlet error", ex);
-            throw new ServletException("Lỗi hệ thống khi tải thông tin khóa học.", ex);
+            throw new ServletException("Lỗi hệ thống khi tải chi tiết khóa học.", ex);
         }
     }
 }

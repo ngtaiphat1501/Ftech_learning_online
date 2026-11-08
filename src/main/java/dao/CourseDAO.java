@@ -42,7 +42,7 @@ public class CourseDAO {
                 + "GROUP BY e.CourseId) rv ON rv.CourseId = c.CourseId "
                 + "WHERE c.Status = 'PUBLISHED' "
                 + "AND ca.IsActive = 1 "
-                + "AND (c.Title LIKE ? OR ISNULL(c.Subtitle, '') LIKE ? OR u.FullName LIKE ? OR ca.Name LIKE ?) "
+                + "AND c.Title LIKE ? "
                 + "AND (? = 0 OR c.CategoryId = ?) "
                 + "AND (? = '' OR c.PricingType = ?) "
                 + "ORDER BY c.PublishedAt DESC, c.CourseId DESC";
@@ -51,13 +51,10 @@ public class CourseDAO {
                 Connection connection = DBContext.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, "%" + keyword + "%");
-            statement.setString(2, "%" + keyword + "%");
-            statement.setString(3, "%" + keyword + "%");
-            statement.setString(4, "%" + keyword + "%");
-            statement.setLong(5, categoryId);
-            statement.setLong(6, categoryId);
-            statement.setString(7, pricingType);
-            statement.setString(8, pricingType);
+            statement.setLong(2, categoryId);
+            statement.setLong(3, categoryId);
+            statement.setString(4, pricingType);
+            statement.setString(5, pricingType);
 
             try (ResultSet result = statement.executeQuery()) {
 

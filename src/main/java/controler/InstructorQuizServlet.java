@@ -121,7 +121,12 @@ public class InstructorQuizServlet extends HttpServlet {
         }
 
         try (Connection conn = DBContext.getConnection()) {
-            long targetInstructorId = user.isAdmin() ? -1 : user.getUserId();
+            long targetInstructorId = user.getUserId();
+            // If admin, find course's actual instructorId
+            if (user.isAdmin() && courseId > 0) {
+                Course c = courseDAO.getCourseDetail(conn, courseId);
+                if (c != null) targetInstructorId = c.getInstructorId();
+            }
 
             if ("create".equalsIgnoreCase(action)) {
                 String title = request.getParameter("title");
@@ -193,8 +198,7 @@ public class InstructorQuizServlet extends HttpServlet {
 
     private BigDecimal parseBigDecimal(String val, BigDecimal def) {
         try {
-            if (val == null || val.isBlank()) return def;
-            return new BigDecimal(val.trim().replace(',', '.'));
+            return new BigDecimal(val.trim());
         } catch (Exception e) {
             return def;
         }
