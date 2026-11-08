@@ -187,7 +187,7 @@
             <% } %>
 
             <% if (!isEnrolled) { %>
-            <div class="alert alert-warning border-0 rounded-4 d-flex align-items-center gap-3 mb-4 shadow-sm" style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.25) !important; color: #fef08a;">
+            <div class="alert alert-warning border-0 rounded-4 d-flex align-items-center gap-3 mb-4 shadow-sm" style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.25) !important;">
                 <i class="bi bi-shield-lock-fill fs-2 text-warning"></i>
                 <div>
                     <div class="fw-bold fs-6">Chế độ xem trước dành cho <%= isAdminViewer ? "Quản trị viên (Admin)" : (isInstructorViewer ? "Giảng viên" : "Người quản lý") %></div>

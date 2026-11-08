@@ -28,6 +28,19 @@
     String loginEmail
             = (String) session.getAttribute("loginEmail");
 
+    boolean isRemembered = false;
+    if ((loginEmail == null || loginEmail.isEmpty()) && request.getCookies() != null) {
+        for (jakarta.servlet.http.Cookie c : request.getCookies()) {
+            if ("rememberedUser".equals(c.getName())) {
+                try {
+                    loginEmail = java.net.URLDecoder.decode(c.getValue(), java.nio.charset.StandardCharsets.UTF_8);
+                    isRemembered = true;
+                } catch (Exception ignored) {}
+                break;
+            }
+        }
+    }
+
     String regFullName
             = (String) session.getAttribute("regFullName");
 
@@ -163,7 +176,11 @@
     <head>
         <script>
             (function() {
-                var savedTheme = localStorage.getItem('ftech_theme') || 'dark';
+                function getCookie(name) {
+                    var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+                    return match ? match[2] : null;
+                }
+                var savedTheme = getCookie('ftech_theme') || localStorage.getItem('ftech_theme') || 'dark';
                 document.documentElement.setAttribute('data-bs-theme', savedTheme);
                 document.documentElement.dataset.bsTheme = savedTheme;
             })();
@@ -403,18 +420,54 @@
                 color: #f1f5f9;
             }
 
-            /* Safeguards for pristine Light Theme rendering */
-            [data-bs-theme="light"] .text-white:not(.btn):not(.btn *):not(.badge):not(.badge *):not(.alert) {
+            /* Safeguards for pristine Light & Dark Theme rendering */
+            [data-bs-theme="light"] .detail-card,
+            [data-bs-theme="light"] .checkout-card,
+            [data-bs-theme="light"] .success-card,
+            [data-bs-theme="light"] .cart-item-card,
+            [data-bs-theme="light"] .summary-card,
+            [data-bs-theme="light"] .review-card,
+            [data-bs-theme="light"] .modal-content:not(.btn) {
+                background-color: #ffffff !important;
+                border-color: rgba(0, 0, 0, 0.08) !important;
+                color: #0f172a !important;
+            }
+
+            [data-bs-theme="light"] .catalog-accent {
+                color: #6d28d9 !important;
+            }
+            [data-bs-theme="dark"] .catalog-accent {
+                color: #c4b5fd !important;
+            }
+
+            [data-bs-theme="light"] .text-white:not(.btn-primary):not(.btn-primary *):not(.btn-success):not(.btn-success *):not(.btn-danger):not(.btn-danger *):not(.btn-warning *):not(.badge) {
                 color: var(--ftech-text-main) !important;
             }
             [data-bs-theme="light"] .text-white-50 {
                 color: var(--ftech-text-sub) !important;
             }
-            [data-bs-theme="light"] .bg-dark:not(.ftech-meteor):not(spline-viewer):not(.badge):not(.btn) {
+
+            [data-bs-theme="light"] .btn-outline-secondary,
+            [data-bs-theme="light"] .btn-outline-secondary.text-white,
+            [data-bs-theme="light"] .btn-outline-secondary .text-white,
+            [data-bs-theme="light"] .btn-outline-secondary * {
+                color: #334155 !important;
+            }
+            [data-bs-theme="light"] .btn-outline-secondary:hover,
+            [data-bs-theme="light"] .btn-outline-secondary:hover * {
+                color: #0f172a !important;
+                background-color: #f1f5f9 !important;
+            }
+
+            [data-bs-theme="light"] .bg-dark:not(.ftech-meteor):not(spline-viewer):not(.badge):not(.btn-primary):not(.btn-success):not(.btn-danger) {
                 background-color: var(--ftech-card-bg) !important;
+                color: var(--ftech-text-main) !important;
             }
             [data-bs-theme="light"] .bg-dark-subtle {
                 background-color: var(--ftech-dropdown-hover) !important;
+            }
+            [data-bs-theme="light"] .border-secondary {
+                border-color: rgba(0, 0, 0, 0.12) !important;
             }
 
             /* =================================== */
@@ -1026,6 +1079,8 @@
                                 </div>
 
                             </div>
+
+
 
 
                             <% } else { %>
@@ -1863,6 +1918,10 @@
                                         form-check-input"
 
                                         type="checkbox"
+
+                                        name="rememberMe"
+                                        value="true"
+                                        <%= isRemembered ? "checked" : "" %>
 
                                         id="rememberMe">
 
@@ -2843,4 +2902,37 @@
                         }
                     }
             );
+
+            // =====================================
+            // THEME TOGGLE HANDLER (Dark / Light)
+            // =====================================
+            document.addEventListener("DOMContentLoaded", function() {
+                var themeBtn = document.getElementById("themeToggle");
+                if (themeBtn) {
+                    var icon = themeBtn.querySelector("i");
+                    function applyThemeIcon(theme) {
+                        if (!icon) return;
+                        if (theme === "light") {
+                            icon.className = "bi bi-moon-stars text-primary";
+                            themeBtn.setAttribute("title", "Chuyển sang giao diện tối (Dark mode)");
+                        } else {
+                            icon.className = "bi bi-brightness-high text-warning";
+                            themeBtn.setAttribute("title", "Chuyển sang giao diện sáng (Light mode)");
+                        }
+                    }
+
+                    var currentTheme = document.documentElement.getAttribute("data-bs-theme") || "dark";
+                    applyThemeIcon(currentTheme);
+
+                    themeBtn.addEventListener("click", function() {
+                        var active = document.documentElement.getAttribute("data-bs-theme") || "dark";
+                        var next = active === "dark" ? "light" : "dark";
+                        document.documentElement.setAttribute("data-bs-theme", next);
+                        document.documentElement.dataset.bsTheme = next;
+                        localStorage.setItem("ftech_theme", next);
+                        document.cookie = "ftech_theme=" + next + ";path=/;max-age=31536000";
+                        applyThemeIcon(next);
+                    });
+                }
+            });
         </script>

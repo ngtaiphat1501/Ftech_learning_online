@@ -20,7 +20,7 @@
             <li class="breadcrumb-item">
                 <a href="${pageContext.request.contextPath}/course?id=<%= lesson.getCourseId() %>" class="text-secondary text-decoration-none"><%= courseTitle %></a>
             </li>
-            <li class="breadcrumb-item active text-white" aria-current="page">Học thử</li>
+            <li class="breadcrumb-item active text-body" aria-current="page">Học thử</li>
         </ol>
     </nav>
 
@@ -44,13 +44,13 @@
             </div>
 
             <!-- Lesson Info Card -->
-            <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 shadow-sm mb-4">
+            <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-4 p-4 shadow-sm mb-4">
                 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 pb-3 mb-3 border-bottom border-secondary border-opacity-25">
                     <div>
                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 mb-2 fw-medium">
                             <i class="bi bi-play-circle-fill me-1"></i>Bài học xem thử miễn phí
                         </span>
-                        <h1 class="h3 fw-bold text-white mb-1"><%= lesson.getTitle() %></h1>
+                        <h1 class="h3 fw-bold text-body mb-1"><%= lesson.getTitle() %></h1>
                         <p class="text-secondary small mb-0"><%= chapterTitle %> · <%= courseTitle %></p>
                     </div>
 
@@ -63,7 +63,7 @@
                 </div>
 
                 <% if (lesson.getContent() != null && !lesson.getContent().isBlank()) { %>
-                    <div class="text-light lh-lg article-content" style="font-size: 0.95rem;">
+                    <div class="text-body lh-lg article-content" style="font-size: 0.95rem;">
                         <%= lesson.getContent() %>
                     </div>
                 <% } %>
