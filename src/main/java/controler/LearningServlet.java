@@ -192,7 +192,7 @@ public class LearningServlet extends HttpServlet {
             request.setAttribute("isEnrolled", enrollmentId > 0);
             request.setAttribute("isAdminViewer", isAdmin);
             request.setAttribute("isInstructorViewer", isInstructorOwner);
-            if (enrollmentId > 0) {
+            if (enrollmentId > 0 || isInstructorOwner || isAdmin) {
                 QuizDAO quizDAO = new QuizDAO();
                 request.setAttribute(
                         "quizzes",
