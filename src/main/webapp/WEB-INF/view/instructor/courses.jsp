@@ -4,11 +4,9 @@
 
 <%!
     private String escapeHtml(String value) {
-
         if (value == null) {
             return "";
         }
-
         return value
                 .replace("&", "&amp;")
                 .replace("<", "&lt;")
@@ -19,1010 +17,523 @@
 %>
 
 <%
-    List<Course> courses
-            = (List<Course>)
-                    request.getAttribute("courses");
+    List<Course> courses = (List<Course>) request.getAttribute("courses");
+    String context = request.getContextPath();
+    String success = request.getParameter("success");
+    String error = request.getParameter("error");
 
-    String context
-            = request.getContextPath();
+    request.setAttribute("pageTitle", "Khóa học của tôi | Ftech Instructor Studio");
 
-    String success
-            = request.getParameter("success");
+    java.math.BigDecimal totalRev = (java.math.BigDecimal) request.getAttribute("totalRevenue");
+    java.math.BigDecimal balVnd = (java.math.BigDecimal) request.getAttribute("balanceVnd");
+    Integer totalStu = (Integer) request.getAttribute("totalStudents");
+    Integer pubCount = (Integer) request.getAttribute("publishedCount");
 
-    String error
-            = request.getParameter("error");
+    long totalRevVal = totalRev != null ? totalRev.longValue() : 0L;
+    long balVal = balVnd != null ? balVnd.longValue() : 0L;
+    int totalStuVal = totalStu != null ? totalStu : 0;
+    int pubCountVal = pubCount != null ? pubCount : 0;
 
-    request.setAttribute(
-            "pageTitle",
-            "Khóa học của tôi | Ftech Instructor"
-    );
+    StringBuilder cTitlesSb = new StringBuilder("[");
+    StringBuilder cRevsSb = new StringBuilder("[");
+    if (courses != null && !courses.isEmpty()) {
+        boolean first = true;
+        for (Course c : courses) {
+            if (!first) {
+                cTitlesSb.append(",");
+                cRevsSb.append(",");
+            }
+            first = false;
+            String t = c.getTitle();
+            if (t != null) {
+                t = t.replace('"', '\'').trim();
+                if (t.length() > 25) {
+                    t = t.substring(0, 25) + "...";
+                }
+            } else {
+                t = "Khóa học";
+            }
+            cTitlesSb.append("\"").append(t).append("\"");
+            cRevsSb.append(c.getRevenueVnd() != null ? c.getRevenueVnd().longValue() : 0L);
+        }
+    }
+    cTitlesSb.append("]");
+    cRevsSb.append("]");
 %>
 
 <%@ include file="/WEB-INF/view/layout/PublicHeader.jsp" %>
 
-<main class="container py-5">
-
-    <div class="d-flex
-                justify-content-between
-                align-items-center
-                flex-wrap
-                gap-3
-                mb-4">
-
-        <div>
-
-            <div class="small
-                        text-body-secondary
-                        mb-1">
-
-                INSTRUCTOR
-
-            </div>
-
-            <h1 class="fw-bold mb-0">
-                Khóa học của tôi
-            </h1>
-
-        </div>
-
-
-        <a href="<%= context%>/instructor/course?view=create"
-           class="btn btn-primary">
-
-            <i class="bi bi-plus-lg me-1"></i>
-            Tạo khóa học
-
-        </a>
-
-    </div>
-
-
-    <% if ("create".equals(success)) { %>
-
-    <div class="alert alert-success">
-
-        <i class="bi bi-check-circle me-1"></i>
-        Tạo khóa học thành công.
-
-    </div>
-
-    <% } %>
-
-
-    <% if ("edit".equals(success)) { %>
-
-    <div class="alert alert-success">
-
-        <i class="bi bi-check-circle me-1"></i>
-        Cập nhật khóa học thành công.
-
-    </div>
-
-    <% } %>
-
-
-    <% if ("archive".equals(success)) { %>
-
-    <div class="alert alert-success">
-
-        <i class="bi bi-check-circle me-1"></i>
-        Đã lưu trữ khóa học.
-
-    </div>
-
-    <% } %>
-
-
-    <% if ("reopen".equals(success)) { %>
-
-    <div class="alert alert-success">
-
-        <i class="bi bi-check-circle me-1"></i>
-        Đã mở lại khóa học để chỉnh sửa.
-
-    </div>
-
-    <% } %>
-
-
-    <% if ("submit".equals(success)) { %>
-
-    <div class="alert alert-success">
-
-        <i class="bi bi-check-circle me-1"></i>
-        Đã gửi khóa học để duyệt.
-
-    </div>
-
-    <% } %>
-
-
-    <% if ("create".equals(error)) { %>
-
-    <div class="alert alert-warning">
-        Không thể tạo khóa học.
-    </div>
-
-    <% } %>
-
-
-    <% if ("edit".equals(error)) { %>
-
-    <div class="alert alert-warning">
-        Không thể cập nhật khóa học.
-    </div>
-
-    <% } %>
-
-
-    <% if ("archive".equals(error)) { %>
-
-    <div class="alert alert-warning">
-        Không thể lưu trữ khóa học.
-    </div>
-
-    <% } %>
-
-
-    <% if ("reopen".equals(error)) { %>
-
-    <div class="alert alert-warning">
-
-        Không thể mở lại khóa học.
-        Khóa học có thể đã có học viên.
-
-    </div>
-
-    <% } %>
-
-
-    <% if ("submit-content".equals(error)) { %>
-
-    <div class="alert alert-warning">
-
-        <i class="bi bi-exclamation-triangle me-1"></i>
-
-        Khóa học cần có ít nhất
-        một chương và một bài học
-        trước khi gửi duyệt.
-
-    </div>
-
-    <% } %>
-
-
-    <% if ("submit".equals(error)) { %>
-
-    <div class="alert alert-warning">
-
-        <i class="bi bi-exclamation-triangle me-1"></i>
-
-        Không thể gửi khóa học để duyệt.
-        Khóa học có thể không còn ở trạng thái DRAFT.
-
-    </div>
-
-    <% } %>
-
-
-    <%
-        java.math.BigDecimal totalRev = (java.math.BigDecimal) request.getAttribute("totalRevenue");
-        java.math.BigDecimal balVnd = (java.math.BigDecimal) request.getAttribute("balanceVnd");
-        Integer totalStu = (Integer) request.getAttribute("totalStudents");
-        Integer pubCount = (Integer) request.getAttribute("publishedCount");
-
-        long totalRevVal = totalRev != null ? totalRev.longValue() : 0L;
-        long balVal = balVnd != null ? balVnd.longValue() : 0L;
-        int totalStuVal = totalStu != null ? totalStu : 0;
-        int pubCountVal = pubCount != null ? pubCount : 0;
-
-        StringBuilder cTitlesSb = new StringBuilder("[");
-        StringBuilder cRevsSb = new StringBuilder("[");
-        StringBuilder cStudentsSb = new StringBuilder("[");
-        if (courses != null && !courses.isEmpty()) {
-            for (int i = 0; i < courses.size(); i++) {
-                Course c = courses.get(i);
-                if (i > 0) {
-                    cTitlesSb.append(",");
-                    cRevsSb.append(",");
-                    cStudentsSb.append(",");
-                }
-                String t = c.getTitle();
-                if (t != null && t.length() > 28) {
-                    t = t.substring(0, 28) + "...";
-                }
-                cTitlesSb.append("\"").append(t != null ? t.replace('"', '\'') : "").append("\"");
-                cRevsSb.append(c.getRevenueVnd() != null ? c.getRevenueVnd().longValue() : 0L);
-                cStudentsSb.append(c.getEnrollmentCount());
-            }
-        }
-        cTitlesSb.append("]");
-        cRevsSb.append("]");
-        cStudentsSb.append("]");
-    %>
-
-    <!-- KPI STATS CARDS -->
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
-                    <div class="rounded-4 bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                        <i class="bi bi-cash-stack fs-3"></i>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+    .course-studio-page { min-height: calc(100vh - 76px); background: var(--bs-body-bg); }
+    .course-studio-container { max-width: 1510px; }
+    .course-studio-sidebar {
+        background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color);
+        border-radius: 22px; padding: 18px 12px;
+    }
+    .course-studio-brand { display: flex; gap: 12px; align-items: center; padding: 12px 14px 19px;
+        border-bottom: 1px solid var(--bs-border-color); margin-bottom: 16px; }
+    .course-studio-brand-icon { width: 45px; height: 45px; display: grid; place-items: center;
+        border-radius: 13px; color: white; font-size: 1.25rem;
+        background: linear-gradient(125deg, #4b63e8, #9a4be1); }
+    .course-studio-nav-title { padding: 10px 16px; font-size: .72rem; font-weight: 800;
+        letter-spacing: .1em; color: var(--bs-secondary-color); }
+    .course-studio-nav { display: flex; align-items: center; gap: 11px; padding: 12px 16px;
+        margin: 4px 0; border-radius: 13px; color: var(--bs-body-color);
+        font-weight: 600; text-decoration: none; }
+    .course-studio-nav i { width: 22px; }
+    .course-studio-nav:hover { background: var(--bs-secondary-bg); color: var(--bs-body-color); }
+    .course-studio-nav.active { background: rgba(112, 97, 238, .17); color: #a69bff; }
+    [data-bs-theme="light"] .course-studio-nav.active { color: #5844d0; }
+    .course-studio-hero { overflow: hidden; position: relative; padding: 29px 33px;
+        border: 1px solid rgba(143,126,255,.25); border-radius: 24px;
+        background: radial-gradient(circle at 95% 12%, rgba(166,101,230,.37), transparent 44%),
+                    linear-gradient(110deg, #182857, #242044 80%); color: #fff; }
+    .course-studio-hero p { color: #cad0e8; }
+    .course-studio-hero-mark { position: absolute; font-size: 9rem; top: -33px; right: 30px;
+        color: rgba(255,255,255,.07); pointer-events: none; }
+    .course-studio-submit { color: white; border: 0; padding: .75rem 1.3rem;
+        background: linear-gradient(100deg,#4965ec,#8150e8); text-decoration: none; }
+    .course-studio-submit:hover { color: #fff; filter: brightness(1.08); }
+</style>
+
+<main class="course-studio-page">
+    <div class="container-fluid course-studio-container py-4 py-lg-5">
+        <div class="row g-4">
+            <!-- STUDIO SIDEBAR -->
+            <aside class="col-12 col-lg-3 col-xl-2" aria-label="Điều hướng giảng viên">
+                <nav class="course-studio-sidebar sticky-lg-top" style="top: 20px">
+                    <div class="course-studio-brand">
+                        <div class="course-studio-brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                        <div><div class="fw-bold">Instructor</div><div class="small text-body-secondary">Ftech Studio</div></div>
                     </div>
-                    <div>
-                        <div class="text-body-secondary small fw-medium">Tổng doanh thu bán</div>
-                        <div class="fs-4 fw-bold text-success"><%= String.format("%,d đ", totalRevVal) %></div>
+                    <div class="course-studio-nav-title">KHÔNG GIAN GIẢNG VIÊN</div>
+                    <a class="course-studio-nav" href="<%= context %>/instructor/courses">
+                        <i class="bi bi-grid-1x2-fill"></i> Tổng quan
+                    </a>
+                    <a class="course-studio-nav active" aria-current="page" href="<%= context %>/instructor/courses">
+                        <i class="bi bi-collection-play"></i> Khóa học của tôi
+                    </a>
+                    <a class="course-studio-nav" href="<%= context %>/instructor/course?view=create">
+                        <i class="bi bi-plus-square-fill"></i> Tạo khóa học
+                    </a>
+                    <hr class="mx-3 my-3">
+                    <a class="course-studio-nav" href="<%= context %>/">
+                        <i class="bi bi-house-door"></i> Về trang chủ
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- MAIN CONTENT AREA -->
+            <section class="col-12 col-lg-9 col-xl-10" aria-label="Khóa học của tôi">
+                <!-- HERO BANNER -->
+                <div class="course-studio-hero mb-4">
+                    <div class="course-studio-hero-mark"><i class="bi bi-mortarboard"></i></div>
+                    <div class="position-relative d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <div class="small fw-bold mb-2" style="letter-spacing:.12em;color:#d9d1ff">FTECH INSTRUCTOR STUDIO</div>
+                            <h1 class="fw-bold display-6 mb-2">Khóa học của tôi</h1>
+                            <p class="mb-0">Theo dõi doanh thu bán khóa, số lượng học viên và tình trạng xuất bản của các khóa học.</p>
+                        </div>
+                        <div>
+                            <a href="<%= context %>/instructor/course?view=create" class="btn course-studio-submit rounded-pill shadow-sm">
+                                <i class="bi bi-plus-lg me-1"></i> Tạo khóa học mới
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
-                    <div class="rounded-4 bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                        <i class="bi bi-wallet2 fs-3"></i>
-                    </div>
-                    <div>
-                        <div class="text-body-secondary small fw-medium">Số dư ví giảng viên</div>
-                        <div class="fs-4 fw-bold text-primary"><%= String.format("%,d đ", balVal) %></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <!-- ALERTS -->
+                <% if ("create".equals(success)) { %>
+                    <div class="alert alert-success rounded-4"><i class="bi bi-check-circle me-1"></i> Tạo khóa học thành công.</div>
+                <% } %>
+                <% if ("edit".equals(success)) { %>
+                    <div class="alert alert-success rounded-4"><i class="bi bi-check-circle me-1"></i> Cập nhật khóa học thành công.</div>
+                <% } %>
+                <% if ("archive".equals(success)) { %>
+                    <div class="alert alert-success rounded-4"><i class="bi bi-check-circle me-1"></i> Đã lưu trữ khóa học.</div>
+                <% } %>
+                <% if ("reopen".equals(success)) { %>
+                    <div class="alert alert-success rounded-4"><i class="bi bi-check-circle me-1"></i> Đã mở lại khóa học để chỉnh sửa.</div>
+                <% } %>
+                <% if ("submit".equals(success)) { %>
+                    <div class="alert alert-success rounded-4"><i class="bi bi-check-circle me-1"></i> Đã gửi khóa học để duyệt.</div>
+                <% } %>
+                <% if ("create".equals(error)) { %>
+                    <div class="alert alert-warning rounded-4">Không thể tạo khóa học.</div>
+                <% } %>
+                <% if ("edit".equals(error)) { %>
+                    <div class="alert alert-warning rounded-4">Không thể cập nhật khóa học.</div>
+                <% } %>
+                <% if ("archive".equals(error)) { %>
+                    <div class="alert alert-warning rounded-4">Không thể lưu trữ khóa học.</div>
+                <% } %>
+                <% if ("reopen".equals(error)) { %>
+                    <div class="alert alert-warning rounded-4">Không thể mở lại khóa học. Khóa học có thể đã có học viên.</div>
+                <% } %>
+                <% if ("submit-content".equals(error)) { %>
+                    <div class="alert alert-warning rounded-4"><i class="bi bi-exclamation-triangle me-1"></i> Khóa học cần có ít nhất một chương và một bài học trước khi gửi duyệt.</div>
+                <% } %>
+                <% if ("submit".equals(error)) { %>
+                    <div class="alert alert-warning rounded-4"><i class="bi bi-exclamation-triangle me-1"></i> Không thể gửi khóa học để duyệt. Khóa học có thể không còn ở trạng thái DRAFT.</div>
+                <% } %>
 
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
-                    <div class="rounded-4 bg-info-subtle text-info p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                        <i class="bi bi-people-fill fs-3"></i>
-                    </div>
-                    <div>
-                        <div class="text-body-secondary small fw-medium">Tổng lượt học viên</div>
-                        <div class="fs-4 fw-bold text-body-emphasis"><%= totalStuVal %></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
-                    <div class="rounded-4 bg-warning-subtle text-warning p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                        <i class="bi bi-journal-check fs-3"></i>
-                    </div>
-                    <div>
-                        <div class="text-body-secondary small fw-medium">Khóa học mở bán</div>
-                        <div class="fs-4 fw-bold text-body-emphasis"><%= pubCountVal %></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- INSTRUCTOR REVENUE ANALYTICS ROW -->
-    <% if (courses != null && !courses.isEmpty()) { %>
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-xl-8">
-            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold mb-1">
-                            <i class="bi bi-bar-chart-line text-success me-2"></i>Doanh thu từng khóa học
-                        </h5>
-                        <p class="text-body-secondary small mb-0">So sánh doanh thu thực nhận giữa các khóa học của bạn</p>
-                    </div>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
-                        Doanh thu khóa
-                    </span>
-                </div>
-                <div style="position: relative; height: 280px; width: 100%;">
-                    <canvas id="instructorRevenueChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 h-100">
-                <div class="mb-3">
-                    <h5 class="fw-bold mb-1">
-                        <i class="bi bi-pie-chart text-primary me-2"></i>Tỷ trọng đóng góp
-                    </h5>
-                    <p class="text-body-secondary small mb-0">Cơ cấu doanh thu theo từng khóa học</p>
-                </div>
-                <div style="position: relative; height: 220px; width: 100%; display: flex; align-items: center; justify-content: center;">
-                    <canvas id="instructorShareChart"></canvas>
-                </div>
-                <div class="text-center mt-3 small text-body-secondary">
-                    Tổng số khóa có doanh thu: <strong class="text-body-emphasis"><%= courses != null ? courses.stream().filter(c -> c.getRevenueVnd() != null && c.getRevenueVnd().compareTo(java.math.BigDecimal.ZERO) > 0).count() : 0 %></strong>
-                </div>
-            </div>
-        </div>
-    </div>
-    <% } %>
-
-    <%
-        if (courses == null
-                || courses.isEmpty()) {
-    %>
-
-
-    <div class="card
-                border-0
-                shadow-sm">
-
-        <div class="card-body
-                    text-center
-                    py-5">
-
-            <i class="bi
-                      bi-journal-x
-                      fs-1
-                      text-body-secondary">
-            </i>
-
-            <h2 class="h5 fw-bold mt-3">
-                Chưa có khóa học
-            </h2>
-
-            <p class="text-body-secondary mb-4">
-                Bạn chưa tạo khóa học nào.
-            </p>
-
-            <a href="<%= context%>/instructor/course?view=create"
-               class="btn btn-primary">
-
-                <i class="bi bi-plus-lg me-1"></i>
-                Tạo khóa học đầu tiên
-
-            </a>
-
-        </div>
-
-    </div>
-
-
-    <%
-        } else {
-    %>
-
-
-    <div class="card
-                border-0
-                shadow-sm">
-
-        <div class="table-responsive">
-
-            <table class="table
-                          table-hover
-                          align-middle
-                          mb-0">
-
-
-                <thead class="table-light">
-
-                    <tr>
-
-                        <th class="px-4 py-3">
-                            ID
-                        </th>
-
-                        <th class="py-3">
-                            Khóa học
-                        </th>
-
-                        <th class="py-3">
-                            Trạng thái
-                        </th>
-
-                        <th class="py-3">
-                            Học viên
-                        </th>
-
-                        <th class="py-3">
-                            Doanh thu
-                        </th>
-
-                        <th class="py-3
-                                   text-end
-                                   px-4">
-
-                            Thao tác
-
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-
-                    <%
-                        for (Course course
-                                : courses) {
-                    %>
-
-
-                    <tr>
-
-
-                        <td class="px-4">
-
-                            <span class="text-body-secondary">
-
-                                #<%= course.getId()%>
-
-                            </span>
-
-                        </td>
-
-
-                        <td>
-
-                            <div class="fw-semibold">
-
-                                <%= escapeHtml(
-                                        course.getTitle()
-                                )%>
-
+                <!-- 4 KPI STATS CARDS -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                                <div class="rounded-4 bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                    <i class="bi bi-cash-stack fs-3"></i>
+                                </div>
+                                <div>
+                                    <div class="text-secondary small fw-medium">Tổng doanh thu bán</div>
+                                    <div class="fs-4 fw-bold text-success"><%= String.format("%,d đ", totalRevVal) %></div>
+                                </div>
                             </div>
-
-                        </td>
-
-
-                        <td>
-
-                            <%
-                                String status
-                                        = course.getStatus();
-                            %>
-
-
-                            <% if ("DRAFT".equals(status)) { %>
-
-                            <span class="badge
-                                         text-bg-secondary">
-
-                                DRAFT
-
-                            </span>
-
-
-                            <% } else if ("PENDING_APPROVAL".equals(status)) { %>
-
-                            <span class="badge
-                                         text-bg-warning">
-
-                                PENDING_APPROVAL
-
-                            </span>
-
-
-                            <% } else if ("PUBLISHED".equals(status)) { %>
-
-                            <span class="badge
-                                         text-bg-success">
-
-                                PUBLISHED
-
-                            </span>
-
-
-                            <% } else if ("ARCHIVED".equals(status)) { %>
-
-                            <span class="badge
-                                         text-bg-dark">
-
-                                ARCHIVED
-
-                            </span>
-
-
-                            <% } else if ("SUSPENDED".equals(status)) { %>
-
-                            <span class="badge
-                                         text-bg-danger">
-
-                                SUSPENDED
-
-                            </span>
-
-
-                            <% } else { %>
-
-                            <span class="badge
-                                         text-bg-secondary">
-
-                                <%= escapeHtml(status)%>
-
-                            </span>
-
-                            <% } %>
-
-                        </td>
-
-
-                        <td>
-
-                            <i class="bi bi-people me-1"></i>
-
-                            <%= course.getEnrollmentCount()%>
-
-                        </td>
-
-                        <td>
-                            <span class="text-success fw-bold">
-                                <%= course.getRevenueVnd() != null ? String.format("%,d đ", course.getRevenueVnd().longValue()) : "0 đ" %>
-                            </span>
-                        </td>
-
-
-                        <td class="text-end px-4">
-
-
-                            <div class="d-flex
-                                        flex-wrap
-                                        justify-content-end
-                                        gap-2">
-
-
-                                <!-- ========================= -->
-                                <!-- CURRICULUM -->
-                                <!-- ========================= -->
-
-                                <a href="<%= context%>/instructor/curriculum?courseId=<%= course.getId()%>"
-                                   class="btn
-                                          btn-sm
-                                          btn-outline-secondary
-                                          rounded-pill">
-
-                                    <i class="bi
-                                              bi-list-nested
-                                              me-1">
-                                    </i>
-
-                                    Nội dung
-
-                                </a>
-
-
-                                <!-- ========================= -->
-                                <!-- STUDENTS -->
-                                <!-- ========================= -->
-
-                                <a href="<%= context%>/instructor/students?courseId=<%= course.getId()%>"
-                                   class="btn
-                                          btn-sm
-                                          btn-outline-info
-                                          rounded-pill">
-
-                                    <i class="bi
-                                              bi-people
-                                              me-1">
-                                    </i>
-
-                                    Học viên
-
-                                </a>
-
-<a href="<%= context%>/instructor/quiz?courseId=<%= course.getId()%>"
-                                   class="btn
-                                          btn-sm
-                                          btn-outline-warning
-                                          rounded-pill">
-
-                                    <i class="bi
-                                              bi-patch-question
-                                              me-1">
-                                    </i>
-
-                                    Đề thi
-
-                                </a>
-
-                                
-
-
-                                <!-- ========================= -->
-                                <!-- DRAFT -->
-                                <!-- ========================= -->
-
-                                <%
-                                    if ("DRAFT".equals(
-                                            course.getStatus())) {
-                                %>
-
-
-                                <!-- EDIT COURSE -->
-
-                                <a href="<%= context%>/instructor/course?view=edit&id=<%= course.getId()%>"
-                                   class="btn
-                                          btn-sm
-                                          btn-outline-primary
-                                          rounded-pill">
-
-                                    <i class="bi
-                                              bi-pencil
-                                              me-1">
-                                    </i>
-
-                                    Chỉnh sửa
-
-                                </a>
-
-
-                                <!-- SUBMIT COURSE -->
-
-                                <form method="post"
-                                      action="<%= context%>/instructor/course/submit"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Gửi khóa học này để Admin duyệt?');">
-
-
-                                    <input type="hidden"
-                                           name="courseId"
-                                           value="<%= course.getId()%>">
-
-
-                                    <button type="submit"
-                                            class="btn
-                                                   btn-sm
-                                                   btn-success
-                                                   rounded-pill">
-
-                                        <i class="bi
-                                                  bi-send
-                                                  me-1">
-                                        </i>
-
-                                        Gửi duyệt
-
-                                    </button>
-
-
-                                </form>
-
-
-                                <%
-                                    }
-                                %>
-
-
-                                <!-- ========================= -->
-                                <!-- PENDING APPROVAL -->
-                                <!-- ========================= -->
-
-                                <%
-                                    if ("PENDING_APPROVAL".equals(
-                                            course.getStatus())) {
-                                %>
-
-
-                                <span class="badge
-                                             text-bg-warning
-                                             align-self-center
-                                             py-2">
-
-                                    <i class="bi
-                                              bi-hourglass-split
-                                              me-1">
-                                    </i>
-
-                                    Đang chờ duyệt
-
-                                </span>
-
-
-                                <%
-                                    }
-                                %>
-
-
-                                <!-- ========================= -->
-                                <!-- PUBLISHED -->
-                                <!-- ========================= -->
-
-                                <%
-                                    if ("PUBLISHED".equals(
-                                            course.getStatus())) {
-                                %>
-
-
-                                <!-- ARCHIVE -->
-
-                                <form method="post"
-                                      action="<%= context%>/instructor/course?action=archive"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Bạn có chắc muốn lưu trữ khóa học này?');">
-
-
-                                    <input type="hidden"
-                                           name="id"
-                                           value="<%= course.getId()%>">
-
-
-                                    <button type="submit"
-                                            class="btn
-                                                   btn-sm
-                                                   btn-outline-danger
-                                                   rounded-pill">
-
-                                        <i class="bi
-                                                  bi-archive
-                                                  me-1">
-                                        </i>
-
-                                        Archive
-
-                                    </button>
-
-
-                                </form>
-
-
-                                <!-- REOPEN -->
-
-                                <%
-                                    if (course
-                                            .getEnrollmentCount()
-                                            == 0) {
-                                %>
-
-
-                                <form method="post"
-                                      action="<%= context%>/instructor/course?action=reopen"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Mở khóa học này về DRAFT để chỉnh sửa?');">
-
-
-                                    <input type="hidden"
-                                           name="id"
-                                           value="<%= course.getId()%>">
-
-
-                                    <button type="submit"
-                                            class="btn
-                                                   btn-sm
-                                                   btn-outline-primary
-                                                   rounded-pill">
-
-                                        <i class="bi
-                                                  bi-arrow-counterclockwise
-                                                  me-1">
-                                        </i>
-
-                                        Reopen
-
-                                    </button>
-
-
-                                </form>
-
-
-                                <%
-                                    } else {
-                                %>
-
-
-                                <span class="badge
-                                             text-bg-light
-                                             border
-                                             align-self-center
-                                             py-2">
-
-                                    <i class="bi
-                                              bi-people
-                                              me-1">
-                                    </i>
-
-                                    Đã có học viên
-
-                                </span>
-
-
-                                <%
-                                        }
-                                    }
-                                %>
-
-
-                                <!-- ========================= -->
-                                <!-- ARCHIVED -->
-                                <!-- ========================= -->
-
-                                <%
-                                    if ("ARCHIVED".equals(
-                                            course.getStatus())) {
-                                %>
-
-
-                                <span class="badge
-                                             text-bg-dark
-                                             align-self-center
-                                             py-2">
-
-                                    <i class="bi
-                                              bi-archive
-                                              me-1">
-                                    </i>
-
-                                    Đã lưu trữ
-
-                                </span>
-
-
-                                <%
-                                    }
-                                %>
-
-
-                                <!-- ========================= -->
-                                <!-- SUSPENDED -->
-                                <!-- ========================= -->
-
-                                <%
-                                    if ("SUSPENDED".equals(
-                                            course.getStatus())) {
-                                %>
-
-
-                                <span class="badge
-                                             text-bg-danger
-                                             align-self-center
-                                             py-2">
-
-                                    <i class="bi
-                                              bi-exclamation-triangle
-                                              me-1">
-                                    </i>
-
-                                    Đã tạm ngưng
-
-                                </span>
-
-
-                                <%
-                                    }
-                                %>
-
-
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                                <div class="rounded-4 bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                    <i class="bi bi-wallet2 fs-3"></i>
+                                </div>
+                                <div>
+                                    <div class="text-secondary small fw-medium">Số dư ví giảng viên</div>
+                                    <div class="fs-4 fw-bold text-primary"><%= String.format("%,d đ", balVal) %></div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
 
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                                <div class="rounded-4 bg-info-subtle text-info p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                    <i class="bi bi-people-fill fs-3"></i>
+                                </div>
+                                <div>
+                                    <div class="text-secondary small fw-medium">Tổng lượt học viên</div>
+                                    <div class="fs-4 fw-bold text-white"><%= totalStuVal %></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                        </td>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
+                                <div class="rounded-4 bg-warning-subtle text-warning p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                    <i class="bi bi-journal-check fs-3"></i>
+                                </div>
+                                <div>
+                                    <div class="text-secondary small fw-medium">Khóa học mở bán</div>
+                                    <div class="fs-4 fw-bold text-white"><%= pubCountVal %></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- INSTRUCTOR REVENUE CHARTS ROW -->
+                <% if (courses != null && !courses.isEmpty()) { %>
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-xl-8">
+                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 p-3 p-md-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="fw-bold text-white mb-1">
+                                        <i class="bi bi-bar-chart-line text-success me-2"></i>Doanh thu từng khóa học
+                                    </h5>
+                                    <p class="text-secondary small mb-0">So sánh doanh thu thực nhận giữa các khóa học của bạn</p>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                    Doanh thu khóa
+                                </span>
+                            </div>
+                            <div style="position: relative; height: 280px; width: 100%;">
+                                <canvas id="instructorRevenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
 
-                    </tr>
+                    <div class="col-12 col-xl-4">
+                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 p-3 p-md-4 h-100">
+                            <div class="mb-3">
+                                <h5 class="fw-bold text-white mb-1">
+                                    <i class="bi bi-pie-chart text-primary me-2"></i>Tỷ trọng đóng góp
+                                </h5>
+                                <p class="text-secondary small mb-0">Cơ cấu doanh thu theo từng khóa học</p>
+                            </div>
+                            <div style="position: relative; height: 220px; width: 100%; display: flex; align-items: center; justify-content: center;">
+                                <canvas id="instructorShareChart"></canvas>
+                            </div>
+                            <div class="text-center mt-3 small text-secondary">
+                                Tổng số khóa có doanh thu: <strong class="text-white"><%= courses != null ? courses.stream().filter(c -> c.getRevenueVnd() != null && c.getRevenueVnd().compareTo(java.math.BigDecimal.ZERO) > 0).count() : 0 %></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
 
-
-                    <%
-                        }
-                    %>
-
-
-                </tbody>
-
-            </table>
-
+                <!-- COURSES TABLE -->
+                <% if (courses == null || courses.isEmpty()) { %>
+                    <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 shadow-sm text-center py-5">
+                        <div class="card-body py-5">
+                            <i class="bi bi-journal-x fs-1 text-secondary"></i>
+                            <h2 class="h5 fw-bold text-white mt-3">Chưa có khóa học</h2>
+                            <p class="text-secondary mb-4">Bạn chưa tạo khóa học nào.</p>
+                            <a href="<%= context %>/instructor/course?view=create" class="btn course-studio-submit rounded-pill px-4">
+                                <i class="bi bi-plus-lg me-1"></i> Tạo khóa học đầu tiên
+                            </a>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 shadow-sm overflow-hidden mb-4">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover align-middle mb-0">
+                                <thead class="table-secondary bg-opacity-10 text-secondary small text-uppercase">
+                                    <tr>
+                                        <th class="px-4 py-3" style="width: 80px;">ID</th>
+                                        <th class="py-3">Khóa học</th>
+                                        <th class="py-3" style="width: 140px;">Trạng thái</th>
+                                        <th class="py-3 text-center" style="width: 110px;">Học viên</th>
+                                        <th class="py-3" style="width: 140px;">Doanh thu</th>
+                                        <th class="py-3 text-end px-4" style="width: 320px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (Course course : courses) {
+                                        String status = course.getStatus();
+                                    %>
+                                    <tr>
+                                        <td class="px-4">
+                                            <span class="text-secondary font-monospace">#<%= course.getId() %></span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold text-white mb-1"><%= escapeHtml(course.getTitle()) %></div>
+                                            <div class="small text-secondary"><%= escapeHtml(course.getCategoryName()) %></div>
+                                        </td>
+                                        <td>
+                                            <% if ("DRAFT".equals(status)) { %>
+                                                <span class="badge text-bg-secondary rounded-pill">DRAFT</span>
+                                            <% } else if ("PENDING_APPROVAL".equals(status)) { %>
+                                                <span class="badge text-bg-warning rounded-pill">PENDING</span>
+                                            <% } else if ("PUBLISHED".equals(status)) { %>
+                                                <span class="badge text-bg-success rounded-pill">PUBLISHED</span>
+                                            <% } else if ("ARCHIVED".equals(status)) { %>
+                                                <span class="badge text-bg-dark rounded-pill">ARCHIVED</span>
+                                            <% } else if ("SUSPENDED".equals(status)) { %>
+                                                <span class="badge text-bg-danger rounded-pill">SUSPENDED</span>
+                                            <% } else { %>
+                                                <span class="badge text-bg-secondary rounded-pill"><%= escapeHtml(status) %></span>
+                                            <% } %>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary bg-opacity-25 text-light rounded-pill px-2.5">
+                                                <i class="bi bi-people me-1"></i><%= course.getEnrollmentCount() %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-success fw-bold font-monospace">
+                                                <%= course.getRevenueVnd() != null ? String.format("%,d đ", course.getRevenueVnd().longValue()) : "0 đ" %>
+                                            </span>
+                                        </td>
+                                        <td class="text-end px-4">
+                                            <div class="d-flex flex-wrap justify-content-end gap-1.5">
+                                                <!-- CURRICULUM -->
+                                                <a href="<%= context %>/instructor/curriculum?courseId=<%= course.getId() %>"
+                                                   class="btn btn-sm btn-outline-secondary rounded-pill">
+                                                    <i class="bi bi-list-nested me-1"></i>Nội dung
+                                                </a>
+                                                <!-- STUDENTS -->
+                                                <a href="<%= context %>/instructor/students?courseId=<%= course.getId() %>"
+                                                   class="btn btn-sm btn-outline-info rounded-pill">
+                                                    <i class="bi bi-people me-1"></i>Học viên
+                                                </a>
+                                                <!-- QUIZ -->
+                                                <a href="<%= context %>/instructor/quiz?courseId=<%= course.getId() %>"
+                                                   class="btn btn-sm btn-outline-warning rounded-pill">
+                                                    <i class="bi bi-patch-question me-1"></i>Đề thi
+                                                </a>
+                                                <!-- DRAFT ACTIONS -->
+                                                <% if ("DRAFT".equals(course.getStatus())) { %>
+                                                    <a href="<%= context %>/instructor/course?view=edit&id=<%= course.getId() %>"
+                                                       class="btn btn-sm btn-outline-primary rounded-pill">
+                                                        <i class="bi bi-pencil me-1"></i>Sửa
+                                                    </a>
+                                                    <form method="post" action="<%= context %>/instructor/course/submit" class="d-inline"
+                                                          onsubmit="return confirm('Gửi khóa học này để Admin duyệt?');">
+                                                        <input type="hidden" name="courseId" value="<%= course.getId() %>">
+                                                        <button type="submit" class="btn btn-sm btn-success rounded-pill">
+                                                            <i class="bi bi-send me-1"></i>Gửi duyệt
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                                <!-- PENDING APPROVAL -->
+                                                <% if ("PENDING_APPROVAL".equals(course.getStatus())) { %>
+                                                    <span class="badge text-bg-warning align-self-center py-2 px-3 rounded-pill">
+                                                        <i class="bi bi-hourglass-split me-1"></i>Chờ duyệt
+                                                    </span>
+                                                <% } %>
+                                                <!-- PUBLISHED ACTIONS -->
+                                                <% if ("PUBLISHED".equals(course.getStatus())) { %>
+                                                    <form method="post" action="<%= context %>/instructor/course?action=archive" class="d-inline"
+                                                          onsubmit="return confirm('Bạn có chắc muốn lưu trữ khóa học này?');">
+                                                        <input type="hidden" name="id" value="<%= course.getId() %>">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
+                                                            <i class="bi bi-archive me-1"></i>Lưu trữ
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                                <!-- ARCHIVED ACTIONS -->
+                                                <% if ("ARCHIVED".equals(course.getStatus())) { %>
+                                                    <form method="post" action="<%= context %>/instructor/course?action=reopen" class="d-inline"
+                                                          onsubmit="return confirm('Mở lại khóa học để tiếp tục chỉnh sửa?');">
+                                                        <input type="hidden" name="id" value="<%= course.getId() %>">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-pill">
+                                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Mở lại
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                                <!-- SUSPENDED -->
+                                                <% if ("SUSPENDED".equals(course.getStatus())) { %>
+                                                    <span class="badge text-bg-danger align-self-center py-2 px-3 rounded-pill">
+                                                        <i class="bi bi-exclamation-triangle me-1"></i>Tạm ngưng
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <% } %>
+            </section>
         </div>
-
     </div>
-
-
-    <%
-        }
-    %>
-
-
 </main>
 
-<script src="${pageContext.request.contextPath}/assets/js/chart.min.js"></script>
 <script>
-    if (typeof Chart === 'undefined') {
-        var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js';
-        document.head.appendChild(s);
-    }
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const cLabels = <%= cTitlesSb.toString() %>;
-    const cRevenues = <%= cRevsSb.toString() %>;
+(function initInstructorCharts() {
+    function render() {
+        if (typeof Chart === 'undefined') {
+            setTimeout(render, 100);
+            return;
+        }
 
-    // 1. Instructor Bar Chart
-    const ctxBar = document.getElementById('instructorRevenueChart');
-    if (ctxBar && typeof Chart !== 'undefined' && cLabels.length > 0) {
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: cLabels,
-                datasets: [{
-                    label: 'Doanh thu (VNĐ)',
-                    data: cRevenues,
-                    backgroundColor: 'rgba(25, 135, 84, 0.75)',
-                    borderColor: '#198754',
-                    borderWidth: 1.5,
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function (ctx) {
-                                return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed.x) + ' đ';
-                            }
-                        }
-                    }
+        const cLabels = <%= cTitlesSb.toString() %>;
+        const cRevenues = <%= cRevsSb.toString() %>;
+
+        // 1. Instructor Horizontal Bar Chart
+        const ctxBar = document.getElementById('instructorRevenueChart');
+        if (ctxBar && cLabels.length > 0) {
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: cLabels,
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: cRevenues,
+                        backgroundColor: 'rgba(25, 135, 84, 0.75)',
+                        borderColor: '#198754',
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
                 },
-                scales: {
-                    x: {
-                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
-                        ticks: {
-                            callback: function (val) {
-                                if (val >= 1000000) return (val / 1000000) + 'M';
-                                if (val >= 1000) return (val / 1000) + 'k';
-                                return val;
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    return ' Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed.x) + ' đ';
+                                }
                             }
                         }
                     },
-                    y: {
-                        grid: { display: false }
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            ticks: {
+                                color: '#adb5bd',
+                                callback: function (val) {
+                                    if (val >= 1000000) return (val / 1000000) + 'M';
+                                    if (val >= 1000) return (val / 1000) + 'k';
+                                    return val;
+                                }
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: '#adb5bd' }
+                        }
                     }
                 }
-            }
-        });
-    }
+            });
+        }
 
-    // 2. Instructor Share Doughnut Chart
-    const ctxShare = document.getElementById('instructorShareChart');
-    if (ctxShare && typeof Chart !== 'undefined' && cLabels.length > 0) {
-        const hasRev = cRevenues.some(r => r > 0);
-        new Chart(ctxShare, {
-            type: 'doughnut',
-            data: {
-                labels: hasRev ? cLabels : ['Chưa có doanh thu'],
-                datasets: [{
-                    data: hasRev ? cRevenues : [1],
-                    backgroundColor: [
-                        '#198754',
-                        '#0d6efd',
-                        '#ffc107',
-                        '#0dcaf0',
-                        '#6f42c1',
-                        '#fd7e14'
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { boxWidth: 10, font: { size: 11 } }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (ctx) {
-                                if (!hasRev) return 'Chưa có doanh thu';
-                                return ' ' + ctx.label + ': ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed) + ' đ';
+        // 2. Instructor Share Doughnut Chart
+        const ctxShare = document.getElementById('instructorShareChart');
+        if (ctxShare && cLabels.length > 0) {
+            const hasRev = cRevenues.some(r => r > 0);
+            new Chart(ctxShare, {
+                type: 'doughnut',
+                data: {
+                    labels: hasRev ? cLabels : ['Chưa có doanh thu'],
+                    datasets: [{
+                        data: hasRev ? cRevenues : [1],
+                        backgroundColor: [
+                            '#198754',
+                            '#0d6efd',
+                            '#ffc107',
+                            '#0dcaf0',
+                            '#6f42c1',
+                            '#fd7e14',
+                            '#20c997'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#212529'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#adb5bd', boxWidth: 10, font: { size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    if (!hasRev) return ' Chưa có doanh thu';
+                                    return ' ' + ctx.label + ': ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed) + ' đ';
+                                }
                             }
                         }
-                    }
-                },
-                cutout: '65%'
-            }
-        });
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
     }
-});
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', render);
+    } else {
+        render();
+    }
+})();
 </script>
 
 <%@ include file="/WEB-INF/view/layout/publicFooter.jsp" %>

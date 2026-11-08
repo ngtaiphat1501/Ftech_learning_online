@@ -330,16 +330,15 @@
     </div>
 </main>
 
-<script src="${pageContext.request.contextPath}/assets/js/chart.min.js"></script>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
-    if (typeof Chart === 'undefined') {
-        var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js';
-        document.head.appendChild(s);
-    }
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+(function initAdminCharts() {
+    function render() {
+        if (typeof Chart === 'undefined') {
+            setTimeout(render, 100);
+            return;
+        }
     const months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
     const revenueData = <%= mRevSb.toString() %>;
     const ordersData = <%= mOrdSb.toString() %>;
@@ -473,7 +472,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-});
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', render);
+    } else {
+        render();
+    }
+})();
 </script>
 
 <%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>
