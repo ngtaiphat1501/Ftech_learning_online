@@ -34,31 +34,36 @@
     int totalStuVal = totalStu != null ? totalStu : 0;
     int pubCountVal = pubCount != null ? pubCount : 0;
 
-    StringBuilder cTitlesSb = new StringBuilder("[");
-    StringBuilder cRevsSb = new StringBuilder("[");
-    if (courses != null && !courses.isEmpty()) {
-        boolean first = true;
-        for (Course c : courses) {
-            if (!first) {
-                cTitlesSb.append(",");
-                cRevsSb.append(",");
+    List<java.util.Map<String, Object>> monthlyRevList = (List<java.util.Map<String, Object>>) request.getAttribute("monthlyRevenue");
+    Integer selYear = (Integer) request.getAttribute("selectedYear");
+    if (selYear == null) selYear = 2026;
+
+    long[] monthRevArr = new long[12];
+    int[] monthOrdersArr = new int[12];
+    if (monthlyRevList != null) {
+        for (java.util.Map<String, Object> m : monthlyRevList) {
+            int mo = (Integer) m.get("month");
+            if (mo >= 1 && mo <= 12) {
+                java.math.BigDecimal r = (java.math.BigDecimal) m.get("revenue");
+                monthRevArr[mo - 1] = r != null ? r.longValue() : 0L;
+                Integer oc = (Integer) m.get("totalSold");
+                monthOrdersArr[mo - 1] = oc != null ? oc : 0;
             }
-            first = false;
-            String t = c.getTitle();
-            if (t != null) {
-                t = t.replace('"', '\'').trim();
-                if (t.length() > 25) {
-                    t = t.substring(0, 25) + "...";
-                }
-            } else {
-                t = "Khóa học";
-            }
-            cTitlesSb.append("\"").append(t).append("\"");
-            cRevsSb.append(c.getRevenueVnd() != null ? c.getRevenueVnd().longValue() : 0L);
         }
     }
-    cTitlesSb.append("]");
-    cRevsSb.append("]");
+
+    StringBuilder mRevSb = new StringBuilder("[");
+    StringBuilder mOrdSb = new StringBuilder("[");
+    for (int i = 0; i < 12; i++) {
+        if (i > 0) {
+            mRevSb.append(",");
+            mOrdSb.append(",");
+        }
+        mRevSb.append(monthRevArr[i]);
+        mOrdSb.append(monthOrdersArr[i]);
+    }
+    mRevSb.append("]");
+    mOrdSb.append("]");
 %>
 
 <%@ include file="/WEB-INF/view/layout/PublicHeader.jsp" %>
@@ -190,7 +195,7 @@
                                 </div>
                                 <div>
                                     <div class="text-secondary small fw-medium">Tổng doanh thu bán</div>
-                                    <div class="fs-4 fw-bold text-success"><%= String.format("%,d đ", totalRevVal) %></div>
+                                    <div class="fs-4 fw-bold text-success font-monospace"><%= String.format("%,d đ", totalRevVal) %></div>
                                 </div>
                             </div>
                         </div>
@@ -204,7 +209,7 @@
                                 </div>
                                 <div>
                                     <div class="text-secondary small fw-medium">Số dư ví giảng viên</div>
-                                    <div class="fs-4 fw-bold text-primary"><%= String.format("%,d đ", balVal) %></div>
+                                    <div class="fs-4 fw-bold text-primary font-monospace"><%= String.format("%,d đ", balVal) %></div>
                                 </div>
                             </div>
                         </div>
@@ -239,46 +244,23 @@
                     </div>
                 </div>
 
-                <!-- INSTRUCTOR REVENUE CHARTS ROW -->
-                <% if (courses != null && !courses.isEmpty()) { %>
-                <div class="row g-4 mb-4">
-                    <div class="col-12 col-xl-8">
-                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 p-3 p-md-4 h-100">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h5 class="fw-bold text-white mb-1">
-                                        <i class="bi bi-bar-chart-line text-success me-2"></i>Doanh thu từng khóa học
-                                    </h5>
-                                    <p class="text-secondary small mb-0">So sánh doanh thu thực nhận giữa các khóa học của bạn</p>
-                                </div>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
-                                    Doanh thu khóa
-                                </span>
-                            </div>
-                            <div style="position: relative; height: 280px; width: 100%;">
-                                <canvas id="instructorRevenueChart"></canvas>
-                            </div>
+                <!-- MONTHLY REVENUE ANALYTICS CHART (FULL WIDTH) -->
+                <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 p-3 p-md-4 mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1">
+                                <i class="bi bi-graph-up text-success me-2"></i>Biến động Doanh thu theo tháng (Năm <%= selYear %>)
+                            </h5>
+                            <p class="text-secondary small mb-0">Thống kê tổng doanh thu bán khóa học và số lượt học viên mới theo 12 tháng</p>
                         </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                            <i class="bi bi-check2-circle me-1"></i>Doanh thu thời gian thực
+                        </span>
                     </div>
-
-                    <div class="col-12 col-xl-4">
-                        <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 p-3 p-md-4 h-100">
-                            <div class="mb-3">
-                                <h5 class="fw-bold text-white mb-1">
-                                    <i class="bi bi-pie-chart text-primary me-2"></i>Tỷ trọng đóng góp
-                                </h5>
-                                <p class="text-secondary small mb-0">Cơ cấu doanh thu theo từng khóa học</p>
-                            </div>
-                            <div style="position: relative; height: 220px; width: 100%; display: flex; align-items: center; justify-content: center;">
-                                <canvas id="instructorShareChart"></canvas>
-                            </div>
-                            <div class="text-center mt-3 small text-secondary">
-                                Tổng số khóa có doanh thu: <strong class="text-white"><%= courses != null ? courses.stream().filter(c -> c.getRevenueVnd() != null && c.getRevenueVnd().compareTo(java.math.BigDecimal.ZERO) > 0).count() : 0 %></strong>
-                            </div>
-                        </div>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="instructorMonthlyChart"></canvas>
                     </div>
                 </div>
-                <% } %>
 
                 <!-- COURSES TABLE -->
                 <% if (courses == null || courses.isEmpty()) { %>
@@ -421,48 +403,79 @@
 </main>
 
 <script>
-(function initInstructorCharts() {
+(function initInstructorMonthlyChart() {
     function render() {
         if (typeof Chart === 'undefined') {
             setTimeout(render, 100);
             return;
         }
 
-        const cLabels = <%= cTitlesSb.toString() %>;
-        const cRevenues = <%= cRevsSb.toString() %>;
+        const months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+        const revenueData = <%= mRevSb.toString() %>;
+        const ordersData = <%= mOrdSb.toString() %>;
 
-        // 1. Instructor Horizontal Bar Chart
-        const ctxBar = document.getElementById('instructorRevenueChart');
-        if (ctxBar && cLabels.length > 0) {
-            new Chart(ctxBar, {
+        const ctx = document.getElementById('instructorMonthlyChart');
+        if (ctx) {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: cLabels,
-                    datasets: [{
-                        label: 'Doanh thu (VNĐ)',
-                        data: cRevenues,
-                        backgroundColor: 'rgba(25, 135, 84, 0.75)',
-                        borderColor: '#198754',
-                        borderWidth: 1.5,
-                        borderRadius: 6
-                    }]
+                    labels: months,
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Lượt mua / Học viên mới',
+                            data: ordersData,
+                            borderColor: '#0dcaf0',
+                            backgroundColor: '#0dcaf0',
+                            borderWidth: 2,
+                            tension: 0.35,
+                            yAxisID: 'yOrders',
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Doanh thu (VNĐ)',
+                            data: revenueData,
+                            backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                            borderColor: '#198754',
+                            borderWidth: 1.5,
+                            borderRadius: 6,
+                            yAxisID: 'yRevenue'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    indexAxis: 'y',
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            labels: { color: '#adb5bd', font: { size: 12 } }
+                        },
                         tooltip: {
                             callbacks: {
-                                label: function (ctx) {
-                                    return ' Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed.x) + ' đ';
+                                label: function (context) {
+                                    if (context.dataset.yAxisID === 'yRevenue') {
+                                        return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' đ';
+                                    } else {
+                                        return 'Học viên mới: ' + context.parsed.y + ' lượt';
+                                    }
                                 }
                             }
                         }
                     },
                     scales: {
                         x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            ticks: { color: '#adb5bd' }
+                        },
+                        yRevenue: {
+                            type: 'linear',
+                            position: 'left',
                             grid: { color: 'rgba(255, 255, 255, 0.08)' },
                             ticks: {
                                 color: '#adb5bd',
@@ -473,56 +486,13 @@
                                 }
                             }
                         },
-                        y: {
-                            grid: { display: false },
-                            ticks: { color: '#adb5bd' }
+                        yOrders: {
+                            type: 'linear',
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#0dcaf0', stepSize: 1 }
                         }
                     }
-                }
-            });
-        }
-
-        // 2. Instructor Share Doughnut Chart
-        const ctxShare = document.getElementById('instructorShareChart');
-        if (ctxShare && cLabels.length > 0) {
-            const hasRev = cRevenues.some(r => r > 0);
-            new Chart(ctxShare, {
-                type: 'doughnut',
-                data: {
-                    labels: hasRev ? cLabels : ['Chưa có doanh thu'],
-                    datasets: [{
-                        data: hasRev ? cRevenues : [1],
-                        backgroundColor: [
-                            '#198754',
-                            '#0d6efd',
-                            '#ffc107',
-                            '#0dcaf0',
-                            '#6f42c1',
-                            '#fd7e14',
-                            '#20c997'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#212529'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#adb5bd', boxWidth: 10, font: { size: 11 } }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (ctx) {
-                                    if (!hasRev) return ' Chưa có doanh thu';
-                                    return ' ' + ctx.label + ': ' + new Intl.NumberFormat('vi-VN').format(ctx.parsed) + ' đ';
-                                }
-                            }
-                        }
-                    },
-                    cutout: '65%'
                 }
             });
         }

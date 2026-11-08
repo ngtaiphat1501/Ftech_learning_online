@@ -137,11 +137,16 @@ public class InstructorCourseServlet extends HttpServlet {
             } catch (Exception ignored) {
             }
 
+            int currentYear = java.time.LocalDate.now().getYear();
+            List<java.util.Map<String, Object>> monthlyRevenue = dao.getMonthlyRevenueByInstructor(instructorId, currentYear);
+
             request.setAttribute("courses", courses);
             request.setAttribute("totalRevenue", totalRevenue);
             request.setAttribute("totalStudents", totalStudents);
             request.setAttribute("publishedCount", publishedCount);
             request.setAttribute("balanceVnd", balanceVnd);
+            request.setAttribute("monthlyRevenue", monthlyRevenue);
+            request.setAttribute("selectedYear", currentYear);
 
             request.getRequestDispatcher(
                     "/WEB-INF/view/instructor/courses.jsp"

@@ -669,4 +669,32 @@ public class CourseDAO {
         return getCourseChaptersWithLessons(courseId);
     }
 
+    public List<Map<String, Object>> getMonthlyRevenueByInstructor(long instructorId, int year) throws SQLException {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT MONTH(o.CreatedAt) AS [Month], "
+                   + "       COALESCE(SUM(oi.PayableVnd), 0) AS Revenue, "
+                   + "       COUNT(DISTINCT oi.OrderItemId) AS TotalSold "
+                   + "FROM dbo.OrderItems oi "
+                   + "JOIN dbo.Orders o ON o.OrderId = oi.OrderId AND o.Status = 'PAID' "
+                   + "JOIN dbo.Courses c ON c.CourseId = oi.CourseId "
+                   + "WHERE c.InstructorId = ? AND YEAR(o.CreatedAt) = ? "
+                   + "GROUP BY MONTH(o.CreatedAt) "
+                   + "ORDER BY [Month]";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, instructorId);
+            ps.setInt(2, year);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("month", rs.getInt("Month"));
+                    map.put("revenue", rs.getBigDecimal("Revenue"));
+                    map.put("totalSold", rs.getInt("TotalSold"));
+                    list.add(map);
+                }
+            }
+        }
+        return list;
+    }
+
 }
