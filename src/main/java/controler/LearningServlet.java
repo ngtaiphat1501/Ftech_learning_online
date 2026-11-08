@@ -84,12 +84,32 @@ public class LearningServlet extends HttpServlet {
 
         try {
             LearningDAO learningDAO = new LearningDAO();
+            dao.CourseDAO courseDAO = new dao.CourseDAO();
+            dao.UserDAO userDAO = new dao.UserDAO();
+
+            model.User currentUser = (model.User) session.getAttribute("user");
+            if (currentUser == null) {
+                currentUser = userDAO.findById(studentId);
+                if (currentUser != null) {
+                    session.setAttribute("user", currentUser);
+                }
+            }
+
+            boolean isAdmin = (currentUser != null && currentUser.isAdmin());
+            boolean isInstructorOwner = false;
+            try {
+                model.Course courseDetail = courseDAO.getCourseDetail(courseId);
+                if (courseDetail != null && currentUser != null && currentUser.getUserId() != null) {
+                    isInstructorOwner = (courseDetail.getInstructorId() == currentUser.getUserId().longValue());
+                }
+            } catch (Exception ignored) {}
 
             long enrollmentId = learningDAO.getEnrollmentId(
                     studentId, courseId
             );
 
-            if (enrollmentId == 0) {
+            // Cho phép Admin xem toàn bộ khóa học không cần mua, hoặc Giảng viên xem khóa học của chính mình
+            if (enrollmentId == 0 && !isAdmin && !isInstructorOwner) {
                 response.sendError(
                         HttpServletResponse.SC_FORBIDDEN,
                         "Bạn không có quyền học khóa này."
@@ -166,20 +186,26 @@ public class LearningServlet extends HttpServlet {
             request.setAttribute("nextLesson", nextLesson);
             request.setAttribute("pageTitle", courseTitle);
             request.setAttribute("activeMenu", "myCourses");
-            QuizDAO quizDAO = new QuizDAO();
-
-            request.setAttribute(
-                    "quizzes",
-                    quizDAO.getCourseQuizzes(studentId, courseId)
-            );
+            if (enrollmentId > 0) {
+                QuizDAO quizDAO = new QuizDAO();
+                request.setAttribute(
+                        "quizzes",
+                        quizDAO.getCourseQuizzes(studentId, courseId)
+                );
+            } else {
+                request.setAttribute("quizzes", new java.util.ArrayList<>());
+            }
 
             if (selectedLesson != null) {
-                DiscussionDAO discussionDAO = new DiscussionDAO();
-
-                request.setAttribute(
-                        "discussionPosts",
-                        discussionDAO.getPosts(studentId, selectedLesson.getId())
-                );
+                if (enrollmentId > 0) {
+                    DiscussionDAO discussionDAO = new DiscussionDAO();
+                    request.setAttribute(
+                            "discussionPosts",
+                            discussionDAO.getPosts(studentId, selectedLesson.getId())
+                    );
+                } else {
+                    request.setAttribute("discussionPosts", new java.util.ArrayList<>());
+                }
             }
 
             request.getRequestDispatcher(

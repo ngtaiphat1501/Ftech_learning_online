@@ -23,6 +23,7 @@ public class CartService {
         NOT_PUBLISHED,
         NOT_PAID,
         FORBIDDEN,
+        OWN_COURSE,
         INVALID_INPUT
     }
 
@@ -76,6 +77,9 @@ public class CartService {
 
                     } else if (!"PAID".equals(course[1])) {
                         result = Result.NOT_PAID;
+
+                    } else if (course.length > 2 && course[2] != null && Long.parseLong(course[2]) == studentId) {
+                        result = Result.OWN_COURSE;
 
                     } else if (cartDAO.hasEnrollment(
                             conn, studentId, courseId)) {

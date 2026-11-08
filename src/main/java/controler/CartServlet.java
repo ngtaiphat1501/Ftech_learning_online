@@ -247,6 +247,8 @@ public class CartServlet extends HttpServlet {
                 return "Khóa học chưa được xuất bản.";
             case NOT_PAID:
                 return "Khóa học này là khóa miễn phí.";
+            case OWN_COURSE:
+                return "Bạn là giảng viên của khóa học này, không thể tự mua khóa học của chính mình.";
             default:
                 return "Không thể thực hiện yêu cầu.";
         }

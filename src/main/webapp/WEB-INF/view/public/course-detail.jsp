@@ -27,6 +27,12 @@
 
 <%@include file="/WEB-INF/view/layout/PublicHeader.jsp" %>
 
+<%
+    boolean isAdminUser = (currentUser != null && currentUser.isAdmin());
+    boolean isOwnerInstructor = (currentUser != null && currentUser.getUserId() != null && currentUser.getUserId().longValue() == course.getInstructorId());
+    boolean canDirectAccess = isEnrolled || isAdminUser || isOwnerInstructor;
+%>
+
 <style>
     .course-detail-container {
         padding-top: 2rem;
@@ -283,7 +289,7 @@
                                                        style="font-size: 0.8rem;">
                                                         <i class="bi bi-play-fill me-1"></i>Học thử
                                                     </a>
-                                                <% } else if (isEnrolled) { %>
+                                                <% } else if (canDirectAccess) { %>
                                                     <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>&lessonId=<%= lesson.getLessonId() %>"
                                                        class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1"
                                                        style="font-size: 0.8rem;">
@@ -506,7 +512,27 @@
 
                 <!-- Action Buttons: True to Database & Cart operations -->
                 <div class="d-flex flex-column gap-2 mb-3">
-                    <% if (isEnrolled) { %>
+                    <% if (isAdminUser) { %>
+                        <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>"
+                           class="btn btn-warning w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 text-dark">
+                            <i class="bi bi-play-circle-fill fs-5"></i>
+                            <span>Xem khóa học (Quyền Admin)</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/admin/approval?courseId=<%= course.getId() %>"
+                           class="btn btn-outline-secondary text-white w-100 py-2 rounded-3 small">
+                            <i class="bi bi-shield-check me-1"></i>Trang quản trị duyệt khóa
+                        </a>
+                    <% } else if (isOwnerInstructor) { %>
+                        <a href="${pageContext.request.contextPath}/instructor/curriculum?courseId=<%= course.getId() %>"
+                           class="btn btn-primary w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-pencil-square fs-5"></i>
+                            <span>Quản lý giáo trình (Khóa của bạn)</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>"
+                           class="btn btn-outline-secondary text-white w-100 py-2 rounded-3 small">
+                            <i class="bi bi-play-circle me-1"></i>Vào xem phòng học
+                        </a>
+                    <% } else if (isEnrolled) { %>
                         <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>"
                            class="btn btn-success w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2">
                             <i class="bi bi-play-circle fs-5"></i>

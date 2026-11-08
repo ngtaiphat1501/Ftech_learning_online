@@ -189,7 +189,7 @@ public class CartDAO {
             throws SQLException {
 
         String sql =
-                "SELECT Status, PricingType "
+                "SELECT Status, PricingType, CAST(InstructorId AS VARCHAR) AS InstructorId "
                 + "FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK) "
                 + "WHERE CourseId = ?";
 
@@ -201,7 +201,8 @@ public class CartDAO {
 
                 return new String[]{
                     rs.getString("Status"),
-                    rs.getString("PricingType")
+                    rs.getString("PricingType"),
+                    rs.getString("InstructorId")
                 };
             }
         }
