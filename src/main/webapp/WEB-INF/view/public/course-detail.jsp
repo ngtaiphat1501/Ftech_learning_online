@@ -139,11 +139,18 @@
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 fw-medium">
                     <%= course.getCategoryName() %>
                 </span>
+                <% if (course.getTotalRatings() > 0) { %>
                 <div class="d-flex align-items-center text-warning small ms-1">
                     <i class="bi bi-star-fill me-1"></i>
                     <strong class="text-white"><%= course.getAverageRating() %></strong>
                     <span class="text-secondary ms-1">· <%= course.getTotalRatings() %> đánh giá</span>
                 </div>
+                <% } else { %>
+                <div class="d-flex align-items-center text-secondary small ms-1">
+                    <i class="bi bi-star me-1"></i>
+                    <span>Chưa có đánh giá</span>
+                </div>
+                <% } %>
             </div>
 
             <!-- Meta Badges: Learners, Modules, Lessons, Hours -->
@@ -353,6 +360,7 @@
                         <i class="bi bi-chat-heart text-primary"></i>
                         <span>Đánh giá từ học viên</span>
                     </h3>
+                <% if (course.getTotalRatings() > 0) { %>
                     <div class="d-flex align-items-center gap-1 text-warning small">
                         <% for (int s = 1; s <= 5; s++) { %>
                             <i class="bi <%= s <= Math.round(course.getAverageRating()) ? "bi-star-fill" : "bi-star" %>"></i>
@@ -360,6 +368,11 @@
                         <strong class="text-white ms-1"><%= course.getAverageRating() %> / 5</strong>
                         <span class="text-secondary">· <%= course.getTotalRatings() %> đánh giá</span>
                     </div>
+                <% } else { %>
+                    <div class="text-secondary small">
+                        <i class="bi bi-star me-1"></i> Chưa có đánh giá nào
+                    </div>
+                <% } %>
                 </div>
 
                 <% if ("1".equals(request.getParameter("reviewSaved"))) { %>
