@@ -58,7 +58,7 @@
 
             <div class="col-12 col-md">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                    <h2 class="h4 fw-bold text-white mb-0"><%= userProfile.getFullName() %></h2>
+                    <h2 class="h4 fw-bold text-body mb-0"><%= userProfile.getFullName() %></h2>
                     <% if (userProfile.isAdmin()) { %>
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill small">Quản trị viên</span>
                     <% } %>
@@ -70,7 +70,7 @@
                     <% } %>
                 </div>
                 <div class="text-secondary small mb-2"><i class="bi bi-envelope me-1"></i><%= userProfile.getEmail() %></div>
-                <div class="text-white-50 small"><%= userProfile.getHeadline() != null ? userProfile.getHeadline() : "Thành viên nền tảng học tập Learnora" %></div>
+                <div class="text-body-secondary small"><%= userProfile.getHeadline() != null ? userProfile.getHeadline() : "Thành viên nền tảng học tập Learnora" %></div>
             </div>
 
             <div class="col-12 col-md-auto text-md-end border-top border-md-top-0 border-secondary border-opacity-25 pt-3 pt-md-0">
@@ -83,7 +83,7 @@
                     </div>
                     <div>
                         <span class="text-secondary small d-block">Khóa học ghi danh</span>
-                        <span class="fw-bold text-white fs-5">
+                        <span class="fw-bold text-body fs-5">
                             <i class="bi bi-journal-check text-primary me-1"></i><%= enrolledCount %> khóa
                         </span>
                     </div>
@@ -93,17 +93,17 @@
     </div>
 
     <!-- Navigation Tabs -->
-    <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 shadow-sm overflow-hidden">
-        <div class="card-header bg-dark-subtle border-bottom border-secondary border-opacity-25 px-4 pt-3 pb-0">
+    <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-4 shadow-sm overflow-hidden">
+        <div class="card-header bg-body-secondary border-bottom border-secondary border-opacity-25 px-4 pt-3 pb-0">
             <ul class="nav nav-tabs card-header-tabs border-bottom-0" id="profileTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active bg-transparent text-white border-0 border-bottom border-primary border-3 fw-medium pb-3"
+                    <button class="nav-link active bg-transparent text-body border-0 border-bottom border-primary border-3 fw-medium pb-3"
                             id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab">
                         <i class="bi bi-person me-2"></i>Thông tin tài khoản
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link bg-transparent text-secondary border-0 fw-medium pb-3"
+                    <button class="nav-link bg-transparent text-body-secondary border-0 fw-medium pb-3"
                             id="password-tab" data-bs-toggle="tab" data-bs-target="#password-pane" type="button" role="tab">
                         <i class="bi bi-shield-lock me-2"></i>Đổi mật khẩu
                     </button>
@@ -127,20 +127,20 @@
 
                         <div class="col-12 col-md-6">
                             <label class="form-label text-secondary small fw-medium">Họ và tên <span class="text-danger">*</span></label>
-                            <input type="text" name="fullName" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white"
+                            <input type="text" name="fullName" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-body"
                                    value="<%= userProfile.getFullName() != null ? userProfile.getFullName() : "" %>" required>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label text-secondary small fw-medium">Tiêu đề chuyên môn / Nghề nghiệp</label>
-                            <input type="text" name="headline" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white"
+                            <input type="text" name="headline" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-body"
                                    placeholder="VD: Sinh viên ngành Kỹ thuật phần mềm | Lập trình viên Java Fullstack"
                                    value="<%= userProfile.getHeadline() != null ? userProfile.getHeadline() : "" %>">
                         </div>
 
                         <div class="col-12">
                             <label class="form-label text-secondary small fw-medium">Đường dẫn ảnh đại diện (Avatar URL)</label>
-                            <input type="url" name="avatarUrl" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white"
+                            <input type="url" name="avatarUrl" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-body"
                                    placeholder="https://example.com/avatar.jpg"
                                    value="<%= userProfile.getAvatarUrl() != null ? userProfile.getAvatarUrl() : "" %>">
                             <div class="form-text text-secondary small">Nhập URL hình ảnh công khai (.jpg, .png) để cập nhật ảnh đại diện.</div>
@@ -148,7 +148,7 @@
 
                         <div class="col-12">
                             <label class="form-label text-secondary small fw-medium">Giới thiệu bản thân (Bio)</label>
-                            <textarea name="bio" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white"
+                            <textarea name="bio" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-body"
                                       rows="4" placeholder="Chia sẻ kinh nghiệm, sở thích hoặc định hướng học tập của bạn..."><%= userProfile.getBio() != null ? userProfile.getBio() : "" %></textarea>
                         </div>
 
@@ -167,19 +167,19 @@
 
                         <div class="col-12">
                             <label class="form-label text-secondary small fw-medium">Mật khẩu hiện tại <span class="text-danger">*</span></label>
-                            <input type="password" name="currentPassword" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white"
+                            <input type="password" name="currentPassword" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-body"
                                    placeholder="Nhập mật khẩu bạn đang sử dụng..." required>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label text-secondary small fw-medium">Mật khẩu mới <span class="text-danger">*</span></label>
-                            <input type="password" name="newPassword" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white"
+                            <input type="password" name="newPassword" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-body"
                                    placeholder="Tối thiểu 6 ký tự..." minlength="6" required>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label text-secondary small fw-medium">Xác nhận mật khẩu mới <span class="text-danger">*</span></label>
-                            <input type="password" name="confirmPassword" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-white"
+                            <input type="password" name="confirmPassword" class="form-control bg-body-tertiary border-secondary border-opacity-25 text-body"
                                    placeholder="Nhập lại mật khẩu mới..." minlength="6" required>
                         </div>
 

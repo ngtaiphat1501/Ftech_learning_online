@@ -403,6 +403,20 @@
                 color: #f1f5f9;
             }
 
+            /* Safeguards for pristine Light Theme rendering */
+            [data-bs-theme="light"] .text-white:not(.btn):not(.btn *):not(.badge):not(.badge *):not(.alert) {
+                color: var(--ftech-text-main) !important;
+            }
+            [data-bs-theme="light"] .text-white-50 {
+                color: var(--ftech-text-sub) !important;
+            }
+            [data-bs-theme="light"] .bg-dark:not(.ftech-meteor):not(spline-viewer):not(.badge):not(.btn) {
+                background-color: var(--ftech-card-bg) !important;
+            }
+            [data-bs-theme="light"] .bg-dark-subtle {
+                background-color: var(--ftech-dropdown-hover) !important;
+            }
+
             /* =================================== */
             /* AUTH DROPDOWN                       */
             /* =================================== */

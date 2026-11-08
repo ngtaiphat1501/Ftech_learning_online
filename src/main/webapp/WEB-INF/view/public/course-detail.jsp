@@ -108,7 +108,7 @@
             <li class="breadcrumb-item">
                 <a href="${pageContext.request.contextPath}/courses" class="text-secondary text-decoration-none">Courses</a>
             </li>
-            <li class="breadcrumb-item active text-white text-truncate" style="max-width: 500px;" aria-current="page">
+            <li class="breadcrumb-item active text-body text-truncate" style="max-width: 500px;" aria-current="page">
                 <%= course.getTitle() %>
             </li>
         </ol>
@@ -123,10 +123,10 @@
 
             <!-- Title & Bookmark -->
             <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
-                <h1 class="display-6 fw-bold text-white mb-0" style="font-size: clamp(1.8rem, 3.5vw, 2.5rem);">
+                <h1 class="display-6 fw-bold text-body mb-0" style="font-size: clamp(1.8rem, 3.5vw, 2.5rem);">
                     <%= course.getTitle() %>
                 </h1>
-                <button type="button" class="btn btn-icon rounded-circle bg-dark border border-secondary border-opacity-25 text-secondary flex-shrink-0" title="Lưu khóa học">
+                <button type="button" class="btn btn-icon rounded-circle bg-body-tertiary border border-secondary border-opacity-25 text-body flex-shrink-0" title="Lưu khóa học">
                     <i class="bi bi-bookmark fs-5"></i>
                 </button>
             </div>
@@ -146,7 +146,7 @@
                 <% if (course.getTotalRatings() > 0) { %>
                 <div class="d-flex align-items-center text-warning small ms-1">
                     <i class="bi bi-star-fill me-1"></i>
-                    <strong class="text-white"><%= course.getAverageRating() %></strong>
+                    <strong class="text-body"><%= course.getAverageRating() %></strong>
                     <span class="text-secondary ms-1">· <%= course.getTotalRatings() %> đánh giá</span>
                 </div>
                 <% } else { %>
@@ -159,19 +159,19 @@
 
             <!-- Meta Badges: Learners, Modules, Lessons, Hours -->
             <div class="d-flex flex-wrap gap-2 mb-4">
-                <div class="badge bg-dark border border-secondary border-opacity-25 text-secondary fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
+                <div class="badge bg-body-tertiary border border-secondary border-opacity-25 text-body fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
                     <i class="bi bi-people text-primary"></i>
                     <span><%= course.getLearnerCount() %> học viên</span>
                 </div>
-                <div class="badge bg-dark border border-secondary border-opacity-25 text-secondary fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
+                <div class="badge bg-body-tertiary border border-secondary border-opacity-25 text-body fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
                     <i class="bi bi-stack text-info"></i>
                     <span><%= course.getModuleCount() %> chương</span>
                 </div>
-                <div class="badge bg-dark border border-secondary border-opacity-25 text-secondary fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
+                <div class="badge bg-body-tertiary border border-secondary border-opacity-25 text-body fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
                     <i class="bi bi-collection-play text-warning"></i>
                     <span><%= course.getLessonCount() %> bài học</span>
                 </div>
-                <div class="badge bg-dark border border-secondary border-opacity-25 text-secondary fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
+                <div class="badge bg-body-tertiary border border-secondary border-opacity-25 text-body fw-normal py-2 px-3 rounded-pill d-flex align-items-center gap-1.5">
                     <i class="bi bi-clock text-success"></i>
                     <span><%= course.getEstimatedHours() %> giờ học</span>
                 </div>
@@ -185,7 +185,7 @@
             <!-- Instructor Byline -->
             <div class="d-flex align-items-center gap-2 text-secondary small mb-5 pb-3 border-bottom border-secondary border-opacity-25">
                 <span>Giảng viên:</span>
-                <strong class="text-white fs-6"><%= course.getInstructorName() %></strong>
+                <strong class="text-body fs-6"><%= course.getInstructorName() %></strong>
                 <% if (course.getInstructorHeadline() != null && !course.getInstructorHeadline().isBlank()) { %>
                     <span class="text-secondary d-none d-md-inline">· <%= course.getInstructorHeadline() %></span>
                 <% } %>
@@ -194,16 +194,16 @@
             <!-- ================= WHAT YOU'LL LEARN (LearningObjectives in DB) ================= -->
             <% if (!course.getLearningObjectivesList().isEmpty()) { %>
                 <section class="mb-5">
-                    <h3 class="h5 fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <h3 class="h5 fw-bold text-body mb-3 d-flex align-items-center gap-2">
                         <i class="bi bi-check2-circle text-primary"></i>
                         <span>Những gì bạn sẽ học được</span>
                     </h3>
-                    <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
+                    <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
                         <div class="row g-3">
                             <% for (String objective : course.getLearningObjectivesList()) { %>
                                 <div class="col-12 col-md-6 d-flex align-items-start gap-2.5">
                                     <i class="bi bi-check-circle-fill text-primary flex-shrink-0 mt-1"></i>
-                                    <span class="text-light small lh-base"><%= objective %></span>
+                                    <span class="text-body small lh-base"><%= objective %></span>
                                 </div>
                             <% } %>
                         </div>
@@ -215,7 +215,7 @@
             <section class="mb-5">
                 <div class="d-flex align-items-baseline justify-content-between mb-3">
                     <div>
-                        <h3 class="h5 fw-bold text-white mb-1 d-flex align-items-center gap-2">
+                        <h3 class="h5 fw-bold text-body mb-1 d-flex align-items-center gap-2">
                             <i class="bi bi-journals text-primary"></i>
                             <span>Nội dung khóa học</span>
                         </h3>
@@ -247,7 +247,7 @@
                                         aria-expanded="<%= isFirst ? "true" : "false" %>"
                                         aria-controls="<%= collapseId %>">
                                     <div class="d-flex flex-column text-start me-3">
-                                        <span class="fw-semibold text-white"><%= chapter.getTitle() %></span>
+                                        <span class="fw-semibold text-body"><%= chapter.getTitle() %></span>
                                         <% if (chapter.getDescription() != null && !chapter.getDescription().isBlank()) { %>
                                             <span class="text-secondary small fw-normal mt-0.5"><%= chapter.getDescription() %></span>
                                         <% } %>
@@ -274,7 +274,7 @@
                                                     <i class="bi bi-lock-fill text-secondary fs-5 flex-shrink-0"></i>
                                                 <% } %>
                                                 <div class="min-w-0">
-                                                    <div class="text-white small fw-medium text-truncate" title="<%= lesson.getTitle() %>">
+                                                    <div class="text-body small fw-medium text-truncate" title="<%= lesson.getTitle() %>">
                                                         <%= lesson.getTitle() %>
                                                     </div>
                                                     <span class="text-secondary small" style="font-size: 0.78rem;">
@@ -297,7 +297,7 @@
                                                         Vào học
                                                     </a>
                                                 <% } else { %>
-                                                    <span class="badge bg-dark text-secondary border border-secondary border-opacity-25 rounded-pill px-2.5 py-1" style="font-size: 0.75rem;">
+                                                    <span class="badge bg-body-tertiary text-secondary border border-secondary border-opacity-25 rounded-pill px-2.5 py-1" style="font-size: 0.75rem;">
                                                         Đã khóa
                                                     </span>
                                                 <% } %>
@@ -327,7 +327,7 @@
                     <div class="row g-4">
                         <% if (!course.getRequirementsList().isEmpty()) { %>
                             <div class="col-12 col-md-6">
-                                <h3 class="h6 fw-bold text-white mb-2 d-flex align-items-center gap-2">
+                                <h3 class="h6 fw-bold text-body mb-2 d-flex align-items-center gap-2">
                                     <i class="bi bi-info-circle text-primary"></i>
                                     <span>Yêu cầu tiên quyết</span>
                                 </h3>
@@ -344,7 +344,7 @@
 
                         <% if (course.getTargetAudience() != null && !course.getTargetAudience().isBlank()) { %>
                             <div class="col-12 col-md-6">
-                                <h3 class="h6 fw-bold text-white mb-2 d-flex align-items-center gap-2">
+                                <h3 class="h6 fw-bold text-body mb-2 d-flex align-items-center gap-2">
                                     <i class="bi bi-person-check text-primary"></i>
                                     <span>Khóa học dành cho ai</span>
                                 </h3>
@@ -360,7 +360,7 @@
             <!-- ================= LEARNER REVIEWS IN DB ================= -->
             <section class="mb-5">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h3 class="h5 fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                    <h3 class="h5 fw-bold text-body mb-0 d-flex align-items-center gap-2">
                         <i class="bi bi-chat-heart text-primary"></i>
                         <span>Đánh giá từ học viên</span>
                     </h3>
@@ -369,7 +369,7 @@
                         <% for (int s = 1; s <= 5; s++) { %>
                             <i class="bi <%= s <= Math.round(course.getAverageRating()) ? "bi-star-fill" : "bi-star" %>"></i>
                         <% } %>
-                        <strong class="text-white ms-1"><%= course.getAverageRating() %> / 5</strong>
+                        <strong class="text-body ms-1"><%= course.getAverageRating() %> / 5</strong>
                         <span class="text-secondary">· <%= course.getTotalRatings() %> đánh giá</span>
                     </div>
                 <% } else { %>
@@ -380,8 +380,8 @@
                 </div>
 
                 <!-- Your Rating Form (Interactive Box) -->
-                <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
-                    <h6 class="text-white fw-bold mb-2">Đánh giá của bạn</h6>
+                <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
+                    <h6 class="text-body fw-bold mb-2">Đánh giá của bạn</h6>
                     <div class="d-flex align-items-center gap-1 mb-3" id="ratingStarsGroup">
                         <i class="bi bi-star rating-star-interactive" data-star="1"></i>
                         <i class="bi bi-star rating-star-interactive" data-star="2"></i>
@@ -392,7 +392,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <textarea class="form-control bg-body-tertiary border border-secondary border-opacity-25 text-white py-2.5 px-3 rounded-3"
+                        <textarea class="form-control bg-body border border-secondary border-opacity-25 text-body py-2.5 px-3 rounded-3"
                                   rows="3"
                                   placeholder="Chia sẻ cảm nhận của bạn về khóa học này (tùy chọn)..."
                                   style="resize: none; font-size: 0.92rem;"></textarea>
@@ -407,11 +407,11 @@
 
                 <!-- Reviews List or Empty State -->
                 <% if (reviews == null || reviews.isEmpty()) { %>
-                    <div class="text-center py-5 rounded-4 bg-dark border border-secondary border-opacity-25">
+                    <div class="text-center py-5 rounded-4 bg-body-tertiary border border-secondary border-opacity-25">
                         <div class="rounded-circle bg-body-tertiary d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; border: 1px solid rgba(255,255,255,0.1);">
                             <i class="bi bi-inbox fs-3 text-secondary"></i>
                         </div>
-                        <h6 class="text-white fw-bold mb-1">Chưa có đánh giá nào</h6>
+                        <h6 class="text-body fw-bold mb-1">Chưa có đánh giá nào</h6>
                         <p class="text-secondary small mb-0">Hãy là người đầu tiên trải nghiệm và chia sẻ nhận xét về khóa học này.</p>
                     </div>
                 <% } else { %>
@@ -428,7 +428,7 @@
                                             </div>
                                         <% } %>
                                         <div>
-                                            <div class="text-white fw-semibold small"><%= review.getStudentName() %></div>
+                                            <div class="text-body fw-semibold small"><%= review.getStudentName() %></div>
                                             <div class="text-warning small" style="font-size: 0.75rem;">
                                                 <% for (int r = 1; r <= 5; r++) { %>
                                                     <i class="bi <%= r <= review.getRating() ? "bi-star-fill" : "bi-star" %>"></i>
@@ -440,7 +440,7 @@
                                         <%= review.getCreatedAt() != null ? review.getCreatedAt().toString().substring(0, 10) : "" %>
                                     </span>
                                 </div>
-                                <p class="text-light small mb-0 lh-base"><%= review.getComment() %></p>
+                                <p class="text-body-secondary small mb-0 lh-base"><%= review.getComment() %></p>
                             </div>
                         <% } %>
                     </div>
@@ -449,11 +449,11 @@
 
             <!-- ================= INSTRUCTOR PROFILE IN DB ================= -->
             <section class="mb-5">
-                <h3 class="h5 fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                <h3 class="h5 fw-bold text-body mb-3 d-flex align-items-center gap-2">
                     <i class="bi bi-person-badge text-primary"></i>
                     <span>Giảng viên hướng dẫn</span>
                 </h3>
-                <div class="card bg-dark border border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
+                <div class="card bg-body-tertiary border border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
                     <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3 mb-3">
                         <% if (course.getInstructorAvatar() != null && !course.getInstructorAvatar().isBlank()) { %>
                             <img src="<%= course.getInstructorAvatar() %>" alt="Avatar" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;">
@@ -463,7 +463,7 @@
                             </div>
                         <% } %>
                         <div>
-                            <h5 class="text-white fw-bold mb-1"><%= course.getInstructorName() %></h5>
+                            <h5 class="text-body fw-bold mb-1"><%= course.getInstructorName() %></h5>
                             <p class="text-secondary small mb-0"><%= course.getInstructorHeadline() != null ? course.getInstructorHeadline() : "Giảng viên tại Ftech" %></p>
                         </div>
                     </div>
@@ -482,7 +482,7 @@
             <div class="sticky-course-card p-3 p-xl-4">
 
                 <!-- Course Cover Image ONLY (NO video link, pure thumbnail as requested) -->
-                <div class="rounded-3 overflow-hidden mb-3 border border-secondary border-opacity-25" style="aspect-ratio: 16/9; background-color: #0b0d13;">
+                <div class="rounded-3 overflow-hidden mb-3 border border-secondary border-opacity-25" class="rounded-3 overflow-hidden mb-3 border border-secondary border-opacity-25 bg-body-tertiary" style="aspect-ratio: 16/9;">
                     <% if (course.getThumbnailUrl() != null && !course.getThumbnailUrl().isBlank()) { %>
                         <img src="<%= course.getThumbnailUrl() %>"
                              alt="<%= course.getTitle() %>"
@@ -497,7 +497,7 @@
                 <!-- Pricing Display from Database -->
                 <div class="mb-3">
                     <div class="d-flex align-items-baseline gap-2">
-                        <span class="fw-bold text-white fs-3">
+                        <span class="fw-bold text-body fs-3">
                             <%= course.isFree() ? "Miễn phí" : currency.format(course.getCurrentPrice()) + "đ" %>
                         </span>
                         <% if (course.isDiscounted()) { %>
@@ -520,7 +520,7 @@
                             <span>Xem khóa học (Quyền Admin)</span>
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/approval?courseId=<%= course.getId() %>"
-                           class="btn btn-outline-secondary text-white w-100 py-2 rounded-3 small">
+                           class="btn btn-outline-secondary w-100 py-2 rounded-3 small">
                             <i class="bi bi-shield-check me-1"></i>Trang quản trị duyệt khóa
                         </a>
                     <% } else if (isOwnerInstructor) { %>
@@ -530,7 +530,7 @@
                             <span>Quản lý giáo trình (Khóa của bạn)</span>
                         </a>
                         <a href="${pageContext.request.contextPath}/student/learn?courseId=<%= course.getId() %>"
-                           class="btn btn-outline-secondary text-white w-100 py-2 rounded-3 small">
+                           class="btn btn-outline-secondary w-100 py-2 rounded-3 small">
                             <i class="bi bi-play-circle me-1"></i>Vào xem phòng học
                         </a>
                     <% } else if (isEnrolled) { %>
@@ -558,7 +558,7 @@
                         <% if (isInCart) { %>
                             <button type="button"
                                     id="btnCartAction"
-                                    class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 bg-dark-subtle border-secondary border-opacity-50 text-white"
+                                    class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 bg-body-tertiary border-secondary border-opacity-50 text-body"
                                     onclick="removeCartItem(<%= course.getId() %>)">
                                 <i class="bi bi-check2 text-success fs-5"></i>
                                 <span>Đã có trong giỏ hàng</span>
@@ -567,7 +567,7 @@
                         <% } else { %>
                             <button type="button"
                                     id="btnCartAction"
-                                    class="btn btn-outline-secondary text-white w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 border-secondary border-opacity-50"
+                                    class="btn btn-outline-secondary text-body w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 border-secondary border-opacity-50"
                                     onclick="addCourseToCart(<%= course.getId() %>)">
                                 <i class="bi bi-cart-plus fs-5"></i>
                                 <span>Thêm vào giỏ hàng</span>
@@ -578,7 +578,7 @@
                     <!-- Try for free button (only if there are preview lessons in DB) -->
                     <% if (course.getFirstPreviewLessonId() != null) { %>
                         <a href="${pageContext.request.contextPath}/preview?lessonId=<%= course.getFirstPreviewLessonId() %>"
-                           class="btn btn-outline-secondary text-white w-100 py-2.5 rounded-3 fw-medium border-secondary border-opacity-50">
+                           class="btn btn-outline-secondary text-body w-100 py-2.5 rounded-3 fw-medium border-secondary border-opacity-50">
                             Học thử bài giảng
                         </a>
                     <% } %>
@@ -588,7 +588,7 @@
                 <div class="pt-3 mt-3 border-top border-secondary border-opacity-25 small text-secondary">
                     <div class="d-flex justify-content-between mb-2">
                         <span><i class="bi bi-bar-chart-steps me-2 text-info"></i>Trình độ</span>
-                        <span class="text-white fw-medium">
+                        <span class="text-body fw-medium">
                             <%= "BEGINNER".equalsIgnoreCase(course.getLevel()) ? "Cơ bản" :
                                 "INTERMEDIATE".equalsIgnoreCase(course.getLevel()) ? "Trung cấp" :
                                 "ADVANCED".equalsIgnoreCase(course.getLevel()) ? "Nâng cao" : course.getLevel() %>
@@ -596,19 +596,19 @@
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><i class="bi bi-clock me-2 text-success"></i>Thời lượng</span>
-                        <span class="text-white fw-medium"><%= course.getEstimatedHours() %> giờ học</span>
+                        <span class="text-body fw-medium"><%= course.getEstimatedHours() %> giờ học</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><i class="bi bi-translate me-2 text-warning"></i>Ngôn ngữ</span>
-                        <span class="text-white fw-medium"><%= course.getLanguage() != null ? course.getLanguage() : "Tiếng Việt" %></span>
+                        <span class="text-body fw-medium"><%= course.getLanguage() != null ? course.getLanguage() : "Tiếng Việt" %></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><i class="bi bi-journal-check me-2 text-primary"></i>Số bài giảng</span>
-                        <span class="text-white fw-medium"><%= course.getLessonCount() %> bài</span>
+                        <span class="text-body fw-medium"><%= course.getLessonCount() %> bài</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span><i class="bi bi-people me-2 text-secondary"></i>Học viên</span>
-                        <span class="text-white fw-medium"><%= course.getLearnerCount() %> người đã đăng ký</span>
+                        <span class="text-body fw-medium"><%= course.getLearnerCount() %> người đã đăng ký</span>
                     </div>
                 </div>
 
@@ -624,13 +624,13 @@
         const btn = document.getElementById("btnCartAction");
         if (!btn) return;
         if (inCart) {
-            btn.className = "btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 bg-dark-subtle border-secondary border-opacity-50 text-white";
+            btn.className = "btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 bg-body-tertiary border-secondary border-opacity-50 text-body";
             btn.innerHTML = '<i class="bi bi-check2 text-success fs-5"></i> <span>Đã có trong giỏ hàng</span> <i class="bi bi-trash3 text-danger ms-1"></i>';
             btn.onclick = function () {
                 removeCartItem(<%= course.getId() %>);
             };
         } else {
-            btn.className = "btn btn-outline-secondary text-white w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 border-secondary border-opacity-50";
+            btn.className = "btn btn-outline-secondary text-body w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2 border-secondary border-opacity-50";
             btn.innerHTML = '<i class="bi bi-cart-plus fs-5"></i> <span>Thêm vào giỏ hàng</span>';
             btn.onclick = function () {
                 addCourseToCart(<%= course.getId() %>);
