@@ -207,7 +207,7 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
             rel="stylesheet">
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        
 
 
         <style>
@@ -1033,7 +1033,7 @@
 
                                         data-bs-toggle="modal"
 
-                                        data-bs-target="#signInModal">
+                                        data-bs-target="#signInModal" onclick="window.openSignInModal && window.openSignInModal()">
 
 
                                         <i
@@ -1067,7 +1067,7 @@
 
                                         data-bs-toggle="modal"
 
-                                        data-bs-target="#signUpModal">
+                                        data-bs-target="#signUpModal" onclick="window.openSignUpModal && window.openSignUpModal()">
 
 
                                         <i
@@ -3043,6 +3043,21 @@
 // ============================================================
 // GLOBAL FTECH NOTIFICATION API
 // ============================================================
+
+// Global Auth Modal openers
+window.openSignInModal = function() {
+    var el = document.getElementById('signInModal');
+    if (el && typeof bootstrap !== 'undefined') {
+        bootstrap.Modal.getOrCreateInstance(el).show();
+    }
+};
+window.openSignUpModal = function() {
+    var el = document.getElementById('signUpModal');
+    if (el && typeof bootstrap !== 'undefined') {
+        bootstrap.Modal.getOrCreateInstance(el).show();
+    }
+};
+
 window.ftechAlert = function(options) {
     if (typeof options === 'string') {
         options = { message: options, type: 'warning' };
