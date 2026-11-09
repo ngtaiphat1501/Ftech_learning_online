@@ -342,6 +342,23 @@
                AUTHENTIC OCEAN WAVE TRANSITION SPREADING FROM THEME BUTTON
                SIÊU MƯỢT 60-120FPS GPU - SÓNG BIỂN UỐN LƯỢN NHẤP NHÔ CÓ LÊN CÓ XUỐNG
                ============================================================ */
+            /* ============================================================
+               TẮT / ẨN HOÀN TOÀN THANH CUỘN (SCROLLBAR) TRÊN TOÀN BỘ TRANG WEB
+               GIAO DIỆN HIỆN ĐẠI KHÔNG VIỀN - VẪN LĂN CHUỘT / TRACKPAD CUỘN MƯỢT MÀ
+               ============================================================ */
+            html, body {
+                scrollbar-width: none !important; /* Firefox */
+                -ms-overflow-style: none !important; /* IE & Edge cũ */
+            }
+
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar,
+            *::-webkit-scrollbar {
+                width: 0px !important;
+                height: 0px !important;
+                display: none !important; /* Chrome, Edge, Safari, Opera */
+            }
+
             #ftechOceanWaveCanvas {
                 position: fixed;
                 top: 0;
