@@ -119,7 +119,7 @@ public class UserDAO {
     }
 
     /**
-     * Gets user balance directly from database.
+     * Gets user balance directly from database using provided connection.
      */
     public BigDecimal getUserBalance(Connection conn, long userId) throws SQLException {
         String sql = "SELECT BalanceVnd FROM dbo.Users WHERE UserId = ?";
@@ -132,6 +132,15 @@ public class UserDAO {
                 }
                 return BigDecimal.ZERO;
             }
+        }
+    }
+
+    /**
+     * Gets user balance directly from database (auto-managed connection).
+     */
+    public BigDecimal getUserBalance(long userId) throws SQLException {
+        try (Connection conn = DBContext.getConnection()) {
+            return getUserBalance(conn, userId);
         }
     }
 

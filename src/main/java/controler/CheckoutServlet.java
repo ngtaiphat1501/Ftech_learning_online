@@ -1,5 +1,6 @@
 package controler;
 
+import dao.WalletDAO;
 import model.CartItem;
 import model.User;
 import service.CheckoutService;
@@ -22,6 +23,7 @@ import java.util.List;
 public class CheckoutServlet extends HttpServlet {
 
     private final CheckoutService checkoutService = new CheckoutService();
+    private final WalletDAO walletDAO = new WalletDAO();
 
     private Long getStudentId(HttpSession session) {
         if (session == null) return null;
@@ -255,8 +257,25 @@ public class CheckoutServlet extends HttpServlet {
                     } catch (NumberFormatException ignored) {}
                 }
 
+                String topUpMethod = request.getParameter("topUpMethod");
+                if (topUpMethod == null || topUpMethod.isBlank()) {
+                    topUpMethod = "VIETQR";
+                }
+
                 PaymentResult result = checkoutService.topUpAndPay(studentId, topUpAmount, couponCode, selectedCourseIds);
                 if (result.success) {
+                    // Record deposit in WalletTransactions history
+                    try {
+                        walletDAO.logTransaction(
+                                studentId,
+                                "TOPUP",
+                                topUpAmount,
+                                topUpMethod.toUpperCase(),
+                                "SUCCESS",
+                                "Nạp tiền bù đơn hàng #" + result.orderCode
+                        );
+                    } catch (Exception ignored) {}
+
                     int remainingCount = checkoutService.getRemainingCartCount(studentId);
                     session.setAttribute("cartCount", remainingCount);
                     if (isJson) {

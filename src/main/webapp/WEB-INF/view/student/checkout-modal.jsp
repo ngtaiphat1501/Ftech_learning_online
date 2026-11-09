@@ -37,6 +37,27 @@
     [data-bs-theme="light"] .modal-qr-val {
         color: #0f172a !important;
     }
+    .modal-method-btn {
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    [data-bs-theme="light"] .modal-method-btn {
+        border-color: rgba(0, 0, 0, 0.12);
+        background: #f8fafc;
+    }
+    .modal-method-btn:hover {
+        border-color: #6366f1;
+    }
+    .modal-method-btn.active-vietqr {
+        border-color: #4f46e5 !important;
+        background: rgba(79, 70, 229, 0.12) !important;
+    }
+    .modal-method-btn.active-momo {
+        border-color: #d82d8b !important;
+        background: rgba(216, 45, 139, 0.12) !important;
+    }
     .modal-checkout-header {
         border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
         padding: 1.25rem 1.5rem 1rem 1.5rem !important;
@@ -151,7 +172,7 @@
     <div class="modal-dialog modal-dialog-centered modal-checkout-dialog">
         <div class="modal-content modal-checkout-content">
 
-            <!-- STEP 1: ORDER REVIEW (Matching uploaded image) -->
+            <!-- STEP 1: ORDER REVIEW -->
             <div id="modalStepReview">
                 <!-- Header -->
                 <div class="modal-checkout-header d-flex align-items-center justify-content-between">
@@ -195,7 +216,7 @@
                             <!-- Populated dynamically via JS -->
                         </div>
 
-                        <!-- Coupon Input (No Coins!) -->
+                        <!-- Coupon Input -->
                         <div class="modal-coupon-box d-flex align-items-center mb-3">
                             <input type="text" 
                                    id="modalCouponInput" 
@@ -239,7 +260,7 @@
                 </div>
             </div>
 
-            <!-- STEP 2: PAYMENT EXECUTION (In-place modal transition) -->
+            <!-- STEP 2: PAYMENT EXECUTION -->
             <div id="modalStepPayment" class="d-none">
                 <!-- Header with Back Button -->
                 <div class="modal-checkout-header d-flex align-items-center justify-content-between">
@@ -249,7 +270,7 @@
                         </button>
                         <div>
                             <h5 class="modal-title fw-bold text-white mb-0">Thanh toán đơn hàng</h5>
-                            <span class="text-secondary small">Xác nhận trừ ví hoặc quét VietQR nạp bù</span>
+                            <span class="text-secondary small">Xác nhận trừ ví hoặc chọn quét QR nạp bù</span>
                         </div>
                     </div>
                     <button type="button" class="modal-btn-close" data-bs-dismiss="modal" aria-label="Close">
@@ -293,30 +314,77 @@
                         </button>
                     </div>
 
-                    <!-- CASE 2: INSUFFICIENT BALANCE -> DYNAMIC VIETQR -->
+                    <!-- CASE 2: INSUFFICIENT BALANCE -> CHOOSE METHOD THEN SHOW QR -->
                     <div id="modalInsufficientBox" class="d-none">
                         <div class="p-3 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 mb-3">
                             <div class="d-flex align-items-center gap-2 text-warning small fw-medium mb-1">
-                                <i class="bi bi-exclamation-triangle-fill"></i> Số dư không đủ để thanh toán
+                                <i class="bi bi-exclamation-triangle-fill"></i> Số dư ví không đủ để thanh toán
                             </div>
                             <div class="text-white-50 small">
                                 Cần nạp thêm: <b class="text-danger fw-bold fs-6" id="modalMissingAmountDisplay">0đ</b>
                             </div>
                         </div>
 
+                        <!-- Method selection -->
+                        <div class="mb-3">
+                            <div class="text-secondary small fw-medium mb-2">Chọn phương thức nạp:</div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="modal-method-btn active-vietqr d-flex align-items-center gap-2 p-2 rounded-3 cursor-pointer"
+                                         id="modalMethodVietQr" onclick="setModalTopUpMethod('vietqr')">
+                                        <i class="bi bi-bank fs-4 text-primary flex-shrink-0"></i>
+                                        <div class="lh-sm">
+                                            <div class="fw-bold small text-white">Chuyển khoản QR</div>
+                                            <div class="text-secondary" style="font-size: 0.72rem;">MBBank</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="modal-method-btn d-flex align-items-center gap-2 p-2 rounded-3 cursor-pointer"
+                                         id="modalMethodMomo" onclick="setModalTopUpMethod('momo')">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0" style="width: 26px; height: 26px; background: #d82d8b; font-size: 0.75rem;">M</div>
+                                        <div class="lh-sm">
+                                            <div class="fw-bold small text-white">Ví MoMo</div>
+                                            <div class="text-secondary" style="font-size: 0.72rem;">Quét QR MoMo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- VietQR Container -->
-                        <div class="text-center p-3 rounded-3 mb-3 modal-qr-box">
-                            <div class="text-secondary small mb-2">Quét mã QR để nạp số tiền còn thiếu:</div>
+                        <div id="modalVietQrContainer" class="text-center p-3 rounded-3 mb-3 modal-qr-box">
+                            <div class="text-secondary small mb-2">Quét mã VietQR bằng App Ngân hàng:</div>
                             <div class="d-inline-block bg-white p-2 rounded-3 mb-2 shadow">
-                                <img id="modalVietQrImage" src="" alt="VietQR" class="img-fluid" style="width: 180px; height: 180px; object-fit: contain;">
+                                <img id="modalVietQrImage" src="" alt="VietQR" class="img-fluid" style="width: 170px; height: 170px; object-fit: contain;">
                             </div>
                             <div class="row g-1 text-start mx-auto small text-secondary" style="max-width: 280px; font-size: 0.8rem;">
                                 <div class="col-5">Ngân hàng:</div>
                                 <div class="col-7 modal-qr-val">MBBank</div>
                                 <div class="col-5">Số tài khoản:</div>
                                 <div class="col-7 modal-qr-val font-monospace">0987654321</div>
+                                <div class="col-5">Chủ TK:</div>
+                                <div class="col-7 modal-qr-val">LEARNORA LMS</div>
                                 <div class="col-5">Nội dung:</div>
                                 <div class="col-7 text-warning fw-bold font-monospace" id="modalTransferSyntax">NAPTIEN</div>
+                            </div>
+                        </div>
+
+                        <!-- MoMo Container -->
+                        <div id="modalMomoContainer" class="text-center p-3 rounded-3 mb-3 modal-qr-box d-none" style="border-color: rgba(216, 45, 139, 0.4);">
+                            <div class="text-secondary small mb-2">Quét mã QR bằng ứng dụng Ví MoMo:</div>
+                            <div class="d-inline-block bg-white p-2 rounded-3 mb-2 shadow" style="border: 2px solid #d82d8b;">
+                                <img id="modalMomoQrImage" src="" alt="MoMo QR" class="img-fluid" style="width: 170px; height: 170px; object-fit: contain;">
+                            </div>
+                            <div class="row g-1 text-start mx-auto small text-secondary" style="max-width: 280px; font-size: 0.8rem;">
+                                <div class="col-5">Dịch vụ:</div>
+                                <div class="col-7 modal-qr-val" style="color: #d82d8b !important;">Ví điện tử MoMo</div>
+                                <div class="col-5">Số điện thoại:</div>
+                                <div class="col-7 modal-qr-val font-monospace">0987654321</div>
+                                <div class="col-5">Chủ ví:</div>
+                                <div class="col-7 modal-qr-val">LEARNORA LMS</div>
+                                <div class="col-5">Lời nhắn:</div>
+                                <div class="col-7 text-warning fw-bold font-monospace" id="modalMomoTransferSyntax">NAPTIEN</div>
                             </div>
                         </div>
 
@@ -326,7 +394,7 @@
                                 onclick="executeModalCheckout('topup_and_pay')" 
                                 class="btn btn-success w-100 py-2.5 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
                             <i class="bi bi-qr-code-scan fs-5"></i>
-                            <span>Xác nhận đã chuyển khoản (Nạp demo & Kích hoạt)</span>
+                            <span id="btnModalTopUpText">Xác nhận đã chuyển khoản VietQR (Nạp demo & Kích hoạt)</span>
                         </button>
                     </div>
 
@@ -378,11 +446,44 @@
         quote: null,
         excludedCourseIds: new Set(),
         currentCouponCode: '',
-        userId: '<%= currentUserId != null ? currentUserId : "" %>'
+        userId: '<%= currentUserId != null ? currentUserId : "" %>',
+        currentTopUpMethod: 'vietqr'
     };
 
     function formatVndPrice(num) {
         return new Intl.NumberFormat('vi-VN').format(Math.max(0, Math.round(num))) + 'đ';
+    }
+
+    function setModalTopUpMethod(method) {
+        window.CheckoutModalState.currentTopUpMethod = method;
+        const btnVietQr = document.getElementById('modalMethodVietQr');
+        const btnMomo = document.getElementById('modalMethodMomo');
+        const boxVietQr = document.getElementById('modalVietQrContainer');
+        const boxMomo = document.getElementById('modalMomoContainer');
+        const btnText = document.getElementById('btnModalTopUpText');
+        const btnSubmit = document.getElementById('btnModalTopUpAndPay');
+
+        if (method === 'momo') {
+            if (btnVietQr) btnVietQr.classList.remove('active-vietqr');
+            if (btnMomo) btnMomo.classList.add('active-momo');
+            if (boxVietQr) boxVietQr.classList.add('d-none');
+            if (boxMomo) boxMomo.classList.remove('d-none');
+            if (btnSubmit) {
+                btnSubmit.style.background = 'linear-gradient(135deg, #d82d8b, #a50064)';
+                btnSubmit.style.borderColor = '#a50064';
+            }
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển qua Ví MoMo (Nạp demo & Kích hoạt)';
+        } else {
+            if (btnMomo) btnMomo.classList.remove('active-momo');
+            if (btnVietQr) btnVietQr.classList.add('active-vietqr');
+            if (boxMomo) boxMomo.classList.add('d-none');
+            if (boxVietQr) boxVietQr.classList.remove('d-none');
+            if (btnSubmit) {
+                btnSubmit.style.background = '';
+                btnSubmit.style.borderColor = '';
+            }
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển khoản VietQR (Nạp demo & Kích hoạt)';
+        }
     }
 
     // Opens the in-place Checkout Modal from ANY page or cart drawer
@@ -526,7 +627,6 @@
         // Calculate discount from coupon if applied
         let discount = quote.discount || 0;
         if (quote.subtotal > 0 && subtotal !== quote.subtotal && quote.subtotal > 0) {
-            // Recalculate discount proportionally
             discount = Math.round((discount * subtotal) / quote.subtotal);
         }
         const total = Math.max(0, subtotal - discount);
@@ -615,7 +715,7 @@
             insufficientBox.classList.add('d-none');
             document.getElementById('modalRemainingBalanceDisplay').innerText = formatVndPrice(userBalance - total);
         } else {
-            // Case 2: Insufficient -> VietQR
+            // Case 2: Insufficient -> Options
             sufficientBox.classList.add('d-none');
             insufficientBox.classList.remove('d-none');
             const missing = total - userBalance;
@@ -623,8 +723,18 @@
 
             const userId = state.userId;
             const qrImg = document.getElementById('modalVietQrImage');
-            qrImg.src = 'https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=' + missing + '&addInfo=NAPTIEN%20' + userId + '&accountName=LEARNORA%20LMS';
+            if (qrImg) {
+                qrImg.src = 'https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=' + missing + '&addInfo=NAPTIEN%20' + userId + '&accountName=LEARNORA%20LMS';
+            }
+            const momoImg = document.getElementById('modalMomoQrImage');
+            if (momoImg) {
+                momoImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|LEARNORA%20LMS||0|0|' + missing + '|NAPTIEN%20' + userId + '|transfer_mycode';
+            }
             document.getElementById('modalTransferSyntax').innerText = 'NAPTIEN ' + userId;
+            document.getElementById('modalMomoTransferSyntax').innerText = 'NAPTIEN ' + userId;
+
+            // Default to VietQR
+            setModalTopUpMethod('vietqr');
         }
     }
 
@@ -656,6 +766,7 @@
         params.append('action', actionType);
         params.append('couponCode', state.quote.couponCode || '');
         params.append('topUpAmount', missing);
+        params.append('topUpMethod', (state.currentTopUpMethod || 'VIETQR').toUpperCase());
         params.append('csrfToken', '<%= modalCsrf %>');
 
         activeItems.forEach(it => {

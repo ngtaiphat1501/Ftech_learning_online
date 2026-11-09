@@ -64,34 +64,6 @@
         background-color: #f8fafc;
         border-color: rgba(99, 102, 241, 0.35);
     }
-    .qr-container {
-        background-color: #10121a;
-        border: 1px dashed rgba(255, 255, 255, 0.2);
-        border-radius: 1rem;
-        padding: 1.25rem;
-    }
-    [data-bs-theme="light"] .qr-container {
-        background-color: #f8fafc;
-        border-color: rgba(0, 0, 0, 0.15);
-    }
-    .qr-meta-val {
-        color: #ffffff;
-        font-weight: 600;
-    }
-    [data-bs-theme="light"] .qr-meta-val {
-        color: #0f172a !important;
-    }
-    .checkout-item-row {
-        background-color: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 0.85rem;
-        padding: 1rem 1.15rem;
-        transition: all 0.2s ease;
-    }
-    .checkout-item-row:hover {
-        border-color: rgba(99, 102, 241, 0.35);
-        background-color: rgba(255, 255, 255, 0.04);
-    }
     .checkout-item-thumb {
         width: 72px;
         height: 72px;
@@ -120,13 +92,52 @@
         border: 1px dashed rgba(255, 255, 255, 0.2);
         border-radius: 1rem;
         padding: 1.25rem;
+        transition: all 0.25s ease;
+    }
+    [data-bs-theme="light"] .qr-container {
+        background-color: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.15);
+    }
+    .qr-meta-val {
+        color: #ffffff;
+        font-weight: 600;
+    }
+    [data-bs-theme="light"] .qr-meta-val {
+        color: #0f172a !important;
     }
     .qr-image {
-        max-width: 220px;
+        max-width: 210px;
         border-radius: 0.75rem;
         background-color: #ffffff;
         padding: 0.5rem;
         box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .payment-method-btn {
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 0.85rem;
+        padding: 0.75rem 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+    }
+    [data-bs-theme="light"] .payment-method-btn {
+        border-color: rgba(0, 0, 0, 0.12);
+        background: #f8fafc;
+    }
+    .payment-method-btn:hover {
+        border-color: #6366f1;
+        background: rgba(99, 102, 241, 0.06);
+    }
+    .payment-method-btn.active-vietqr {
+        border-color: #4f46e5 !important;
+        background: rgba(79, 70, 229, 0.12) !important;
+        box-shadow: 0 0 0 1px #4f46e5;
+    }
+    .payment-method-btn.active-momo {
+        border-color: #d82d8b !important;
+        background: rgba(216, 45, 139, 0.12) !important;
+        box-shadow: 0 0 0 1px #d82d8b;
     }
     .form-check-input:checked {
         background-color: #4f46e5;
@@ -380,20 +391,47 @@
                     </button>
                 </div>
 
-                <!-- CASE 2: THIẾU TIỀN -> VIETQR NẠP BÙ & NÚT DEMO -->
+                <!-- CASE 2: THIẾU TIỀN -> CHỌN PHƯƠNG THỨC NẠP (VIETQR HOẶC MOMO) RỒI MỚI HIỆN QR -->
                 <div id="insufficientBalanceBox" class="<%= !quote.isSufficient ? "" : "d-none" %> mb-4">
                     <div class="p-3 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 mb-3">
                         <div class="d-flex align-items-center gap-2 text-warning small fw-medium mb-1">
                             <i class="bi bi-exclamation-triangle-fill"></i> Số dư không đủ để thanh toán
                         </div>
                         <div class="text-white-50 small">
-                            Cần nạp thêm: <b class="text-danger fw-bold" id="summaryMissingAmount"><%= currency.format(quote.missingVnd) %>đ</b>
+                            Cần nạp thêm: <b class="text-danger fw-bold fs-6" id="summaryMissingAmount"><%= currency.format(quote.missingVnd) %>đ</b>
                         </div>
                     </div>
 
-                    <!-- QR Box: VietQR Code & Bank Info -->
-                    <div class="qr-container text-center mb-3">
-                        <div class="text-secondary small mb-2 fw-medium">Quét mã QR để nạp số tiền còn thiếu vào tài khoản:</div>
+                    <!-- Payment Method Selector -->
+                    <div class="mb-3">
+                        <label class="text-secondary small fw-medium mb-2 d-block">
+                            <i class="bi bi-credit-card me-1"></i>Chọn phương thức nạp bù tiền:
+                        </label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="payment-method-btn active-vietqr d-flex align-items-center gap-2" id="methodVietQrBtn" onclick="setCheckoutTopUpMethod('vietqr')">
+                                    <i class="bi bi-bank fs-4 text-primary flex-shrink-0"></i>
+                                    <div class="lh-sm">
+                                        <div class="fw-bold text-body small">Chuyển khoản QR</div>
+                                        <div class="text-secondary" style="font-size: 0.75rem;">Ngân hàng MBBank</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="payment-method-btn d-flex align-items-center gap-2" id="methodMomoBtn" onclick="setCheckoutTopUpMethod('momo')">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0" style="width: 28px; height: 28px; background: #d82d8b; font-size: 0.85rem;">M</div>
+                                    <div class="lh-sm">
+                                        <div class="fw-bold text-body small">Ví MoMo</div>
+                                        <div class="text-secondary" style="font-size: 0.75rem;">Quét QR MoMo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 1: VietQR Box -->
+                    <div id="viewVietQrBox" class="qr-container text-center mb-3">
+                        <div class="text-secondary small mb-2 fw-medium">Quét mã VietQR bằng App Ngân hàng bất kỳ:</div>
                         
                         <div class="d-inline-block position-relative my-2">
                             <img id="vietQrImg"
@@ -418,13 +456,40 @@
                         </div>
                     </div>
 
+                    <!-- VIEW 2: MoMo Box -->
+                    <div id="viewMomoBox" class="qr-container text-center mb-3 d-none" style="border-color: rgba(216, 45, 139, 0.4);">
+                        <div class="text-secondary small mb-2 fw-medium">Quét mã QR bằng ứng dụng Ví điện tử MoMo:</div>
+                        
+                        <div class="d-inline-block position-relative my-2">
+                            <img id="momoQrImg"
+                                 src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|LEARNORA%20LMS||0|0|<%= quote.missingVnd %>|NAPTIEN%20<%= currentUserId %>|transfer_mycode"
+                                 alt="MoMo QR nạp tiền"
+                                 class="qr-image img-fluid"
+                                 style="border: 2px solid #d82d8b;">
+                        </div>
+
+                        <!-- Transfer metadata -->
+                        <div class="row g-2 text-start mt-2 mx-auto small text-secondary" style="max-width: 340px;">
+                            <div class="col-5">Dịch vụ:</div>
+                            <div class="col-7 qr-meta-val text-primary" style="color: #d82d8b !important;">Ví điện tử MoMo</div>
+                            <div class="col-5">Số điện thoại:</div>
+                            <div class="col-7 qr-meta-val font-monospace">0987654321</div>
+                            <div class="col-5">Tên ví nhận:</div>
+                            <div class="col-7 qr-meta-val">LEARNORA LMS</div>
+                            <div class="col-5">Số tiền nạp:</div>
+                            <div class="col-7 text-danger fw-bold" id="momoMissingAmountText"><%= currency.format(quote.missingVnd) %>đ</div>
+                            <div class="col-5">Lời nhắn:</div>
+                            <div class="col-7 text-warning fw-bold font-monospace">NAPTIEN <%= currentUserId %></div>
+                        </div>
+                    </div>
+
                     <!-- Instant Simulation Action for Demo/Grading -->
                     <button type="button" 
                             id="btnTopUpAndPay" 
                             onclick="submitCheckout('topup_and_pay')" 
                             class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
                         <i class="bi bi-qr-code-scan fs-5"></i>
-                        <span>Xác nhận đã chuyển khoản (Nạp tiền Demo & Thanh toán)</span>
+                        <span id="btnTopUpAndPayText">Xác nhận đã chuyển khoản VietQR (Nạp tiền Demo & Thanh toán)</span>
                     </button>
                     <div class="text-center text-secondary small mt-2">
                         <i class="bi bi-info-circle me-1"></i>Hệ thống tự động cộng tiền vào ví và kích hoạt khóa học ngay lập tức.
@@ -459,6 +524,7 @@
 <form id="checkoutSubmitForm" action="${pageContext.request.contextPath}/student/checkout" method="post" class="d-none">
     <input type="hidden" name="action" id="formAction" value="pay">
     <input type="hidden" name="topUpAmount" id="formTopUpAmount" value="0">
+    <input type="hidden" name="topUpMethod" id="formTopUpMethod" value="VIETQR">
     <input type="hidden" name="couponCode" value="<%= quote.appliedCoupon != null ? quote.appliedCoupon.getCode() : "" %>">
     <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
     <!-- Selected course ID hidden inputs will be injected here before submit -->
@@ -480,6 +546,7 @@
     const couponDiscountPercent = <%= quote.appliedCoupon != null ? quote.appliedCoupon.getDiscountPercent() : 0 %>;
     const couponMaxDiscount = <%= (quote.appliedCoupon != null && quote.appliedCoupon.getMaxDiscountVnd() != null) ? quote.appliedCoupon.getMaxDiscountVnd().longValue() : 0 %>;
     const currentUserId = '<%= currentUserId != null ? currentUserId : "" %>';
+    let currentCheckoutMethod = 'vietqr';
 
     function formatCurrency(val) {
         return new Intl.NumberFormat('vi-VN').format(Math.max(0, Math.round(val))) + 'đ';
@@ -503,7 +570,43 @@
         if (toast) toast.classList.add('d-none');
     }
 
-    // Recalculates all pricing, balance checks, and VietQR state
+    // Toggle Payment Method Selection (VietQR vs MoMo)
+    function setCheckoutTopUpMethod(method) {
+        currentCheckoutMethod = method;
+        const btnVietQr = document.getElementById('methodVietQrBtn');
+        const btnMomo = document.getElementById('methodMomoBtn');
+        const boxVietQr = document.getElementById('viewVietQrBox');
+        const boxMomo = document.getElementById('viewMomoBox');
+        const btnSubmit = document.getElementById('btnTopUpAndPay');
+        const btnText = document.getElementById('btnTopUpAndPayText');
+        const hiddenMethod = document.getElementById('formTopUpMethod');
+
+        if (hiddenMethod) hiddenMethod.value = method.toUpperCase();
+
+        if (method === 'momo') {
+            if (btnVietQr) btnVietQr.classList.remove('active-vietqr');
+            if (btnMomo) btnMomo.classList.add('active-momo');
+            if (boxVietQr) boxVietQr.classList.add('d-none');
+            if (boxMomo) boxMomo.classList.remove('d-none');
+            if (btnSubmit) {
+                btnSubmit.style.background = 'linear-gradient(135deg, #d82d8b, #a50064)';
+                btnSubmit.style.borderColor = '#a50064';
+            }
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển qua Ví MoMo (Nạp tiền Demo & Thanh toán)';
+        } else {
+            if (btnMomo) btnMomo.classList.remove('active-momo');
+            if (btnVietQr) btnVietQr.classList.add('active-vietqr');
+            if (boxMomo) boxMomo.classList.add('d-none');
+            if (boxVietQr) boxVietQr.classList.remove('d-none');
+            if (btnSubmit) {
+                btnSubmit.style.background = '';
+                btnSubmit.style.borderColor = '';
+            }
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển khoản VietQR (Nạp tiền Demo & Thanh toán)';
+        }
+    }
+
+    // Recalculates all pricing, balance checks, and VietQR / MoMo state
     function recalculateTotals() {
         const allCheckboxes = Array.from(document.querySelectorAll('.course-checkbox'));
         const checkedCheckboxes = allCheckboxes.filter(cb => cb.checked);
@@ -592,13 +695,22 @@
             const missing = total - userBalance;
             const missingEl = document.getElementById('summaryMissingAmount');
             const qrMissingText = document.getElementById('qrMissingAmountText');
+            const momoMissingText = document.getElementById('momoMissingAmountText');
+
             if (missingEl) missingEl.innerText = formatCurrency(missing);
             if (qrMissingText) qrMissingText.innerText = formatCurrency(missing);
+            if (momoMissingText) momoMissingText.innerText = formatCurrency(missing);
 
             // Update Dynamic VietQR Image URL
             const vietQrImg = document.getElementById('vietQrImg');
             if (vietQrImg) {
                 vietQrImg.src = "https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=" + missing + "&addInfo=NAPTIEN%20" + currentUserId + "&accountName=LEARNORA%20LMS";
+            }
+
+            // Update Dynamic MoMo QR Image URL
+            const momoQrImg = document.getElementById('momoQrImg');
+            if (momoQrImg) {
+                momoQrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|LEARNORA%20LMS||0|0|" + missing + "|NAPTIEN%20" + currentUserId + "|transfer_mycode";
             }
         }
     }
@@ -683,4 +795,3 @@
 </script>
 
 <%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>
-
