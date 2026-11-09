@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.util.List;
 import model.Category;
 import model.Course;
+import model.User;
+import dao.UserDAO;
 
 @WebServlet(
         name = "InstructorCourseServlet",
@@ -24,17 +26,54 @@ import model.Course;
 )
 public class InstructorCourseServlet extends HttpServlet {
 
+    private boolean checkInstructor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        Long currentUserId = null;
+        User currentUser = null;
+        if (session != null) {
+            Object uid = session.getAttribute("userId");
+            if (uid instanceof Number) {
+                currentUserId = ((Number) uid).longValue();
+            }
+            currentUser = (User) session.getAttribute("user");
+        }
+
+        if (currentUserId == null) {
+            response.sendRedirect(request.getContextPath() + "/?authModal=signin");
+            return false;
+        }
+
+        if (currentUser == null) {
+            try {
+                currentUser = new UserDAO().findById(currentUserId);
+                if (currentUser != null && session != null) {
+                    session.setAttribute("user", currentUser);
+                    session.setAttribute("fullName", currentUser.getFullName());
+                    session.setAttribute("roles", currentUser.getRoles());
+                }
+            } catch (SQLException ignored) {
+            }
+        }
+
+        if (currentUser == null || (!currentUser.isInstructor() && !currentUser.isAdmin())) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập khu vực Giảng viên (Instructor).");
+            return false;
+        }
+
+        return true;
+    }
+
+
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        if (!checkInstructor(request, response)) {
             return;
         }
+
+        HttpSession session = request.getSession(false);
 
         long instructorId
                 = ((Number) session.getAttribute("userId")).longValue();
@@ -172,12 +211,11 @@ public class InstructorCourseServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        if (!checkInstructor(request, response)) {
             return;
         }
+
+        HttpSession session = request.getSession(false);
 
         long instructorId
                 = ((Number) session.getAttribute("userId")).longValue();
