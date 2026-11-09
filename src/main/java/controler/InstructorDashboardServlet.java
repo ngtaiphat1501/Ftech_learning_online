@@ -2,11 +2,16 @@ package controler;
 
 import dao.CourseDAO;
 import dao.UserDAO;
+import dao.WalletDAO;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Course;
 import model.User;
+import model.WalletTransaction;
 
 @WebServlet(name = "InstructorDashboardServlet", urlPatterns = {"/instructor/dashboard"})
 public class InstructorDashboardServlet extends HttpServlet {
@@ -35,6 +41,7 @@ public class InstructorDashboardServlet extends HttpServlet {
         try {
             CourseDAO courseDAO = new CourseDAO();
             UserDAO userDAO = new UserDAO();
+            WalletDAO walletDAO = new WalletDAO();
 
             User instructorUser = userDAO.findById(instructorId);
             List<Course> courses = courseDAO.getByInstructorId(instructorId);
@@ -64,6 +71,7 @@ public class InstructorDashboardServlet extends HttpServlet {
             List<Map<String, Object>> monthlyRevenue = courseDAO.getMonthlyRevenueByInstructor(instructorId, currentYear);
             List<Map<String, Object>> recentEnrollments = courseDAO.getRecentEnrollmentsByInstructor(instructorId, 6);
             List<Course> topCourses = courseDAO.getTopCoursesByInstructor(instructorId, 5);
+            List<WalletTransaction> recentTransactions = walletDAO.getTransactionsByUserId(instructorId, 8);
 
             request.setAttribute("instructorUser", instructorUser);
             request.setAttribute("topCourses", topCourses);
@@ -74,6 +82,7 @@ public class InstructorDashboardServlet extends HttpServlet {
             request.setAttribute("balanceVnd", balanceVnd);
             request.setAttribute("monthlyRevenue", monthlyRevenue);
             request.setAttribute("recentEnrollments", recentEnrollments);
+            request.setAttribute("recentTransactions", recentTransactions);
             request.setAttribute("selectedYear", currentYear);
             request.setAttribute("pageTitle", "Tổng quan Giảng viên | Ftech Instructor Studio");
 
@@ -88,6 +97,78 @@ public class InstructorDashboardServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        long instructorId = ((Number) session.getAttribute("userId")).longValue();
+        String action = request.getParameter("action");
+
+        if ("withdraw".equalsIgnoreCase(action)) {
+            String method = request.getParameter("method");
+            String bankName = request.getParameter("bankName");
+            String accountNo = request.getParameter("accountNo");
+            String accountHolder = request.getParameter("accountHolder");
+            String amountStr = request.getParameter("amount");
+
+            BigDecimal amount = BigDecimal.ZERO;
+            try {
+                if (amountStr != null) {
+                    amount = new BigDecimal(amountStr.trim().replaceAll("[,.]", ""));
+                }
+            } catch (Exception ignored) {}
+
+            if (amount.compareTo(BigDecimal.valueOf(10000)) < 0) {
+                response.sendRedirect(request.getContextPath() + "/instructor/dashboard?error=" + urlEncode("Số tiền rút tối thiểu là 10.000 đ."));
+                return;
+            }
+
+            if (accountNo == null || accountNo.isBlank()) {
+                response.sendRedirect(request.getContextPath() + "/instructor/dashboard?error=" + urlEncode("Vui lòng nhập số tài khoản hoặc số điện thoại MoMo."));
+                return;
+            }
+
+            if (accountHolder == null || accountHolder.isBlank()) {
+                response.sendRedirect(request.getContextPath() + "/instructor/dashboard?error=" + urlEncode("Vui lòng nhập tên chủ tài khoản nhận tiền."));
+                return;
+            }
+
+            String destInfo = "BANK".equalsIgnoreCase(method)
+                    ? ((bankName != null && !bankName.isBlank()) ? bankName : "Ngân hàng") + " - STK: " + accountNo
+                    : "MoMo - SĐT: " + accountNo;
+
+            try {
+                WalletDAO walletDAO = new WalletDAO();
+                boolean ok = walletDAO.withdraw(instructorId, amount, method != null ? method.toUpperCase() : "BANK",
+                        bankName, accountNo.trim(), accountHolder.trim().toUpperCase(), "Giảng viên rút doanh thu về " + destInfo);
+                if (ok) {
+                    UserDAO userDAO = new UserDAO();
+                    User updatedUser = userDAO.findById(instructorId);
+                    if (updatedUser != null) {
+                        session.setAttribute("user", updatedUser);
+                    }
+                    NumberFormat cur = NumberFormat.getIntegerInstance(new Locale("vi", "VN"));
+                    response.sendRedirect(request.getContextPath() + "/instructor/dashboard?msg=" + urlEncode("Rút doanh thu thành công " + cur.format(amount) + " đ về " + destInfo + "!"));
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/instructor/dashboard?error=" + urlEncode("Số dư khả dụng không đủ để thực hiện rút tiền."));
+                }
+                return;
+            } catch (SQLException ex) {
+                getServletContext().log("Lỗi rút tiền giảng viên", ex);
+                response.sendRedirect(request.getContextPath() + "/instructor/dashboard?error=" + urlEncode("Lỗi hệ thống khi xử lý yêu cầu rút tiền."));
+                return;
+            }
+        }
+
         doGet(request, response);
+    }
+
+    private String urlEncode(String val) {
+        if (val == null) return "";
+        return URLEncoder.encode(val, StandardCharsets.UTF_8);
     }
 }

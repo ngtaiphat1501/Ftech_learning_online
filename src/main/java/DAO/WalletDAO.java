@@ -4,6 +4,7 @@ import config.DBContext;
 import model.WalletTransaction;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -152,6 +153,47 @@ public class WalletDAO {
     }
 
     /**
+     * Credits instructor revenue share from a course purchase within an existing database transaction (Connection conn).
+     * Share: 80% to instructor, 20% platform operating fee.
+     */
+    public void creditInstructorPayout(Connection conn, long instructorId, BigDecimal itemPayableVnd, String courseTitle, String orderCode) throws SQLException {
+        if (itemPayableVnd == null || itemPayableVnd.compareTo(BigDecimal.ZERO) <= 0 || instructorId <= 0) {
+            return;
+        }
+        ensureTable();
+
+        // 80% to instructor, 20% platform operating fee
+        BigDecimal instructorShare = itemPayableVnd.multiply(new BigDecimal("0.80")).setScale(0, RoundingMode.HALF_UP);
+        if (instructorShare.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+
+        // 1. Update instructor balance
+        String updateBal = "UPDATE dbo.Users SET BalanceVnd = BalanceVnd + ? WHERE UserId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(updateBal)) {
+            ps.setBigDecimal(1, instructorShare);
+            ps.setLong(2, instructorId);
+            ps.executeUpdate();
+        }
+
+        // 2. Log WalletTransaction with type INSTRUCTOR_PAYOUT
+        String desc = "Nhận 80% doanh thu từ học viên mua khóa: " + (courseTitle != null ? courseTitle : "Khóa học")
+                    + (orderCode != null ? " (Đơn #" + orderCode + ")" : "");
+        if (desc.length() > 250) {
+            desc = desc.substring(0, 247) + "...";
+        }
+
+        String logSql = "INSERT INTO dbo.WalletTransactions (UserId, Type, Amount, Method, Status, Description, CreatedAt) "
+                      + "VALUES (?, 'INSTRUCTOR_PAYOUT', ?, 'INTERNAL', 'SUCCESS', ?, SYSUTCDATETIME())";
+        try (PreparedStatement ps = conn.prepareStatement(logSql)) {
+            ps.setLong(1, instructorId);
+            ps.setBigDecimal(2, instructorShare);
+            ps.setString(3, desc);
+            ps.executeUpdate();
+        }
+    }
+
+    /**
      * Simply logs a wallet transaction (used by checkout topup_and_pay).
      */
     public boolean logTransaction(long userId, String type, BigDecimal amount, String method, String status, String description) {
@@ -181,7 +223,7 @@ public class WalletDAO {
         String sql = "SELECT TOP (?) TransactionId, UserId, Type, Amount, Method, Status, BankName, AccountNumber, AccountHolder, Description, CreatedAt "
                    + "FROM dbo.WalletTransactions "
                    + "WHERE UserId = ? "
-                   + "ORDER BY CreatedAt DESC";
+                   + "ORDER BY CreatedAt DESC, TransactionId DESC";
 
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

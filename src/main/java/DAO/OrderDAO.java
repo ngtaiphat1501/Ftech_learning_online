@@ -155,21 +155,42 @@ public class OrderDAO {
             ps.executeUpdate();
         }
 
-        // 4. Retrieve order items to enroll
-        String selectItemsSql = "SELECT OrderItemId, CourseId FROM dbo.OrderItems WHERE OrderId = ?";
-        List<long[]> itemPairs = new ArrayList<>();
+        // 4. Retrieve order items to enroll & credit 80% instructor payout
+        String selectItemsSql = "SELECT oi.OrderItemId, oi.CourseId, oi.PayableVnd, oi.CourseTitleSnapshot, "
+                              + "c.InstructorId, o.OrderCode "
+                              + "FROM dbo.OrderItems oi "
+                              + "JOIN dbo.Courses c ON c.CourseId = oi.CourseId "
+                              + "JOIN dbo.Orders o ON o.OrderId = oi.OrderId "
+                              + "WHERE oi.OrderId = ?";
+        WalletDAO walletDAO = new WalletDAO();
+        class OrderItemPurchaseInfo {
+            long orderItemId;
+            long courseId;
+            BigDecimal payableVnd;
+            String courseTitle;
+            long instructorId;
+            String orderCode;
+        }
+        List<OrderItemPurchaseInfo> itemInfos = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(selectItemsSql)) {
             ps.setLong(1, orderId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    itemPairs.add(new long[]{rs.getLong("OrderItemId"), rs.getLong("CourseId")});
+                    OrderItemPurchaseInfo info = new OrderItemPurchaseInfo();
+                    info.orderItemId = rs.getLong("OrderItemId");
+                    info.courseId = rs.getLong("CourseId");
+                    info.payableVnd = rs.getBigDecimal("PayableVnd");
+                    info.courseTitle = rs.getString("CourseTitleSnapshot");
+                    info.instructorId = rs.getLong("InstructorId");
+                    info.orderCode = rs.getString("OrderCode");
+                    itemInfos.add(info);
                 }
             }
         }
 
-        for (long[] pair : itemPairs) {
-            long orderItemId = pair[0];
-            long courseId = pair[1];
+        for (OrderItemPurchaseInfo info : itemInfos) {
+            long orderItemId = info.orderItemId;
+            long courseId = info.courseId;
 
             // Upsert Enrollment
             String upsertEnrollmentSql =
@@ -220,6 +241,11 @@ public class OrderDAO {
                 psDel.setLong(1, studentId);
                 psDel.setLong(2, courseId);
                 psDel.executeUpdate();
+            }
+
+            // Credit 80% revenue share to the course Instructor
+            if (info.instructorId > 0 && info.payableVnd != null && info.payableVnd.compareTo(BigDecimal.ZERO) > 0) {
+                walletDAO.creditInstructorPayout(conn, info.instructorId, info.payableVnd, info.courseTitle, info.orderCode);
             }
         }
 

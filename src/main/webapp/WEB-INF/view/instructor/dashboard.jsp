@@ -3,6 +3,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="model.Course" %>
 <%@ page import="model.User" %>
+<%@ page import="model.WalletTransaction" %>
 
 <%!
     private String escapeHtml(String value) {
@@ -27,6 +28,7 @@
     }
     List<Map<String, Object>> recentEnrollments = (List<Map<String, Object>>) request.getAttribute("recentEnrollments");
     List<Map<String, Object>> monthlyRevList = (List<Map<String, Object>>) request.getAttribute("monthlyRevenue");
+    List<WalletTransaction> recentTransactions = (List<WalletTransaction>) request.getAttribute("recentTransactions");
 
     String context = request.getContextPath();
     String instructorName = (instructorUser != null && instructorUser.getFullName() != null) ? instructorUser.getFullName() : "Giảng viên";
@@ -171,6 +173,24 @@
                     </div>
                 </div>
 
+                <% 
+    String dashMsg = request.getParameter("msg");
+    String dashError = request.getParameter("error");
+    if (dashMsg != null && !dashMsg.isBlank()) { 
+%>
+<div class="alert alert-success alert-dismissible fade show rounded-4 mb-4 border-0 shadow-sm d-flex align-items-center" role="alert" style="background: rgba(25, 135, 84, 0.15); border: 1px solid rgba(25, 135, 84, 0.3) !important;">
+    <i class="bi bi-check-circle-fill fs-5 text-success me-2"></i>
+    <div class="flex-grow-1"><%= escapeHtml(dashMsg) %></div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<% } else if (dashError != null && !dashError.isBlank()) { %>
+<div class="alert alert-danger alert-dismissible fade show rounded-4 mb-4 border-0 shadow-sm d-flex align-items-center" role="alert" style="background: rgba(220, 53, 69, 0.15); border: 1px solid rgba(220, 53, 69, 0.3) !important;">
+    <i class="bi bi-exclamation-triangle-fill fs-5 text-danger me-2"></i>
+    <div class="flex-grow-1"><%= escapeHtml(dashError) %></div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<% } %>
+
                 <!-- 4 KPI STATS CARDS -->
                 <div class="row g-3 mb-4">
                     <div class="col-12 col-sm-6 col-xl-3">
@@ -189,13 +209,21 @@
 
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 h-100">
-                            <div class="card-body p-3 p-md-4 d-flex align-items-center gap-3">
-                                <div class="rounded-4 bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
-                                    <i class="bi bi-wallet2 fs-3"></i>
+                            <div class="card-body p-3 p-md-4 d-flex align-items-center justify-content-between gap-2">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-4 bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                        <i class="bi bi-wallet2 fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-secondary small fw-medium">Số dư ví (80%)</div>
+                                        <div class="fs-4 fw-bold text-primary font-monospace"><%= String.format("%,d đ", balVal) %></div>
+                                    </div>
                                 </div>
                                 <div>
-                                    <div class="text-secondary small fw-medium">Số dư ví giảng viên</div>
-                                    <div class="fs-4 fw-bold text-primary font-monospace"><%= String.format("%,d đ", balVal) %></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 fw-bold d-inline-flex align-items-center gap-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#instructorWithdrawModal" title="Rút tiền về ngân hàng / MoMo">
+                                        <i class="bi bi-cash-coin fs-6"></i>
+                                        <span>Rút</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -361,9 +389,204 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- LỊCH SỬ BIẾN ĐỘNG VÍ & CHIA SẺ DOANH THU (80%) -->
+                <div class="card bg-dark border border-secondary border-opacity-25 shadow-sm rounded-4 p-3 p-md-4 mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1">
+                                <i class="bi bi-clock-history text-primary me-2"></i>Lịch sử Biến động Ví & Doanh thu Chia sẻ (80%)
+                            </h5>
+                            <p class="text-secondary small mb-0">Hệ thống Ftech tự động trích 80% giá trị đơn hàng về ví giảng viên khi học viên thanh toán thành công.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#instructorWithdrawModal">
+                            <i class="bi bi-cash-stack me-1"></i>Rút doanh thu
+                        </button>
+                    </div>
+
+                    <% if (recentTransactions == null || recentTransactions.isEmpty()) { %>
+                        <div class="text-center py-4 text-secondary">
+                            <i class="bi bi-inbox fs-2 d-block mb-2 opacity-50"></i>
+                            Chưa có biến động số dư ví nào.
+                        </div>
+                    <% } else { %>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover align-middle mb-0 small">
+                                <thead>
+                                    <tr class="text-secondary border-secondary">
+                                        <th>Thời gian</th>
+                                        <th>Loại giao dịch</th>
+                                        <th>Số tiền</th>
+                                        <th>Phương thức</th>
+                                        <th>Nội dung chi tiết</th>
+                                        <th class="text-center">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (WalletTransaction tx : recentTransactions) { 
+                                        boolean isPayout = "INSTRUCTOR_PAYOUT".equalsIgnoreCase(tx.getType());
+                                        boolean isWithdraw = "WITHDRAW".equalsIgnoreCase(tx.getType());
+                                        long txAmount = tx.getAmount() != null ? tx.getAmount().longValue() : 0L;
+                                    %>
+                                    <tr>
+                                        <td class="text-secondary text-nowrap">
+                                            <%= tx.getCreatedAt() != null ? tx.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "--" %>
+                                        </td>
+                                        <td>
+                                            <% if (isPayout) { %>
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1">
+                                                    <i class="bi bi-arrow-down-left me-1"></i>+80% Doanh thu
+                                                </span>
+                                            <% } else if (isWithdraw) { %>
+                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1">
+                                                    <i class="bi bi-arrow-up-right me-1"></i>Rút tiền
+                                                </span>
+                                            <% } else { %>
+                                                <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2.5 py-1"><%= escapeHtml(tx.getType()) %></span>
+                                            <% } %>
+                                        </td>
+                                        <td class="fw-bold font-monospace text-nowrap <%= isPayout ? "text-success" : (isWithdraw ? "text-warning" : "text-light") %>">
+                                            <%= isPayout ? "+" : (isWithdraw ? "-" : "") %><%= String.format("%,d đ", txAmount) %>
+                                        </td>
+                                        <td class="text-secondary text-nowrap">
+                                            <% if ("INTERNAL".equalsIgnoreCase(tx.getMethod())) { %>
+                                                <span class="badge bg-dark-subtle text-light border border-secondary"><i class="bi bi-cpu me-1"></i>Hệ thống Ftech</span>
+                                            <% } else if ("BANK".equalsIgnoreCase(tx.getMethod())) { %>
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle"><i class="bi bi-bank me-1"></i>Ngân hàng</span>
+                                            <% } else if ("MOMO".equalsIgnoreCase(tx.getMethod())) { %>
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-wallet-fill me-1"></i>MoMo</span>
+                                            <% } else { %>
+                                                <%= escapeHtml(tx.getMethod()) %>
+                                            <% } %>
+                                        </td>
+                                        <td class="text-light">
+                                            <%= escapeHtml(tx.getDescription()) %>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                                <i class="bi bi-check-circle me-1"></i>Thành công
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </div>
             </section>
         </div>
     </div>
+<!-- MODAL RÚT TIỀN CHO GIẢNG VIÊN -->
+<div class="modal fade" id="instructorWithdrawModal" tabindex="-1" aria-labelledby="instructorWithdrawModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border border-secondary border-opacity-50 rounded-4 shadow-lg">
+            <form action="<%= context %>/instructor/dashboard" method="post" id="withdrawForm">
+                <input type="hidden" name="action" value="withdraw">
+                <div class="modal-header border-secondary border-opacity-25 pb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-3 bg-primary bg-opacity-25 p-2 text-primary">
+                            <i class="bi bi-cash-coin fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="instructorWithdrawModalLabel">Rút doanh thu về tài khoản</h5>
+                            <div class="small text-secondary">Số dư khả dụng: <strong class="text-primary font-monospace"><%= String.format("%,d đ", balVal) %></strong></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary fw-semibold">Hình thức nhận tiền</label>
+                        <div class="d-flex gap-2">
+                            <input type="radio" class="btn-check" name="method" id="withdrawMethodBank" value="BANK" checked autocomplete="off" onchange="toggleWithdrawMethod('BANK')">
+                            <label class="btn btn-outline-primary rounded-3 flex-fill text-center py-2" for="withdrawMethodBank">
+                                <i class="bi bi-bank me-1"></i>Tài khoản Ngân hàng
+                            </label>
+                            <input type="radio" class="btn-check" name="method" id="withdrawMethodMomo" value="MOMO" autocomplete="off" onchange="toggleWithdrawMethod('MOMO')">
+                            <label class="btn btn-outline-danger rounded-3 flex-fill text-center py-2" for="withdrawMethodMomo">
+                                <i class="bi bi-wallet-fill me-1"></i>Ví điện tử MoMo
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="bankSelectionGroup" class="mb-3">
+                        <label for="bankNameInput" class="form-label small text-secondary fw-semibold">Ngân hàng thụ hưởng</label>
+                        <select name="bankName" id="bankNameInput" class="form-select bg-dark text-white border-secondary">
+                            <option value="MBBank (Quân Đội)" selected>MBBank - Ngân hàng TMCP Quân Đội</option>
+                            <option value="Vietcombank">Vietcombank - Ngoại thương Việt Nam</option>
+                            <option value="Techcombank">Techcombank - Kỹ thương Việt Nam</option>
+                            <option value="ACB">ACB - Á Châu</option>
+                            <option value="VPBank">VPBank - Việt Nam Thịnh Vượng</option>
+                            <option value="TPBank">TPBank - Tiên Phong</option>
+                            <option value="BIDV">BIDV - Đầu tư và Phát triển VN</option>
+                            <option value="Agribank">Agribank - Nông nghiệp và PT Nông thôn</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="accountNoInput" id="accountNoLabel" class="form-label small text-secondary fw-semibold">Số tài khoản nhận tiền</label>
+                        <input type="text" name="accountNo" id="accountNoInput" class="form-control bg-dark text-white border-secondary" placeholder="Ví dụ: 08612345678" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="accountHolderInput" class="form-label small text-secondary fw-semibold">Tên chủ tài khoản (viết hoa không dấu)</label>
+                        <input type="text" name="accountHolder" id="accountHolderInput" class="form-control bg-dark text-white border-secondary text-uppercase" placeholder="Ví dụ: TRAN MINH KHOA" value="<%= escapeHtml(instructorName) %>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="withdrawAmountInput" class="form-label small text-secondary fw-semibold">Số tiền muốn rút (VNĐ)</label>
+                        <div class="input-group">
+                            <input type="number" name="amount" id="withdrawAmountInput" class="form-control bg-dark text-white border-secondary fs-5 font-monospace" min="10000" max="<%= balVal %>" step="10000" placeholder="Tối thiểu 10.000 đ" value="<%= balVal > 0 ? balVal : 100000 %>" required>
+                            <span class="input-group-text bg-dark border-secondary text-secondary">VNĐ</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="setQuickWithdraw(500000)">500k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="setQuickWithdraw(1000000)">1M</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="setQuickWithdraw(2000000)">2M</button>
+                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill ms-auto" onclick="setQuickWithdraw(<%= balVal %>)">Toàn bộ số dư</button>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-3 bg-secondary bg-opacity-10 border border-secondary border-opacity-25 small text-secondary">
+                        <i class="bi bi-shield-check text-success me-1"></i>Hệ thống Ftech cam kết xử lý chuyển khoản trực tiếp về tài khoản của giảng viên trong vòng 2-24 giờ làm việc.
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary border-opacity-25 pt-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" <%= balVal < 10000 ? "disabled" : "" %>>
+                        <i class="bi bi-check-lg me-1"></i>Xác nhận rút tiền
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleWithdrawMethod(method) {
+    const bankGroup = document.getElementById('bankSelectionGroup');
+    const accountLabel = document.getElementById('accountNoLabel');
+    const accountInput = document.getElementById('accountNoInput');
+    if (method === 'MOMO') {
+        if (bankGroup) bankGroup.style.display = 'none';
+        if (accountLabel) accountLabel.innerText = 'Số điện thoại Ví MoMo';
+        if (accountInput) accountInput.placeholder = 'Ví dụ: 0987654321';
+    } else {
+        if (bankGroup) bankGroup.style.display = 'block';
+        if (accountLabel) accountLabel.innerText = 'Số tài khoản nhận tiền';
+        if (accountInput) accountInput.placeholder = 'Ví dụ: 08612345678';
+    }
+}
+
+function setQuickWithdraw(amount) {
+    const maxVal = <%= balVal %>;
+    const input = document.getElementById('withdrawAmountInput');
+    if (input) {
+        input.value = Math.min(amount, maxVal);
+    }
+}
+</script>
 </main>
 
 <script>
