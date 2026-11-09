@@ -334,7 +334,97 @@
                         translateY(120vh);
                 }
             }
-            .logo-gradient {
+            
+            /* ============================================================
+               FTECH METEOR DIAGONAL SWEEP THEME TRANSITION
+               ============================================================ */
+            #ftechThemeSweep {
+                position: fixed;
+                top: -60vh;
+                left: -60vw;
+                width: 220vw;
+                height: 220vh;
+                pointer-events: none;
+                z-index: 9999999;
+                opacity: 0;
+                transform: rotate(-45deg) translateY(-140%);
+                will-change: transform, opacity;
+            }
+
+            #ftechThemeSweep.sweep-to-dark {
+                opacity: 1;
+                background: linear-gradient(
+                    180deg,
+                    rgba(11, 15, 25, 0) 0%,
+                    rgba(15, 23, 42, 0.82) 22%,
+                    #0b0f19 50%,
+                    rgba(15, 23, 42, 0.82) 78%,
+                    rgba(11, 15, 25, 0) 100%
+                );
+                border-bottom: 3.5px solid #38bdf8;
+                box-shadow: 
+                    0 8px 35px rgba(56, 189, 248, 0.85),
+                    0 20px 70px rgba(139, 92, 246, 0.65),
+                    0 50px 120px rgba(11, 15, 25, 0.95);
+                animation: ftechMeteorSweepAnim 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            }
+
+            #ftechThemeSweep.sweep-to-light {
+                opacity: 1;
+                background: linear-gradient(
+                    180deg,
+                    rgba(248, 250, 252, 0) 0%,
+                    rgba(255, 255, 255, 0.88) 22%,
+                    #f8fafc 50%,
+                    rgba(255, 255, 255, 0.88) 78%,
+                    rgba(248, 250, 252, 0) 100%
+                );
+                border-bottom: 3.5px solid #f59e0b;
+                box-shadow: 
+                    0 8px 35px rgba(245, 158, 11, 0.85),
+                    0 20px 70px rgba(96, 165, 250, 0.5),
+                    0 50px 120px rgba(255, 255, 255, 0.95);
+                animation: ftechMeteorSweepAnim 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            }
+
+            @keyframes ftechMeteorSweepAnim {
+                0% {
+                    opacity: 0.95;
+                    transform: rotate(-45deg) translateY(-130%);
+                }
+                40% {
+                    opacity: 1;
+                }
+                85% {
+                    opacity: 0.95;
+                }
+                100% {
+                    opacity: 0;
+                    transform: rotate(-45deg) translateY(130%);
+                }
+            }
+
+            .ftech-theme-icon-spin {
+                animation: ftechThemeIconSpin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+            }
+
+            @keyframes ftechThemeIconSpin {
+                0% { transform: rotate(0deg) scale(1); }
+                50% { transform: rotate(180deg) scale(0.6); opacity: 0.4; }
+                100% { transform: rotate(360deg) scale(1); opacity: 1; }
+            }
+
+            [data-bs-theme="light"] #ftech-meteor-layer {
+                opacity: 0.2;
+                transition: opacity 0.8s ease;
+            }
+
+            [data-bs-theme="dark"] #ftech-meteor-layer {
+                opacity: 1;
+                transition: opacity 0.8s ease;
+            }
+
+.logo-gradient {
 
                 background:
                     linear-gradient(
@@ -605,6 +695,7 @@
     <body>
 
         <div id="ftech-meteor-layer" aria-hidden="true"></div>
+        <div id="ftechThemeSweep" aria-hidden="true"></div>
 
         <!-- ========================================== -->
         <!-- HEADER                                     -->
@@ -2828,92 +2919,101 @@
 
         </script>
         <script>
-            document.addEventListener(
-                    "DOMContentLoaded",
-                    function () {
+            // FTECH METEOR SPAWN ENGINE
+            window.ftechSpawnMeteors = function(burst) {
+                const meteorLayer = document.getElementById("ftech-meteor-layer");
+                if (!meteorLayer) return;
 
-                        const meteorLayer =
-                                document.getElementById(
-                                        "ftech-meteor-layer"
-                                        );
+                if (!burst) {
+                    meteorLayer.innerHTML = "";
+                }
 
-                        if (!meteorLayer) {
-                            return;
-                        }
+                const count = burst ? 16 : (window.innerWidth < 768 ? 12 : 30);
+                for (let i = 0; i < count; i++) {
+                    const meteor = document.createElement("span");
+                    meteor.className = "ftech-meteor";
+                    const left = Math.random() * 120 - 10;
+                    const top = burst ? (Math.random() * 30 - 20) : (Math.random() * 80 - 40);
+                    const length = burst ? (55 + Math.random() * 80) : (30 + Math.random() * 60);
+                    const duration = burst ? (1.6 + Math.random() * 2.2) : (3 + Math.random() * 5);
+                    const delay = burst ? (Math.random() * 0.4) : (-Math.random() * 12);
 
-                        meteorLayer.innerHTML = "";
+                    meteor.style.left = left + "vw";
+                    meteor.style.top = top + "vh";
+                    meteor.style.setProperty("--meteor-length", length + "px");
+                    meteor.style.setProperty("--meteor-duration", duration + "s");
+                    meteor.style.setProperty("--meteor-delay", delay + "s");
 
-                        const meteorCount =
-                                window.innerWidth < 768
-                                ? 12
-                                : 30;
+                    meteorLayer.appendChild(meteor);
 
-                        for (
-                                let i = 0;
-                                i < meteorCount;
-                                i++
-                                ) {
-
-                            const meteor =
-                                    document.createElement(
-                                            "span"
-                                            );
-
-                            meteor.className =
-                                    "ftech-meteor";
-
-                            const left =
-                                    Math.random()
-                                    * 120
-                                    - 10;
-
-                            const top =
-                                    Math.random()
-                                    * 80
-                                    - 40;
-
-                            const length =
-                                    30
-                                    + Math.random()
-                                    * 60;
-
-                            const duration =
-                                    3
-                                    + Math.random()
-                                    * 5;
-
-                            const delay =
-                                    -Math.random()
-                                    * 12;
-
-                            meteor.style.left =
-                                    left + "vw";
-
-                            meteor.style.top =
-                                    top + "vh";
-
-                            meteor.style.setProperty(
-                                    "--meteor-length",
-                                    length + "px"
-                                    );
-
-                            meteor.style.setProperty(
-                                    "--meteor-duration",
-                                    duration + "s"
-                                    );
-
-                            meteor.style.setProperty(
-                                    "--meteor-delay",
-                                    delay + "s"
-                                    );
-
-                            meteorLayer.appendChild(
-                                    meteor
-                                    );
-                        }
+                    if (burst) {
+                        setTimeout(() => {
+                            if (meteor.parentNode) meteor.remove();
+                        }, (duration + 1) * 1000);
                     }
-            );
+                }
+            };
 
+            let _isThemeSwitching = false;
+            window.ftechSwitchTheme = function(targetTheme) {
+                if (_isThemeSwitching) return;
+
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-bs-theme') || html.dataset.bsTheme || 'dark';
+                const newTheme = targetTheme || (currentTheme === 'dark' ? 'light' : 'dark');
+
+                if (newTheme === currentTheme) return;
+
+                let sweepEl = document.getElementById('ftechThemeSweep');
+                if (!sweepEl) {
+                    sweepEl = document.createElement('div');
+                    sweepEl.id = 'ftechThemeSweep';
+                    sweepEl.setAttribute('aria-hidden', 'true');
+                    document.body.appendChild(sweepEl);
+                }
+
+                const themeBtn = document.getElementById('themeToggle');
+                const icon = themeBtn ? themeBtn.querySelector('i') : null;
+
+                _isThemeSwitching = true;
+                sweepEl.className = newTheme === 'dark' ? 'sweep-to-dark' : 'sweep-to-light';
+
+                if (icon) {
+                    icon.classList.remove('ftech-theme-icon-spin');
+                    void icon.offsetWidth;
+                    icon.classList.add('ftech-theme-icon-spin');
+                }
+
+                // Chuyển theme ngay tại trung điểm sóng quét (260ms) khi dải màu đang che phủ màn hình
+                setTimeout(() => {
+                    html.setAttribute('data-bs-theme', newTheme);
+                    html.dataset.bsTheme = newTheme;
+                    localStorage.setItem('ftech_theme', newTheme);
+                    document.cookie = 'ftech_theme=' + newTheme + ';path=/;max-age=31536000';
+
+                    if (icon) {
+                        icon.className = newTheme === 'dark' ? 'bi bi-brightness-high fs-5 text-warning ftech-theme-icon-spin' : 'bi bi-moon-stars fs-5 text-primary ftech-theme-icon-spin';
+                    }
+
+                    // Nếu bật theme Tối: Bùng nổ vệt sao băng rực sáng bầu trời đêm Ftech
+                    if (newTheme === 'dark' && typeof window.ftechSpawnMeteors === 'function') {
+                        window.ftechSpawnMeteors(true);
+                    }
+
+                    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+                }, 260);
+
+                // Kết thúc animation quét chéo (650ms)
+                setTimeout(() => {
+                    sweepEl.className = '';
+                    if (icon) icon.classList.remove('ftech-theme-icon-spin');
+                    _isThemeSwitching = false;
+                }, 650);
+            };
+
+            document.addEventListener("DOMContentLoaded", function () {
+                window.ftechSpawnMeteors(false);
+            });
         </script>
 
 <!-- ============================================================

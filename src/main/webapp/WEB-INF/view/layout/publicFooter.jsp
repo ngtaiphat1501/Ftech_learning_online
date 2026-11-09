@@ -121,22 +121,23 @@
     html.dataset.bsTheme = currentTheme;
     syncThemeIcon(currentTheme);
 
-    // 2. Bắt sự kiện click để bật tắt Sáng / Tối (bảo vệ tránh bind trùng)
+    // 2. Bắt sự kiện click để bật tắt Sáng / Tối với hiệu ứng Meteor Diagonal Sweep
     if (themeBtn && !themeBtn.dataset.themeBound) {
       themeBtn.dataset.themeBound = 'true';
       themeBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const active = html.getAttribute('data-bs-theme') || html.dataset.bsTheme || 'dark';
-        const newTheme = active === 'dark' ? 'light' : 'dark';
-        
-        html.setAttribute('data-bs-theme', newTheme);
-        html.dataset.bsTheme = newTheme;
-        localStorage.setItem('ftech_theme', newTheme);
-        document.cookie = 'ftech_theme=' + newTheme + ';path=/;max-age=31536000';
-        syncThemeIcon(newTheme);
-
-        // Bắn sự kiện để các biểu đồ Chart.js và thành phần giao diện khác cập nhật lại nếu cần
-        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+        if (typeof window.ftechSwitchTheme === 'function') {
+          window.ftechSwitchTheme();
+        } else {
+          const active = html.getAttribute('data-bs-theme') || html.dataset.bsTheme || 'dark';
+          const newTheme = active === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-bs-theme', newTheme);
+          html.dataset.bsTheme = newTheme;
+          localStorage.setItem('ftech_theme', newTheme);
+          document.cookie = 'ftech_theme=' + newTheme + ';path=/;max-age=31536000';
+          syncThemeIcon(newTheme);
+          window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+        }
       });
     }
 
