@@ -339,10 +339,10 @@
                FTECH METEOR DIAGONAL SWEEP THEME TRANSITION
                ============================================================ */
             /* ============================================================
-               REALISTIC 3D ORGANIC WATER RIPPLE THEME TRANSITION
-               (SÓNG NƯỚC 3D GỢN NHẤP NHÔ LAN TỎA 2.5S NHƯ NƯỚC THẬT)
+               AUTHENTIC OCEAN WAVE THEME TRANSITION (SÓNG BIỂN UỐN LƯỢN CUỘN TRÀO)
+               CÓ ĐỈNH SÓNG LÊN XUỐNG NHẤP NHÔ NHƯ SÓNG BIỂN VỖ BỜ - SIÊU NHẸ 60FPS
                ============================================================ */
-            #ftechWaveSystem {
+            #ftechOceanWaveContainer {
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -351,197 +351,104 @@
                 pointer-events: none;
                 z-index: 999999999;
                 overflow: hidden;
+                visibility: hidden;
             }
 
-            /* Lớp nền màu theme mới bung nở mượt mà */
-            #ftechWaveBackdrop {
+            #ftechOceanWaveContainer.wave-running {
+                visibility: visible;
+            }
+
+            .ftech-ocean-track {
                 position: absolute;
-                top: 0;
                 left: 0;
                 width: 100%;
-                height: 100%;
-                pointer-events: none;
-                clip-path: circle(0px at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%));
-                animation: ftechBackdropExpand 2.5s cubic-bezier(0.12, 0.85, 0.25, 1) forwards;
+                height: 180vh;
+                top: 100vh;
+                display: flex;
+                flex-direction: column;
+                will-change: transform;
             }
 
-            #ftechWaveBackdrop.theme-dark {
-                background: radial-gradient(circle at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%), #0f172a 0%, #0b0f19 80%);
+            /* Chuyển động cuộn dạt qua màn hình của con sóng */
+            .wave-running .ftech-ocean-track {
+                animation: ftechOceanSweepAnim 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
             }
 
-            #ftechWaveBackdrop.theme-light {
-                background: radial-gradient(circle at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%), #ffffff 0%, #f8fafc 80%);
-            }
-
-            @keyframes ftechBackdropExpand {
+            @keyframes ftechOceanSweepAnim {
                 0% {
-                    clip-path: circle(0px at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%));
+                    transform: translateY(0);
                 }
                 100% {
-                    clip-path: circle(var(--ftech-radius, 150vmax) at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%));
+                    transform: translateY(-280vh);
                 }
             }
 
-            /* Các tầng gợn sóng nước uốn lượn nhấp nhô liên hoàn (Organic Undulating Ripples) */
-            .ftech-wave-ripple {
+            /* Đỉnh sóng uốn lượn có đỉnh nhấp nhô lên xuống */
+            .ftech-ocean-crest {
+                width: 100%;
+                height: 180px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .ftech-ocean-svg {
                 position: absolute;
                 top: 0;
                 left: 0;
-                border-radius: 50%;
-                pointer-events: none;
-                will-change: transform, opacity;
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0);
+                width: 200%;
+                height: 100%;
+                will-change: transform;
             }
 
-            /* Tầng sóng 1 - Đỉnh sóng chính (Leading Crest) */
-            .wave-active .ripple-1 {
-                animation: ftechLiquidRipple1 2.5s cubic-bezier(0.12, 0.85, 0.25, 1) forwards;
+            /* Sóng uốn lượn nhấp nhô dập dềnh ngang (sóng có lên có xuống) */
+            .wave-running .ftech-ocean-svg {
+                animation: ftechWaveUndulate 1.4s ease-in-out infinite alternate;
             }
 
-            /* Tầng sóng 2 - Đợt gợn thứ hai (Second Harmonic) */
-            .wave-active .ripple-2 {
-                animation: ftechLiquidRipple2 2.35s cubic-bezier(0.12, 0.85, 0.25, 1) 0.18s forwards;
-            }
-
-            /* Tầng sóng 3 - Đợt gợn thứ ba (Third Harmonic) */
-            .wave-active .ripple-3 {
-                animation: ftechLiquidRipple3 2.2s cubic-bezier(0.12, 0.85, 0.25, 1) 0.36s forwards;
-            }
-
-            /* Tầng sóng 4 - Đợt gợn thứ tư (Fourth Harmonic) */
-            .wave-active .ripple-4 {
-                animation: ftechLiquidRipple4 2.05s cubic-bezier(0.12, 0.85, 0.25, 1) 0.54s forwards;
-            }
-
-            /* Sóng nước 3D Theme Tối (Xanh Cyan cực quang & Tím vũ trụ) */
-            .waves-dark .ripple-1 {
-                border: 3.5px solid rgba(56, 189, 248, 0.9);
-                box-shadow: 
-                    0 0 50px 14px rgba(56, 189, 248, 0.75),
-                    inset 0 0 35px 8px rgba(139, 92, 246, 0.6);
-            }
-
-            .waves-dark .ripple-2 {
-                border: 2.5px solid rgba(56, 189, 248, 0.75);
-                box-shadow: 
-                    0 0 35px 8px rgba(56, 189, 248, 0.55),
-                    inset 0 0 25px 6px rgba(56, 189, 248, 0.4);
-            }
-
-            .waves-dark .ripple-3 {
-                border: 2px dashed rgba(139, 92, 246, 0.8);
-                box-shadow: 0 0 25px 6px rgba(139, 92, 246, 0.45);
-            }
-
-            .waves-dark .ripple-4 {
-                border: 1.5px solid rgba(56, 189, 248, 0.5);
-                box-shadow: 0 0 18px 4px rgba(56, 189, 248, 0.3);
-            }
-
-            /* Sóng nước 3D Theme Sáng (Vàng bình minh ấm áp & Xanh mây trời) */
-            .waves-light .ripple-1 {
-                border: 3.5px solid rgba(245, 158, 11, 0.9);
-                box-shadow: 
-                    0 0 50px 14px rgba(245, 158, 11, 0.75),
-                    inset 0 0 35px 8px rgba(96, 165, 250, 0.6);
-            }
-
-            .waves-light .ripple-2 {
-                border: 2.5px solid rgba(245, 158, 11, 0.75);
-                box-shadow: 
-                    0 0 35px 8px rgba(245, 158, 11, 0.55),
-                    inset 0 0 25px 6px rgba(245, 158, 11, 0.4);
-            }
-
-            .waves-light .ripple-3 {
-                border: 2px dashed rgba(96, 165, 250, 0.8);
-                box-shadow: 0 0 25px 6px rgba(96, 165, 250, 0.45);
-            }
-
-            .waves-light .ripple-4 {
-                border: 1.5px solid rgba(245, 158, 11, 0.5);
-                box-shadow: 0 0 18px 4px rgba(245, 158, 11, 0.3);
-            }
-
-            /* Chuyển động sóng nước gợn nhấp nhô uốn lượn chân thật */
-            @keyframes ftechLiquidRipple1 {
+            @keyframes ftechWaveUndulate {
                 0% {
-                    transform: translate(-50%, -50%) rotate(0deg) scale(0);
-                    border-radius: 50% 48% 52% 49% / 49% 52% 48% 51%;
-                    opacity: 0.95;
+                    transform: translateX(0) scaleY(1);
                 }
-                25% {
-                    opacity: 1;
-                    border-radius: 49% 51% 48% 52% / 52% 48% 51% 49%;
-                }
-                65% {
-                    opacity: 0.85;
-                    border-radius: 52% 48% 51% 49% / 48% 52% 49% 51%;
+                50% {
+                    transform: translateX(-25%) scaleY(1.25);
                 }
                 100% {
-                    transform: translate(-50%, -50%) rotate(40deg) scale(1);
-                    border-radius: 50%;
-                    opacity: 0;
+                    transform: translateX(-45%) scaleY(0.95);
                 }
             }
 
-            @keyframes ftechLiquidRipple2 {
-                0% {
-                    transform: translate(-50%, -50%) rotate(0deg) scale(0);
-                    border-radius: 51% 49% 48% 52% / 50% 48% 52% 50%;
-                    opacity: 0.9;
-                }
-                30% {
-                    opacity: 0.95;
-                    border-radius: 48% 52% 51% 49% / 51% 49% 50% 50%;
-                }
-                70% {
-                    opacity: 0.75;
-                }
-                100% {
-                    transform: translate(-50%, -50%) rotate(-35deg) scale(1);
-                    border-radius: 50%;
-                    opacity: 0;
-                }
+            /* Thân sóng đại dương che phủ đổi theme */
+            .ftech-ocean-body {
+                width: 100%;
+                flex-grow: 1;
             }
 
-            @keyframes ftechLiquidRipple3 {
-                0% {
-                    transform: translate(-50%, -50%) rotate(0deg) scale(0);
-                    opacity: 0.85;
-                }
-                35% {
-                    opacity: 0.9;
-                }
-                75% {
-                    opacity: 0.65;
-                }
-                100% {
-                    transform: translate(-50%, -50%) rotate(30deg) scale(1);
-                    opacity: 0;
-                }
+            /* Sóng biển Theme Tối (Đêm đại dương cực quang) */
+            .ocean-dark .ftech-ocean-body {
+                background: linear-gradient(180deg, #0f172a 0%, #0b0f19 100%);
+            }
+            .ocean-dark .ftech-foam-back {
+                fill: rgba(56, 189, 248, 0.35);
+            }
+            .ocean-dark .ftech-foam-front {
+                fill: #0f172a;
+                filter: drop-shadow(0 -8px 16px rgba(56, 189, 248, 0.85));
             }
 
-            @keyframes ftechLiquidRipple4 {
-                0% {
-                    transform: translate(-50%, -50%) rotate(0deg) scale(0);
-                    opacity: 0.8;
-                }
-                40% {
-                    opacity: 0.85;
-                }
-                80% {
-                    opacity: 0.5;
-                }
-                100% {
-                    transform: translate(-50%, -50%) rotate(-25deg) scale(1);
-                    opacity: 0;
-                }
+            /* Sóng biển Theme Sáng (Biển sớm ban mai nắng ấm) */
+            .ocean-light .ftech-ocean-body {
+                background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            }
+            .ocean-light .ftech-foam-back {
+                fill: rgba(245, 158, 11, 0.35);
+            }
+            .ocean-light .ftech-foam-front {
+                fill: #ffffff;
+                filter: drop-shadow(0 -8px 16px rgba(245, 158, 11, 0.85));
             }
 
             .ftech-theme-icon-spin {
-                animation: ftechThemeIconSpin 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+                animation: ftechThemeIconSpin 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
             }
 
             @keyframes ftechThemeIconSpin {
@@ -552,12 +459,12 @@
 
             [data-bs-theme="light"] #ftech-meteor-layer {
                 opacity: 0.15;
-                transition: opacity 2s ease;
+                transition: opacity 1s ease;
             }
 
             [data-bs-theme="dark"] #ftech-meteor-layer {
                 opacity: 1;
-                transition: opacity 2s ease;
+                transition: opacity 1s ease;
             }
 
 .logo-gradient {
@@ -3091,7 +2998,7 @@
             };
 
             let _isThemeSwitching = false;
-            window.ftechSwitchTheme = function(targetTheme, event) {
+            window.ftechSwitchTheme = function(targetTheme) {
                 if (_isThemeSwitching) return;
 
                 const html = document.documentElement;
@@ -3103,54 +3010,28 @@
                 const themeBtn = document.getElementById('themeToggle');
                 const icon = themeBtn ? themeBtn.querySelector('i') : null;
 
-                // Tọa độ click chuột chính xác để các tầng sóng nước khởi phát
-                const rect = themeBtn ? themeBtn.getBoundingClientRect() : null;
-                const x = (event && typeof event.clientX === 'number' && event.clientX > 0)
-                    ? event.clientX
-                    : (rect ? rect.left + rect.width / 2 : window.innerWidth / 2);
-                const y = (event && typeof event.clientY === 'number' && event.clientY > 0)
-                    ? event.clientY
-                    : (rect ? rect.top + rect.height / 2 : window.innerHeight / 2);
+                // Xóa container cũ nếu còn sót lại để tránh màn hình trắng
+                const oldContainer = document.getElementById('ftechOceanWaveContainer');
+                if (oldContainer) oldContainer.remove();
 
-                const endRadius = Math.hypot(
-                    Math.max(x, window.innerWidth - x),
-                    Math.max(y, window.innerHeight - y)
-                );
+                // Tạo mới đợt sóng biển uốn lượn có lên có xuống
+                const container = document.createElement('div');
+                container.id = 'ftechOceanWaveContainer';
+                container.setAttribute('aria-hidden', 'true');
+                container.className = newTheme === 'dark' ? 'ocean-dark' : 'ocean-light';
 
-                // Gán biến CSS cho mặt nạ Circular Reveal
-                html.style.setProperty('--ftech-click-x', x + 'px');
-                html.style.setProperty('--ftech-click-y', y + 'px');
-                html.style.setProperty('--ftech-radius', endRadius + 'px');
+                container.innerHTML = 
+                    '<div class="ftech-ocean-track">' +
+                        '<div class="ftech-ocean-crest">' +
+                            '<svg class="ftech-ocean-svg" viewBox="0 0 2880 200" preserveAspectRatio="none">' +
+                                '<path class="ftech-foam-back" d="M0,100 C360,180 720,20 1080,100 C1440,180 1800,20 2160,100 C2520,180 2700,40 2880,90 L2880,200 L0,200 Z"></path>' +
+                                '<path class="ftech-foam-front" d="M0,60 C420,0 660,150 1080,60 C1500,-30 1740,130 2160,60 C2580,-10 2760,110 2880,60 L2880,200 L0,200 Z"></path>' +
+                            '</svg>' +
+                        '</div>' +
+                        '<div class="ftech-ocean-body"></div>' +
+                    '</div>';
 
-                // Tạo hệ thống 4 tầng sóng gợn nước nhấp nhô
-                let waveSys = document.getElementById('ftechWaveSystem');
-                if (!waveSys) {
-                    waveSys = document.createElement('div');
-                    waveSys.id = 'ftechWaveSystem';
-                    waveSys.setAttribute('aria-hidden', 'true');
-                    waveSys.innerHTML =
-                        '<div id="ftechWaveBackdrop"></div>' +
-                        '<div class="ftech-wave-ripple ripple-1"></div>' +
-                        '<div class="ftech-wave-ripple ripple-2"></div>' +
-                        '<div class="ftech-wave-ripple ripple-3"></div>' +
-                        '<div class="ftech-wave-ripple ripple-4"></div>';
-                    document.body.appendChild(waveSys);
-                }
-
-                // Căn chỉnh tâm và kích thước cho từng tầng gợn sóng
-                const diameter = Math.ceil(endRadius * 2.06);
-                const rings = waveSys.querySelectorAll('.ftech-wave-ripple');
-                rings.forEach(ring => {
-                    ring.style.left = x + 'px';
-                    ring.style.top = y + 'px';
-                    ring.style.width = diameter + 'px';
-                    ring.style.height = diameter + 'px';
-                });
-
-                const backdrop = document.getElementById('ftechWaveBackdrop');
-                if (backdrop) {
-                    backdrop.className = newTheme === 'dark' ? 'theme-dark' : 'theme-light';
-                }
+                document.body.appendChild(container);
 
                 _isThemeSwitching = true;
 
@@ -3160,10 +3041,12 @@
                     icon.classList.add('ftech-theme-icon-spin');
                 }
 
-                // Kích hoạt chùm 4 tầng gợn sóng nhấp nhô
-                waveSys.className = (newTheme === 'dark' ? 'waves-dark' : 'waves-light') + ' wave-active';
+                // Kích hoạt con sóng dạt dâng lên cuộn qua màn hình
+                requestAnimationFrame(() => {
+                    container.classList.add('wave-running');
+                });
 
-                // Sau đúng 2.5s khi 4 tầng sóng đã lướt trọn vẹn màn hình: cập nhật theme hoàn chỉnh
+                // Tại trung điểm sóng dâng phủ kín màn hình (650ms): chuyển đổi theme tức thì
                 setTimeout(() => {
                     html.setAttribute('data-bs-theme', newTheme);
                     html.dataset.bsTheme = newTheme;
@@ -3181,12 +3064,16 @@
                     }
 
                     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+                }, 650);
 
-                    // Dỡ bỏ wave system êm ái
-                    waveSys.className = '';
+                // Khi sóng đã dạt hết qua màn hình (1400ms): gỡ bỏ phần tử sóng an toàn tuyệt đối
+                setTimeout(() => {
+                    if (container && container.parentNode) {
+                        container.remove();
+                    }
                     if (icon) icon.classList.remove('ftech-theme-icon-spin');
                     _isThemeSwitching = false;
-                }, 2500);
+                }, 1450);
             };
 
             document.addEventListener("DOMContentLoaded", function () {
