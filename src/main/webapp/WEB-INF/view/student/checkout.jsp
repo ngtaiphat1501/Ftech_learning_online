@@ -33,10 +33,53 @@
         padding-bottom: 5rem;
     }
     .checkout-card {
-        background-color: #151821 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background-color: var(--ftech-card-bg, #151821) !important;
+        border: 1px solid var(--ftech-card-border, rgba(255, 255, 255, 0.1)) !important;
         border-radius: 1.25rem !important;
         padding: 1.5rem !important;
+        color: var(--ftech-text-main, #ffffff);
+    }
+    [data-bs-theme="light"] .checkout-card {
+        background-color: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        color: #0f172a !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+    .checkout-item-row {
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 0.85rem;
+        padding: 1rem 1.15rem;
+        transition: all 0.2s ease;
+    }
+    [data-bs-theme="light"] .checkout-item-row {
+        background-color: #ffffff;
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+    .checkout-item-row:hover {
+        border-color: rgba(99, 102, 241, 0.35);
+        background-color: rgba(255, 255, 255, 0.04);
+    }
+    [data-bs-theme="light"] .checkout-item-row:hover {
+        background-color: #f8fafc;
+        border-color: rgba(99, 102, 241, 0.35);
+    }
+    .qr-container {
+        background-color: #10121a;
+        border: 1px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        padding: 1.25rem;
+    }
+    [data-bs-theme="light"] .qr-container {
+        background-color: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.15);
+    }
+    .qr-meta-val {
+        color: #ffffff;
+        font-weight: 600;
+    }
+    [data-bs-theme="light"] .qr-meta-val {
+        color: #0f172a !important;
     }
     .checkout-item-row {
         background-color: rgba(255, 255, 255, 0.02);
@@ -115,9 +158,19 @@
 
     <!-- Error Alert if any -->
     <% if (checkoutError != null && !checkoutError.isBlank()) { %>
-        <div class="alert alert-danger py-2.5 small mb-4 border-0 d-flex align-items-center gap-2 rounded-3">
-            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
-            <span><%= checkoutError %></span>
+        <div class="alert alert-danger p-3 mb-4 border-0 d-flex align-items-center justify-content-between flex-wrap gap-3 rounded-4 shadow-sm" role="alert">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(239, 68, 68, 0.15); color: #ef4444;">
+                    <i class="bi bi-exclamation-octagon-fill fs-4"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-6 text-danger mb-0.5">Thanh toán chưa hoàn tất</div>
+                    <div class="text-body-secondary small"><%= checkoutError %></div>
+                </div>
+            </div>
+            <a href="#insufficientBalanceBox" class="btn btn-sm btn-danger rounded-pill px-3 py-1.5 fw-medium text-nowrap">
+                <i class="bi bi-qr-code-scan me-1"></i>Xem cách nạp bù
+            </a>
         </div>
     <% } %>
 
@@ -353,11 +406,11 @@
                         <!-- Transfer metadata -->
                         <div class="row g-2 text-start mt-2 mx-auto small text-secondary" style="max-width: 340px;">
                             <div class="col-5">Ngân hàng:</div>
-                            <div class="col-7 text-white fw-semibold">MBBank (Quân Đội)</div>
+                            <div class="col-7 qr-meta-val">MBBank (Quân Đội)</div>
                             <div class="col-5">Số tài khoản:</div>
-                            <div class="col-7 text-white fw-semibold font-monospace">0987654321</div>
+                            <div class="col-7 qr-meta-val font-monospace">0987654321</div>
                             <div class="col-5">Chủ tài khoản:</div>
-                            <div class="col-7 text-white fw-semibold">LEARNORA LMS</div>
+                            <div class="col-7 qr-meta-val">LEARNORA LMS</div>
                             <div class="col-5">Số tiền nạp:</div>
                             <div class="col-7 text-danger fw-bold" id="qrMissingAmountText"><%= currency.format(quote.missingVnd) %>đ</div>
                             <div class="col-5">Nội dung:</div>
@@ -628,5 +681,6 @@
         form.submit();
     }
 </script>
-</body>
-</html>
+
+<%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>
+

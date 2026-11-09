@@ -9,12 +9,33 @@
         margin: 1.75rem auto;
     }
     .modal-checkout-content {
-        background-color: #151821 !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background-color: var(--ftech-card-bg, #151821) !important;
+        border: 1px solid var(--ftech-card-border, rgba(255, 255, 255, 0.12)) !important;
         border-radius: 1.25rem !important;
-        color: #ffffff !important;
+        color: var(--ftech-text-main, #ffffff) !important;
         box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65) !important;
         overflow: hidden;
+    }
+    [data-bs-theme="light"] .modal-checkout-content {
+        background-color: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+        color: #0f172a !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15) !important;
+    }
+    .modal-qr-box {
+        background: #0d0f15;
+        border: 1px dashed rgba(255, 255, 255, 0.18);
+    }
+    [data-bs-theme="light"] .modal-qr-box {
+        background: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.15);
+    }
+    .modal-qr-val {
+        color: #ffffff;
+        font-weight: 600;
+    }
+    [data-bs-theme="light"] .modal-qr-val {
+        color: #0f172a !important;
     }
     .modal-checkout-header {
         border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -284,16 +305,16 @@
                         </div>
 
                         <!-- VietQR Container -->
-                        <div class="text-center p-3 rounded-3 mb-3" style="background: #0d0f15; border: 1px dashed rgba(255,255,255,0.18);">
+                        <div class="text-center p-3 rounded-3 mb-3 modal-qr-box">
                             <div class="text-secondary small mb-2">Quét mã QR để nạp số tiền còn thiếu:</div>
                             <div class="d-inline-block bg-white p-2 rounded-3 mb-2 shadow">
                                 <img id="modalVietQrImage" src="" alt="VietQR" class="img-fluid" style="width: 180px; height: 180px; object-fit: contain;">
                             </div>
                             <div class="row g-1 text-start mx-auto small text-secondary" style="max-width: 280px; font-size: 0.8rem;">
                                 <div class="col-5">Ngân hàng:</div>
-                                <div class="col-7 text-white fw-semibold">MBBank</div>
+                                <div class="col-7 modal-qr-val">MBBank</div>
                                 <div class="col-5">Số tài khoản:</div>
-                                <div class="col-7 text-white font-monospace">0987654321</div>
+                                <div class="col-7 modal-qr-val font-monospace">0987654321</div>
                                 <div class="col-5">Nội dung:</div>
                                 <div class="col-7 text-warning fw-bold font-monospace" id="modalTransferSyntax">NAPTIEN</div>
                             </div>
@@ -310,7 +331,10 @@
                     </div>
 
                     <!-- Payment error notice if any -->
-                    <div id="modalPaymentError" class="alert alert-danger py-2 px-3 small mt-3 mb-0 d-none"></div>
+                    <div id="modalPaymentError" class="alert alert-danger py-2.5 px-3 small mt-3 mb-0 d-none d-flex align-items-center gap-2 rounded-3 border-0">
+                        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 fs-5 text-danger"></i>
+                        <span id="modalPaymentErrorText"></span>
+                    </div>
 
                 </div>
             </div>
@@ -671,7 +695,9 @@
                 document.getElementById('modalSuccessOrderCode').innerText = '#' + result.orderCode;
 
             } else {
-                errBox.innerText = result.message || 'Thanh toán thất bại. Vui lòng thử lại.';
+                const msgText = document.getElementById('modalPaymentErrorText');
+                if (msgText) msgText.innerText = result.message || 'Thanh toán thất bại. Vui lòng kiểm tra lại số dư ví.';
+                else errBox.innerText = result.message || 'Thanh toán thất bại. Vui lòng kiểm tra lại số dư ví.';
                 errBox.classList.remove('d-none');
                 if (btnPay) btnPay.disabled = false;
                 if (btnTopUp) btnTopUp.disabled = false;
@@ -679,7 +705,9 @@
 
         } catch (err) {
             console.error('Execute modal checkout error:', err);
-            errBox.innerText = 'Lỗi kết nối máy chủ. Vui lòng kiểm tra lại.';
+            const msgText = document.getElementById('modalPaymentErrorText');
+            if (msgText) msgText.innerText = 'Lỗi kết nối máy chủ. Vui lòng kiểm tra lại.';
+            else errBox.innerText = 'Lỗi kết nối máy chủ. Vui lòng kiểm tra lại.';
             errBox.classList.remove('d-none');
             if (btnPay) btnPay.disabled = false;
             if (btnTopUp) btnTopUp.disabled = false;

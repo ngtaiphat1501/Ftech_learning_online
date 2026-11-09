@@ -132,7 +132,7 @@
     <!-- Orders List -->
     <% if (orders == null || orders.isEmpty()) { %>
         <!-- Empty State -->
-        <div class="text-center py-5 rounded-4 border border-secondary border-opacity-25" class="text-center py-5 rounded-4 border border-secondary border-opacity-25 bg-body-tertiary">
+        <div class="text-center py-5 rounded-4 border border-secondary border-opacity-25 bg-body-tertiary">
             <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center mb-3"
                  style="width: 76px; height: 76px; border: 1px solid rgba(255,255,255,0.1);">
                 <i class="bi bi-receipt-cutoff fs-1 text-secondary"></i>
@@ -278,6 +278,5 @@
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>
+

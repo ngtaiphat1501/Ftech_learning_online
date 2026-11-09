@@ -28,16 +28,26 @@
         padding-bottom: 5rem;
     }
     .detail-card {
-        background-color: #151821 !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background-color: var(--ftech-card-bg, #151821) !important;
+        border: 1px solid var(--ftech-card-border, rgba(255, 255, 255, 0.08)) !important;
         border-radius: 1.25rem !important;
         padding: 2rem !important;
+        color: var(--ftech-text-main, #ffffff);
+    }
+    [data-bs-theme="light"] .detail-card {
+        background-color: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        color: #0f172a !important;
     }
     .detail-meta-box {
         background-color: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 1rem;
         padding: 1.25rem 1.5rem;
+    }
+    [data-bs-theme="light"] .detail-meta-box {
+        background-color: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.06);
     }
     .course-detail-row {
         background-color: rgba(255, 255, 255, 0.015);
@@ -46,8 +56,16 @@
         padding: 1rem 1.25rem;
         transition: all 0.2s ease;
     }
+    [data-bs-theme="light"] .course-detail-row {
+        background-color: #ffffff;
+        border-color: rgba(0, 0, 0, 0.08);
+    }
     .course-detail-row:hover {
         background-color: rgba(255, 255, 255, 0.03);
+        border-color: rgba(99, 102, 241, 0.35);
+    }
+    [data-bs-theme="light"] .course-detail-row:hover {
+        background-color: #f1f5f9;
         border-color: rgba(99, 102, 241, 0.35);
     }
     .detail-thumb {
@@ -65,13 +83,13 @@
     <!-- Top Navigation -->
     <div class="mb-4">
         <a href="${pageContext.request.contextPath}/student/orders" 
-           class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 text-white border-secondary border-opacity-50">
+           class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 border-secondary border-opacity-50">
             <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách đơn hàng
         </a>
     </div>
 
     <% if (order == null) { %>
-        <div class="detail-card text-center text-white">
+        <div class="detail-card text-center">
             <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-2"></i>
             <h4 class="fw-bold mb-1">Không tìm thấy thông tin đơn hàng</h4>
             <p class="text-secondary small mb-3">Đơn hàng không tồn tại hoặc bạn không có quyền xem đơn hàng này.</p>
@@ -85,13 +103,13 @@
         boolean isPending = "PENDING_PAYMENT".equalsIgnoreCase(status);
         boolean isCancelled = "CANCELLED".equalsIgnoreCase(status);
     %>
-        <div class="detail-card text-white shadow-lg">
+        <div class="detail-card shadow-lg">
 
             <!-- Title & Status -->
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-3 mb-4 border-bottom border-secondary border-opacity-25">
                 <div>
                     <span class="text-secondary small text-uppercase fw-semibold">Chi tiết đơn hàng</span>
-                    <h3 class="fw-bold text-white mb-0 font-monospace">#<%= order.getOrderCode() %></h3>
+                    <h3 class="fw-bold mb-0 font-monospace">#<%= order.getOrderCode() %></h3>
                 </div>
                 <div>
                     <% if (isPaid) { %>
@@ -119,26 +137,26 @@
                 <div class="row g-3 text-sm">
                     <div class="col-6 col-md-3">
                         <div class="text-secondary small mb-1">Thời gian đặt:</div>
-                        <div class="fw-semibold text-white">
+                        <div class="fw-semibold">
                             <%= order.getCreatedAt() != null ? order.getCreatedAt().format(dtf) : "N/A" %>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="text-secondary small mb-1">Thời gian thanh toán:</div>
-                        <div class="fw-semibold text-white">
+                        <div class="fw-semibold">
                             <%= order.getPaidAt() != null ? order.getPaidAt().format(dtf) : (isPaid ? "Đã xác nhận" : "Chưa thanh toán") %>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="text-secondary small mb-1">Phương thức:</div>
-                        <div class="fw-semibold text-white">
+                        <div class="fw-semibold">
                             <i class="bi bi-wallet2 text-warning me-1"></i>
                             <%= order.getPaymentProvider() != null ? order.getPaymentProvider() : "Ví tài khoản Ftech" %>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="text-secondary small mb-1">Mã giảm giá:</div>
-                        <div class="fw-semibold text-white font-monospace">
+                        <div class="fw-semibold font-monospace">
                             <%= order.getCouponCode() != null && !order.getCouponCode().isBlank() ? order.getCouponCode() : "Không áp dụng" %>
                         </div>
                     </div>
@@ -147,7 +165,7 @@
 
             <!-- Items Section -->
             <div class="mb-4">
-                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
                     <i class="bi bi-journal-code text-primary"></i>
                     <span>Khóa học trong đơn hàng (<%= order.getItems().size() %>)</span>
                 </h5>
@@ -165,8 +183,8 @@
                                 <% } %>
 
                                 <div class="flex-grow-1 min-w-0">
-                                    <h6 class="text-white fw-bold mb-1 text-truncate" title="<%= item.getCourseTitleSnapshot() %>">
-                                        <a href="${pageContext.request.contextPath}/course?id=<%= item.getCourseId() %>" class="text-white text-decoration-none hover-primary">
+                                    <h6 class="fw-bold mb-1 text-truncate" title="<%= item.getCourseTitleSnapshot() %>">
+                                        <a href="${pageContext.request.contextPath}/course?id=<%= item.getCourseId() %>" class="text-decoration-none hover-primary">
                                             <%= item.getCourseTitleSnapshot() %>
                                         </a>
                                     </h6>
@@ -178,8 +196,8 @@
                                         <span class="text-success"><i class="bi bi-shield-check me-1"></i>Quyền học vĩnh viễn</span>
                                     </div>
                                     <div class="d-flex align-items-baseline gap-2">
-                                        <span class="fw-bold text-white"><%= currency.format(item.getPayableVnd()) %>đ</span>
-                                        <% if (item.getDiscountVnd().compareTo(BigDecimal.ZERO) > 0) { %>
+                                        <span class="fw-bold"><%= currency.format(item.getPayableVnd()) %>đ</span>
+                                        <% if (item.getDiscountVnd() != null && item.getDiscountVnd().compareTo(BigDecimal.ZERO) > 0) { %>
                                             <del class="text-secondary small"><%= currency.format(item.getUnitPriceVnd()) %>đ</del>
                                         <% } %>
                                     </div>
@@ -201,9 +219,9 @@
             <div class="detail-meta-box mb-4">
                 <div class="d-flex justify-content-between align-items-center py-1 text-secondary small">
                     <span>Tạm tính:</span>
-                    <span class="text-white fw-medium"><%= currency.format(order.getSubtotalVnd()) %>đ</span>
+                    <span class="fw-medium"><%= currency.format(order.getSubtotalVnd()) %>đ</span>
                 </div>
-                <% if (order.getDiscountVnd().compareTo(BigDecimal.ZERO) > 0) { %>
+                <% if (order.getDiscountVnd() != null && order.getDiscountVnd().compareTo(BigDecimal.ZERO) > 0) { %>
                     <div class="d-flex justify-content-between align-items-center py-1 text-success small">
                         <span>Giảm giá khuyến mãi:</span>
                         <span class="fw-medium">-<%= currency.format(order.getDiscountVnd()) %>đ</span>
@@ -211,14 +229,14 @@
                 <% } %>
                 <hr class="border-secondary border-opacity-25 my-2">
                 <div class="d-flex justify-content-between align-items-baseline pt-1">
-                    <span class="fw-bold text-white fs-6">Tổng tiền thanh toán:</span>
+                    <span class="fw-bold fs-6">Tổng tiền thanh toán:</span>
                     <span class="fw-bold text-primary fs-4"><%= currency.format(order.getTotalVnd()) %>đ</span>
                 </div>
             </div>
 
             <!-- Actions footer -->
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 pt-2">
-                <a href="${pageContext.request.contextPath}/courses" class="btn btn-outline-secondary text-white rounded-pill px-4 py-2 border-secondary border-opacity-50">
+                <a href="${pageContext.request.contextPath}/courses" class="btn btn-outline-secondary rounded-pill px-4 py-2 border-secondary border-opacity-50">
                     <i class="bi bi-grid me-1"></i> Xem thêm khóa học
                 </a>
 
@@ -244,6 +262,4 @@
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<%@include file="/WEB-INF/view/layout/publicFooter.jsp" %>
