@@ -339,57 +339,34 @@
                FTECH METEOR DIAGONAL SWEEP THEME TRANSITION
                ============================================================ */
             /* ============================================================
-               CIRCULAR REVEAL / RIPPLE THEME TRANSITION (LÀN SÓNG LAN TỎA)
+               TELEGRAM CIRCULAR REVEAL THEME TRANSITION (CHUẨN TELEGRAM)
                ============================================================ */
-            #ftechThemeRipple {
-                position: fixed;
-                top: 0;
-                left: 0;
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 99999999;
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
-                will-change: transform, opacity;
+            ::view-transition-old(root),
+            ::view-transition-new(root) {
+                animation: none;
+                mix-blend-mode: normal;
             }
 
-            #ftechThemeRipple.ripple-to-dark {
-                background: radial-gradient(circle, #0b0f19 70%, #0f172a 100%);
-                box-shadow: 
-                    0 0 0 6px #38bdf8,
-                    0 0 50px 20px rgba(56, 189, 248, 0.85),
-                    0 0 100px 45px rgba(139, 92, 246, 0.65);
-                animation: ftechExpandingRipple 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            ::view-transition-old(root) {
+                z-index: 1;
             }
 
-            #ftechThemeRipple.ripple-to-light {
-                background: radial-gradient(circle, #f8fafc 70%, #ffffff 100%);
-                box-shadow: 
-                    0 0 0 6px #f59e0b,
-                    0 0 50px 20px rgba(245, 158, 11, 0.85),
-                    0 0 100px 45px rgba(96, 165, 250, 0.65);
-                animation: ftechExpandingRipple 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            ::view-transition-new(root) {
+                z-index: 999999;
+                animation: ftechTelegramCircularReveal 0.65s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
-            @keyframes ftechExpandingRipple {
-                0% {
-                    transform: translate(-50%, -50%) scale(0);
-                    opacity: 1;
+            @keyframes ftechTelegramCircularReveal {
+                from {
+                    clip-path: circle(0px at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%));
                 }
-                60% {
-                    opacity: 1;
-                }
-                85% {
-                    opacity: 0.95;
-                }
-                100% {
-                    transform: translate(-50%, -50%) scale(1);
-                    opacity: 0;
+                to {
+                    clip-path: circle(var(--ftech-radius, 150vmax) at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%));
                 }
             }
 
             .ftech-theme-icon-spin {
-                animation: ftechThemeIconSpin 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+                animation: ftechThemeIconSpin 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
             }
 
             @keyframes ftechThemeIconSpin {
@@ -2939,7 +2916,7 @@
             };
 
             let _isThemeSwitching = false;
-            window.ftechSwitchTheme = function(targetTheme, event) {
+            window.ftechSwitchTheme = async function(targetTheme, event) {
                 if (_isThemeSwitching) return;
 
                 const html = document.documentElement;
@@ -2951,7 +2928,7 @@
                 const themeBtn = document.getElementById('themeToggle');
                 const icon = themeBtn ? themeBtn.querySelector('i') : null;
 
-                // Tọa độ tâm xuất phát của làn sóng tròn (vị trí click chuột hoặc tâm icon toggle)
+                // Tọa độ click chuột hoặc tâm nút bấm (giống Telegram)
                 const rect = themeBtn ? themeBtn.getBoundingClientRect() : null;
                 const x = (event && typeof event.clientX === 'number' && event.clientX > 0)
                     ? event.clientX
@@ -2960,41 +2937,25 @@
                     ? event.clientY
                     : (rect ? rect.top + rect.height / 2 : window.innerHeight / 2);
 
-                // Đường kính sóng cực đại bao trùm toàn bộ màn hình
-                const maxDist = Math.hypot(
+                const endRadius = Math.hypot(
                     Math.max(x, window.innerWidth - x),
                     Math.max(y, window.innerHeight - y)
                 );
-                const diameter = Math.ceil(maxDist * 2.6);
 
-                let rippleEl = document.getElementById('ftechThemeRipple');
-                if (!rippleEl) {
-                    rippleEl = document.createElement('div');
-                    rippleEl.id = 'ftechThemeRipple';
-                    rippleEl.setAttribute('aria-hidden', 'true');
-                    document.body.appendChild(rippleEl);
-                }
-
-                // Định vị tâm tại vị trí con trỏ chuột
-                rippleEl.style.left = x + 'px';
-                rippleEl.style.top = y + 'px';
-                rippleEl.style.width = diameter + 'px';
-                rippleEl.style.height = diameter + 'px';
+                // Truyền biến CSS để @keyframes ftechTelegramCircularReveal tự động chạy
+                html.style.setProperty('--ftech-click-x', x + 'px');
+                html.style.setProperty('--ftech-click-y', y + 'px');
+                html.style.setProperty('--ftech-radius', endRadius + 'px');
 
                 _isThemeSwitching = true;
 
-                // Xoay icon toggle
                 if (icon) {
                     icon.classList.remove('ftech-theme-icon-spin');
                     void icon.offsetWidth;
                     icon.classList.add('ftech-theme-icon-spin');
                 }
 
-                // Kích hoạt làn sóng lan tỏa bung nở
-                rippleEl.className = newTheme === 'dark' ? 'ripple-to-dark' : 'ripple-to-light';
-
-                // Tại trung điểm làn sóng che phủ toàn màn hình (380ms): cập nhật theme
-                setTimeout(() => {
+                const applyTheme = () => {
                     html.setAttribute('data-bs-theme', newTheme);
                     html.dataset.bsTheme = newTheme;
                     localStorage.setItem('ftech_theme', newTheme);
@@ -3002,8 +2963,8 @@
 
                     if (icon) {
                         icon.className = newTheme === 'dark'
-                            ? 'bi bi-brightness-high fs-5 text-warning ftech-theme-icon-spin'
-                            : 'bi bi-moon-stars fs-5 text-primary ftech-theme-icon-spin';
+                            ? 'bi bi-brightness-high fs-5 text-warning'
+                            : 'bi bi-moon-stars fs-5 text-primary';
                     }
 
                     if (newTheme === 'dark' && typeof window.ftechSpawnMeteors === 'function') {
@@ -3011,14 +2972,26 @@
                     }
 
                     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
-                }, 380);
+                };
 
-                // Kết thúc hiệu ứng sóng lan tỏa (850ms)
-                setTimeout(() => {
-                    rippleEl.className = '';
+                if (document.startViewTransition) {
+                    const transition = document.startViewTransition(() => {
+                        applyTheme();
+                    });
+
+                    try {
+                        await transition.finished;
+                    } catch (e) {
+                        // ignore abort
+                    } finally {
+                        if (icon) icon.classList.remove('ftech-theme-icon-spin');
+                        _isThemeSwitching = false;
+                    }
+                } else {
+                    applyTheme();
                     if (icon) icon.classList.remove('ftech-theme-icon-spin');
                     _isThemeSwitching = false;
-                }, 850);
+                }
             };
 
             document.addEventListener("DOMContentLoaded", function () {
