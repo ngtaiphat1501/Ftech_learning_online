@@ -72,7 +72,7 @@ public class StudentCourseDAO {
                 + "JOIN UserRoles ur ON u.UserId = ur.UserId "
                 + "WHERE u.UserId = ? "
                 + "AND u.Status = 'ACTIVE' "
-                + "AND ur.RoleCode = 'STUDENT'";
+                + "AND ur.RoleCode IN ('STUDENT', 'INSTRUCTOR')";
 
         try (Connection connection = DBContext.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

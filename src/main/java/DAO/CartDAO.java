@@ -172,7 +172,7 @@ public class CartDAO {
                 + "ON u.UserId = ur.UserId "
                 + "WHERE u.UserId = ? "
                 + "AND u.Status = 'ACTIVE' "
-                + "AND ur.RoleCode = 'STUDENT'";
+                + "AND ur.RoleCode IN ('STUDENT', 'INSTRUCTOR')";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, studentId);
