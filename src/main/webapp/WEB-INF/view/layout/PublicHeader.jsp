@@ -339,8 +339,8 @@
                FTECH METEOR DIAGONAL SWEEP THEME TRANSITION
                ============================================================ */
             /* ============================================================
-               REALISTIC WATER RIPPLE / TELEGRAM THEME TRANSITION
-               (LÀN SÓNG GỢN NƯỚC CHUYỂN ĐỘNG THẬT 1.05S)
+               3D MULTI-LAYERED WATER RIPPLE THEME TRANSITION
+               (LÀN SÓNG NƯỚC 3D ĐỒNG TÂM LAN TỎA MƯỢT MÀ 2.5S)
                ============================================================ */
             ::view-transition-old(root),
             ::view-transition-new(root) {
@@ -354,7 +354,7 @@
 
             ::view-transition-new(root) {
                 z-index: 999999;
-                animation: ftechRealisticCircularReveal 2s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+                animation: ftechRealisticCircularReveal 2.5s cubic-bezier(0.12, 0.85, 0.25, 1) forwards;
             }
 
             @keyframes ftechRealisticCircularReveal {
@@ -366,63 +366,135 @@
                 }
             }
 
-            /* Vành gợn sóng nước thực tế (Realistic Shockwave Ripples) */
-            #ftechWaveRing {
+            /* Container các tầng gợn sóng nước 3D */
+            #ftechWaterWaves {
                 position: fixed;
+                top: 0;
+                left: 0;
+                width: 0;
+                height: 0;
                 pointer-events: none;
                 z-index: 10000000;
+                overflow: visible;
+            }
+
+            .ftech-water-ripple {
+                position: absolute;
+                top: 0;
+                left: 0;
                 border-radius: 50%;
                 transform: translate(-50%, -50%) scale(0);
                 opacity: 0;
+                pointer-events: none;
                 will-change: transform, opacity;
             }
 
-            /* Gợn sóng đồng tâm thứ hai (Secondary concentric ripple) */
-            #ftechWaveRing::before {
-                content: '';
-                position: absolute;
-                inset: 16px;
-                border-radius: 50%;
-                pointer-events: none;
-                opacity: 0.65;
+            /* Đợt sóng 1 - Đỉnh sóng chính (Leading Wave) */
+            .water-anim-active .ripple-1 {
+                animation: ftechWaterRippleAnim 2.5s cubic-bezier(0.12, 0.85, 0.25, 1) forwards;
             }
 
-            #ftechWaveRing.wave-active-dark {
-                border: 3.5px solid #38bdf8;
+            /* Đợt sóng 2 - Gợn sóng thứ cấp 1 */
+            .water-anim-active .ripple-2 {
+                animation: ftechWaterRippleAnim 2.35s cubic-bezier(0.12, 0.85, 0.25, 1) 0.16s forwards;
+            }
+
+            /* Đợt sóng 3 - Gợn sóng thứ cấp 2 */
+            .water-anim-active .ripple-3 {
+                animation: ftechWaterRippleAnim 2.2s cubic-bezier(0.12, 0.85, 0.25, 1) 0.32s forwards;
+            }
+
+            /* Sóng nước 3D Theme Tối (Xanh Cyan cực quang & Tím vũ trụ) */
+            .water-theme-dark .ripple-1 {
+                background: radial-gradient(
+                    circle at center,
+                    transparent 74%,
+                    rgba(56, 189, 248, 0.05) 80%,
+                    rgba(56, 189, 248, 0.35) 88%,
+                    rgba(139, 92, 246, 0.75) 94%,
+                    rgba(56, 189, 248, 0.95) 98%,
+                    transparent 100%
+                );
                 box-shadow: 
-                    0 0 35px 8px rgba(56, 189, 248, 0.85),
-                    inset 0 0 25px 6px rgba(56, 189, 248, 0.6),
-                    0 0 70px 20px rgba(139, 92, 246, 0.5);
-                animation: ftechRealisticWaveAnim 2s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+                    0 0 40px 10px rgba(56, 189, 248, 0.65),
+                    inset 0 0 30px 8px rgba(139, 92, 246, 0.5);
             }
 
-            #ftechWaveRing.wave-active-dark::before {
-                border: 2px dashed rgba(56, 189, 248, 0.7);
+            .water-theme-dark .ripple-2 {
+                background: radial-gradient(
+                    circle at center,
+                    transparent 78%,
+                    rgba(56, 189, 248, 0.05) 84%,
+                    rgba(56, 189, 248, 0.4) 93%,
+                    rgba(56, 189, 248, 0.8) 98%,
+                    transparent 100%
+                );
+                box-shadow: 0 0 30px 6px rgba(56, 189, 248, 0.45);
             }
 
-            #ftechWaveRing.wave-active-light {
-                border: 3.5px solid #f59e0b;
+            .water-theme-dark .ripple-3 {
+                background: radial-gradient(
+                    circle at center,
+                    transparent 82%,
+                    rgba(139, 92, 246, 0.3) 94%,
+                    rgba(56, 189, 248, 0.6) 99%,
+                    transparent 100%
+                );
+                box-shadow: 0 0 20px 4px rgba(139, 92, 246, 0.35);
+            }
+
+            /* Sóng nước 3D Theme Sáng (Vàng bình minh & Xanh mây trời) */
+            .water-theme-light .ripple-1 {
+                background: radial-gradient(
+                    circle at center,
+                    transparent 74%,
+                    rgba(245, 158, 11, 0.05) 80%,
+                    rgba(245, 158, 11, 0.35) 88%,
+                    rgba(96, 165, 250, 0.75) 94%,
+                    rgba(245, 158, 11, 0.95) 98%,
+                    transparent 100%
+                );
                 box-shadow: 
-                    0 0 35px 8px rgba(245, 158, 11, 0.85),
-                    inset 0 0 25px 6px rgba(245, 158, 11, 0.6),
-                    0 0 70px 20px rgba(96, 165, 250, 0.5);
-                animation: ftechRealisticWaveAnim 2s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+                    0 0 40px 10px rgba(245, 158, 11, 0.65),
+                    inset 0 0 30px 8px rgba(96, 165, 250, 0.5);
             }
 
-            #ftechWaveRing.wave-active-light::before {
-                border: 2px dashed rgba(245, 158, 11, 0.7);
+            .water-theme-light .ripple-2 {
+                background: radial-gradient(
+                    circle at center,
+                    transparent 78%,
+                    rgba(245, 158, 11, 0.05) 84%,
+                    rgba(245, 158, 11, 0.4) 93%,
+                    rgba(245, 158, 11, 0.8) 98%,
+                    transparent 100%
+                );
+                box-shadow: 0 0 30px 6px rgba(245, 158, 11, 0.45);
             }
 
-            @keyframes ftechRealisticWaveAnim {
+            .water-theme-light .ripple-3 {
+                background: radial-gradient(
+                    circle at center,
+                    transparent 82%,
+                    rgba(96, 165, 250, 0.3) 94%,
+                    rgba(245, 158, 11, 0.6) 99%,
+                    transparent 100%
+                );
+                box-shadow: 0 0 20px 4px rgba(96, 165, 250, 0.35);
+            }
+
+            @keyframes ftechWaterRippleAnim {
                 0% {
                     transform: translate(-50%, -50%) scale(0);
                     opacity: 0.95;
                 }
-                20% {
+                15% {
                     opacity: 1;
                 }
-                70% {
+                60% {
                     opacity: 0.85;
+                }
+                85% {
+                    opacity: 0.45;
                 }
                 100% {
                     transform: translate(-50%, -50%) scale(1);
@@ -431,7 +503,7 @@
             }
 
             .ftech-theme-icon-spin {
-                animation: ftechThemeIconSpin 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+                animation: ftechThemeIconSpin 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
             }
 
             @keyframes ftechThemeIconSpin {
@@ -442,12 +514,12 @@
 
             [data-bs-theme="light"] #ftech-meteor-layer {
                 opacity: 0.15;
-                transition: opacity 1.8s ease;
+                transition: opacity 2s ease;
             }
 
             [data-bs-theme="dark"] #ftech-meteor-layer {
                 opacity: 1;
-                transition: opacity 1.8s ease;
+                transition: opacity 2s ease;
             }
 
 .logo-gradient {
@@ -2993,7 +3065,7 @@
                 const themeBtn = document.getElementById('themeToggle');
                 const icon = themeBtn ? themeBtn.querySelector('i') : null;
 
-                // Tọa độ click chuột chính xác để làn sóng khởi phát
+                // Tọa độ click chuột chính xác để các tầng sóng nước khởi phát
                 const rect = themeBtn ? themeBtn.getBoundingClientRect() : null;
                 const x = (event && typeof event.clientX === 'number' && event.clientX > 0)
                     ? event.clientX
@@ -3012,20 +3084,27 @@
                 html.style.setProperty('--ftech-click-y', y + 'px');
                 html.style.setProperty('--ftech-radius', endRadius + 'px');
 
-                // Vành sóng nước phát quang chân thực
-                let waveRing = document.getElementById('ftechWaveRing');
-                if (!waveRing) {
-                    waveRing = document.createElement('div');
-                    waveRing.id = 'ftechWaveRing';
-                    waveRing.setAttribute('aria-hidden', 'true');
-                    document.body.appendChild(waveRing);
+                // Tạo container 3 tầng sóng gợn nước
+                let wavesContainer = document.getElementById('ftechWaterWaves');
+                if (!wavesContainer) {
+                    wavesContainer = document.createElement('div');
+                    wavesContainer.id = 'ftechWaterWaves';
+                    wavesContainer.setAttribute('aria-hidden', 'true');
+                    wavesContainer.innerHTML = '<div class="ftech-water-ripple ripple-1"></div>' +
+                                               '<div class="ftech-water-ripple ripple-2"></div>' +
+                                               '<div class="ftech-water-ripple ripple-3"></div>';
+                    document.body.appendChild(wavesContainer);
                 }
 
-                // Căn chỉnh tâm và kích thước vành sóng nước bám sát viền vòng tròn
-                waveRing.style.left = x + 'px';
-                waveRing.style.top = y + 'px';
-                waveRing.style.width = (endRadius * 2.02) + 'px';
-                waveRing.style.height = (endRadius * 2.02) + 'px';
+                // Căn chỉnh tâm và kích thước cho từng tầng gợn sóng
+                const diameter = Math.ceil(endRadius * 2.05);
+                const rings = wavesContainer.querySelectorAll('.ftech-water-ripple');
+                rings.forEach(ring => {
+                    ring.style.left = x + 'px';
+                    ring.style.top = y + 'px';
+                    ring.style.width = diameter + 'px';
+                    ring.style.height = diameter + 'px';
+                });
 
                 _isThemeSwitching = true;
 
@@ -3035,8 +3114,8 @@
                     icon.classList.add('ftech-theme-icon-spin');
                 }
 
-                // Bắt đầu kích hoạt vành sóng gợn nước
-                waveRing.className = newTheme === 'dark' ? 'wave-active-dark' : 'wave-active-light';
+                // Kích hoạt animation sóng nước đồng tâm 3D
+                wavesContainer.className = (newTheme === 'dark' ? 'water-theme-dark' : 'water-theme-light') + ' water-anim-active';
 
                 const applyTheme = () => {
                     html.setAttribute('data-bs-theme', newTheme);
@@ -3068,7 +3147,7 @@
                         // ignore abort
                     } finally {
                         setTimeout(() => {
-                            waveRing.className = '';
+                            wavesContainer.className = '';
                             if (icon) icon.classList.remove('ftech-theme-icon-spin');
                             _isThemeSwitching = false;
                         }, 50);
@@ -3076,10 +3155,10 @@
                 } else {
                     applyTheme();
                     setTimeout(() => {
-                        waveRing.className = '';
+                        wavesContainer.className = '';
                         if (icon) icon.classList.remove('ftech-theme-icon-spin');
                         _isThemeSwitching = false;
-                    }, 2000);
+                    }, 2500);
                 }
             };
 
