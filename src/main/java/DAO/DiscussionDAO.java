@@ -14,9 +14,10 @@ public class DiscussionDAO {
     private long checkAccess(Connection c, long userId, long lessonId) throws SQLException {
         String sql = "SELECT l.CourseId FROM Lessons l JOIN Courses co ON co.CourseId=l.CourseId "
                 + "JOIN Users u ON u.UserId=? AND u.Status='ACTIVE' "
-                + "WHERE l.LessonId=? AND co.Status IN ('PUBLISHED','ARCHIVED') "
-                + "AND (co.InstructorId=? OR EXISTS (SELECT 1 FROM UserRoles ur WHERE ur.UserId=? AND ur.RoleCode='ADMIN') OR EXISTS (SELECT 1 FROM Enrollments e "
-                + "WHERE e.CourseId=co.CourseId AND e.StudentId=? AND e.AccessStatus='ACTIVE'))";
+                + "WHERE l.LessonId=? "
+                + "AND (co.InstructorId=? "
+                + "     OR EXISTS (SELECT 1 FROM UserRoles ur WHERE ur.UserId=? AND ur.RoleCode='ADMIN') "
+                + "     OR (co.Status IN ('PUBLISHED','ARCHIVED') AND EXISTS (SELECT 1 FROM Enrollments e WHERE e.CourseId=co.CourseId AND e.StudentId=? AND e.AccessStatus='ACTIVE')))";
         try (PreparedStatement p=c.prepareStatement(sql)) {
             p.setLong(1,userId); p.setLong(2,lessonId); p.setLong(3,userId); p.setLong(4,userId); p.setLong(5,userId);
             try (ResultSet rs=p.executeQuery()) {
@@ -116,4 +117,3 @@ public class DiscussionDAO {
         }
     }
 }
-

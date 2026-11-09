@@ -215,13 +215,14 @@ public class LearningServlet extends HttpServlet {
             }
 
             if (selectedLesson != null) {
-                if (enrollmentId > 0) {
+                try {
                     DiscussionDAO discussionDAO = new DiscussionDAO();
                     request.setAttribute(
                             "discussionPosts",
                             discussionDAO.getPosts(studentId, selectedLesson.getId())
                     );
-                } else {
+                } catch (Exception ex) {
+                    getServletContext().log("Không thể tải bình luận bài học", ex);
                     request.setAttribute("discussionPosts", new java.util.ArrayList<>());
                 }
             }
