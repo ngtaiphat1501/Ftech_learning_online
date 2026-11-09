@@ -339,53 +339,52 @@
                FTECH METEOR DIAGONAL SWEEP THEME TRANSITION
                ============================================================ */
             /* ============================================================
-               CIRCULAR REVEAL / RIPPLE THEME TRANSITION (Vite.dev / Telegram style)
+               CIRCULAR REVEAL / RIPPLE THEME TRANSITION (LÀN SÓNG LAN TỎA)
                ============================================================ */
-            ::view-transition-old(root),
-            ::view-transition-new(root) {
-                animation: none;
-                mix-blend-mode: normal;
-            }
-
-            ::view-transition-old(root) {
-                z-index: 1;
-            }
-
-            ::view-transition-new(root) {
-                z-index: 999999;
-            }
-
-            /* Fallback ripple overlay cho trình duyệt chưa hỗ trợ View Transitions */
             #ftechThemeRipple {
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 100vw;
-                height: 100vh;
+                border-radius: 50%;
                 pointer-events: none;
-                z-index: 999999;
+                z-index: 99999999;
+                transform: translate(-50%, -50%) scale(0);
                 opacity: 0;
-                will-change: clip-path, opacity;
+                will-change: transform, opacity;
             }
 
             #ftechThemeRipple.ripple-to-dark {
-                opacity: 1;
-                background-color: #0b0f19;
-                animation: ftechCircleRippleAnim 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                background: radial-gradient(circle, #0b0f19 70%, #0f172a 100%);
+                box-shadow: 
+                    0 0 0 6px #38bdf8,
+                    0 0 50px 20px rgba(56, 189, 248, 0.85),
+                    0 0 100px 45px rgba(139, 92, 246, 0.65);
+                animation: ftechExpandingRipple 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
             }
 
             #ftechThemeRipple.ripple-to-light {
-                opacity: 1;
-                background-color: #f8fafc;
-                animation: ftechCircleRippleAnim 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                background: radial-gradient(circle, #f8fafc 70%, #ffffff 100%);
+                box-shadow: 
+                    0 0 0 6px #f59e0b,
+                    0 0 50px 20px rgba(245, 158, 11, 0.85),
+                    0 0 100px 45px rgba(96, 165, 250, 0.65);
+                animation: ftechExpandingRipple 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
             }
 
-            @keyframes ftechCircleRippleAnim {
+            @keyframes ftechExpandingRipple {
                 0% {
-                    clip-path: circle(0px at var(--ripple-x, 50%) var(--ripple-y, 50%));
+                    transform: translate(-50%, -50%) scale(0);
+                    opacity: 1;
+                }
+                60% {
+                    opacity: 1;
+                }
+                85% {
+                    opacity: 0.95;
                 }
                 100% {
-                    clip-path: circle(var(--ripple-radius, 150vmax) at var(--ripple-x, 50%) var(--ripple-y, 50%));
+                    transform: translate(-50%, -50%) scale(1);
+                    opacity: 0;
                 }
             }
 
@@ -2952,7 +2951,7 @@
                 const themeBtn = document.getElementById('themeToggle');
                 const icon = themeBtn ? themeBtn.querySelector('i') : null;
 
-                // Tọa độ tâm vòng tròn lan tỏa (từ cú click chuột hoặc tâm nút toggle)
+                // Tọa độ tâm xuất phát của làn sóng tròn (vị trí click chuột hoặc tâm icon toggle)
                 const rect = themeBtn ? themeBtn.getBoundingClientRect() : null;
                 const x = (event && typeof event.clientX === 'number' && event.clientX > 0)
                     ? event.clientX
@@ -2961,13 +2960,41 @@
                     ? event.clientY
                     : (rect ? rect.top + rect.height / 2 : window.innerHeight / 2);
 
-                // Bán kính tối đa để vòng tròn phủ trọn góc xa nhất của màn hình
-                const endRadius = Math.hypot(
+                // Đường kính sóng cực đại bao trùm toàn bộ màn hình
+                const maxDist = Math.hypot(
                     Math.max(x, window.innerWidth - x),
                     Math.max(y, window.innerHeight - y)
                 );
+                const diameter = Math.ceil(maxDist * 2.6);
 
-                const applyThemeChanges = () => {
+                let rippleEl = document.getElementById('ftechThemeRipple');
+                if (!rippleEl) {
+                    rippleEl = document.createElement('div');
+                    rippleEl.id = 'ftechThemeRipple';
+                    rippleEl.setAttribute('aria-hidden', 'true');
+                    document.body.appendChild(rippleEl);
+                }
+
+                // Định vị tâm tại vị trí con trỏ chuột
+                rippleEl.style.left = x + 'px';
+                rippleEl.style.top = y + 'px';
+                rippleEl.style.width = diameter + 'px';
+                rippleEl.style.height = diameter + 'px';
+
+                _isThemeSwitching = true;
+
+                // Xoay icon toggle
+                if (icon) {
+                    icon.classList.remove('ftech-theme-icon-spin');
+                    void icon.offsetWidth;
+                    icon.classList.add('ftech-theme-icon-spin');
+                }
+
+                // Kích hoạt làn sóng lan tỏa bung nở
+                rippleEl.className = newTheme === 'dark' ? 'ripple-to-dark' : 'ripple-to-light';
+
+                // Tại trung điểm làn sóng che phủ toàn màn hình (380ms): cập nhật theme
+                setTimeout(() => {
                     html.setAttribute('data-bs-theme', newTheme);
                     html.dataset.bsTheme = newTheme;
                     localStorage.setItem('ftech_theme', newTheme);
@@ -2984,70 +3011,14 @@
                     }
 
                     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
-                };
+                }, 380);
 
-                _isThemeSwitching = true;
-
-                if (icon) {
-                    icon.classList.remove('ftech-theme-icon-spin');
-                    void icon.offsetWidth;
-                    icon.classList.add('ftech-theme-icon-spin');
-                }
-
-                // 1. Nếu trình duyệt hỗ trợ View Transitions API (Chrome, Edge, Safari 18+)
-                if (typeof document.startViewTransition === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    const transition = document.startViewTransition(() => {
-                        applyThemeChanges();
-                    });
-
-                    transition.ready.then(() => {
-                        const clipPath = [
-                            `circle(0px at ${x}px ${y}px)`,
-                            `circle(${endRadius}px at ${x}px ${y}px)`
-                        ];
-
-                        document.documentElement.animate(
-                            {
-                                clipPath: clipPath
-                            },
-                            {
-                                duration: 700,
-                                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-                                pseudoElement: '::view-transition-new(root)'
-                            }
-                        );
-                    }).finally(() => {
-                        setTimeout(() => {
-                            if (icon) icon.classList.remove('ftech-theme-icon-spin');
-                            _isThemeSwitching = false;
-                        }, 700);
-                    });
-
-                } else {
-                    // 2. Fallback cho trình duyệt chưa hỗ trợ View Transitions (dùng circular ripple overlay)
-                    let rippleEl = document.getElementById('ftechThemeRipple');
-                    if (!rippleEl) {
-                        rippleEl = document.createElement('div');
-                        rippleEl.id = 'ftechThemeRipple';
-                        rippleEl.setAttribute('aria-hidden', 'true');
-                        document.body.appendChild(rippleEl);
-                    }
-
-                    rippleEl.style.setProperty('--ripple-x', `${x}px`);
-                    rippleEl.style.setProperty('--ripple-y', `${y}px`);
-                    rippleEl.style.setProperty('--ripple-radius', `${endRadius}px`);
-                    rippleEl.className = newTheme === 'dark' ? 'ripple-to-dark' : 'ripple-to-light';
-
-                    setTimeout(() => {
-                        applyThemeChanges();
-                    }, 350);
-
-                    setTimeout(() => {
-                        rippleEl.className = '';
-                        if (icon) icon.classList.remove('ftech-theme-icon-spin');
-                        _isThemeSwitching = false;
-                    }, 750);
-                }
+                // Kết thúc hiệu ứng sóng lan tỏa (850ms)
+                setTimeout(() => {
+                    rippleEl.className = '';
+                    if (icon) icon.classList.remove('ftech-theme-icon-spin');
+                    _isThemeSwitching = false;
+                }, 850);
             };
 
             document.addEventListener("DOMContentLoaded", function () {
