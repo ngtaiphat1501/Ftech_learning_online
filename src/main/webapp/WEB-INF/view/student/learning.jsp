@@ -701,6 +701,10 @@
     }
 
     function showAppAlertModal(title, message, type) {
+        if (window.ftechAlert) {
+            window.ftechAlert({ title: title, message: message.replace(/<[^>]+>/g, ''), type: type === 'danger' ? 'error' : type });
+            return;
+        }
         const modalEl = document.getElementById('appAlertModal');
         if (!modalEl) {
             alert(message.replace(/<[^>]+>/g, ''));
@@ -726,6 +730,10 @@
     }
 
     function showAppToast(title, message, type) {
+        if (window.ftechToast) {
+            window.ftechToast(message, type === 'danger' ? 'error' : (type || 'success'), title);
+            return;
+        }
         const toastEl = document.getElementById('appToast');
         if (!toastEl) return;
         const bodyEl = document.getElementById('appToastBody');

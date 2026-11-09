@@ -420,7 +420,7 @@
                 <i class="bi bi-printer-fill fs-5"></i>
                 <span>In chứng chỉ / Lưu PDF</span>
             </button>
-            <button type="button" onclick="navigator.clipboard.writeText(window.location.href); alert('Đã sao chép liên kết chứng chỉ!');" class="btn btn-outline-light rounded-pill px-3 py-2" title="Sao chép liên kết xác thực">
+            <button type="button" onclick="navigator.clipboard.writeText(window.location.href); if (window.ftechToast) window.ftechToast('Đã sao chép liên kết chứng chỉ!', 'success'); else alert('Đã sao chép liên kết chứng chỉ!');" class="btn btn-outline-light rounded-pill px-3 py-2" title="Sao chép liên kết xác thực">
                 <i class="bi bi-share me-1"></i><span>Chia sẻ</span>
             </button>
         </div>

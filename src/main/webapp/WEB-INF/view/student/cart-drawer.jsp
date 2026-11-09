@@ -214,6 +214,7 @@
 
             // Cập nhật lại drawer live
             await loadCartDrawer();
+            if (window.ftechToast) window.ftechToast("Đã xóa khóa học khỏi giỏ hàng.", "info");
 
             // Đồng bộ trạng thái nút nếu đang ở trang chi tiết khóa học
             if (typeof updateCartButtonState === "function") {
@@ -286,6 +287,7 @@
                 offcanvas.show();
             }
             await loadCartDrawer();
+            if (window.ftechToast) window.ftechToast("Đã thêm khóa học vào giỏ hàng thành công!", "success");
 
             // Đồng bộ trạng thái nút nếu đang ở trang chi tiết khóa học
             if (typeof updateCartButtonState === "function") {

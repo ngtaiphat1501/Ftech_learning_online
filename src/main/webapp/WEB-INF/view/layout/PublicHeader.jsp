@@ -207,6 +207,8 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
             rel="stylesheet">
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
         <style>
             /* =========================================
@@ -2913,3 +2915,315 @@
             );
 
         </script>
+
+<!-- ============================================================
+     FTECH GLOBAL NOTIFICATION & DIALOG HUB
+     ============================================================ -->
+<style>
+.ftech-glass-modal {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+[data-bs-theme="light"] .ftech-glass-modal {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #0f172a !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+}
+.ftech-notice-icon-box {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ftech-icon-error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    box-shadow: 0 0 24px rgba(239, 68, 68, 0.25);
+}
+.ftech-icon-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    box-shadow: 0 0 24px rgba(245, 158, 11, 0.25);
+}
+.ftech-icon-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    box-shadow: 0 0 24px rgba(16, 185, 129, 0.25);
+}
+.ftech-icon-info {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    box-shadow: 0 0 24px rgba(59, 130, 246, 0.25);
+}
+.ftech-toast-progress {
+    height: 3px;
+    width: 100%;
+    background: #3b82f6;
+    animation: ftechToastCountdown 3.5s linear forwards;
+}
+@keyframes ftechToastCountdown {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+[data-bs-theme="light"] #ftechGlobalToast {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #0f172a !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+}
+[data-bs-theme="light"] #ftechGlobalToast .btn-close {
+    filter: none;
+}
+</style>
+
+<!-- 1. Global Alert / Error / Warning / Success Modal -->
+<div class="modal fade" id="ftechGlobalAlertModal" tabindex="-1" aria-labelledby="ftechGlobalAlertTitle" aria-hidden="true" style="z-index: 10600;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 ftech-glass-modal" style="background: var(--ftech-card-bg, #151821); color: var(--ftech-text-main, #ffffff); border: 1px solid var(--ftech-card-border, rgba(255,255,255,0.1)) !important;">
+            <div class="modal-body text-center p-4 pt-5">
+                <div id="ftechGlobalAlertIconBox" class="ftech-notice-icon-box mx-auto mb-3 ftech-icon-error">
+                    <i id="ftechGlobalAlertIcon" class="bi bi-exclamation-triangle-fill fs-1"></i>
+                </div>
+                <h5 class="fw-bold mb-2" id="ftechGlobalAlertTitle">Thông báo</h5>
+                <p class="text-secondary mb-4 small" id="ftechGlobalAlertMessage" style="line-height: 1.6; word-break: break-word;"></p>
+                <div class="d-grid gap-2">
+                    <button type="button" id="ftechGlobalAlertBtn" class="btn btn-primary rounded-pill py-2 fw-semibold shadow-sm" data-bs-dismiss="modal">
+                        Đã hiểu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Global Confirmation Modal (replaces native confirm) -->
+<div class="modal fade" id="ftechGlobalConfirmModal" tabindex="-1" aria-labelledby="ftechGlobalConfirmTitle" aria-hidden="true" style="z-index: 10650;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 ftech-glass-modal" style="background: var(--ftech-card-bg, #151821); color: var(--ftech-text-main, #ffffff); border: 1px solid var(--ftech-card-border, rgba(255,255,255,0.1)) !important;">
+            <div class="modal-body text-center p-4 pt-5">
+                <div id="ftechGlobalConfirmIconBox" class="ftech-notice-icon-box mx-auto mb-3 ftech-icon-warning">
+                    <i id="ftechGlobalConfirmIcon" class="bi bi-question-circle-fill fs-1"></i>
+                </div>
+                <h5 class="fw-bold mb-2" id="ftechGlobalConfirmTitle">Xác nhận thao tác</h5>
+                <p class="text-secondary mb-4 small" id="ftechGlobalConfirmMessage" style="line-height: 1.6; word-break: break-word;"></p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" id="ftechGlobalConfirmCancelBtn" class="btn btn-outline-secondary rounded-pill px-4 py-2" data-bs-dismiss="modal">
+                        Hủy bỏ
+                    </button>
+                    <button type="button" id="ftechGlobalConfirmOkBtn" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold shadow-sm">
+                        Xác nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Global Floating Toast Container -->
+<div id="ftechToastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 10700;">
+    <div id="ftechGlobalToast" class="toast align-items-center border-0 rounded-4 shadow-lg overflow-hidden" role="alert" aria-live="assertive" aria-atomic="true" style="background: var(--ftech-card-bg, #1a202c); color: var(--ftech-text-main, #ffffff); border: 1px solid var(--ftech-card-border, rgba(255,255,255,0.15)) !important;">
+        <div class="d-flex p-3 align-items-center gap-3">
+            <div id="ftechToastIconBox" class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                <i id="ftechToastIcon" class="bi fs-5"></i>
+            </div>
+            <div class="flex-grow-1" style="min-width: 0;">
+                <div class="fw-bold small" id="ftechToastTitle">Thông báo</div>
+                <div class="small opacity-75" id="ftechToastMessage">Nội dung</div>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-1 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="ftechToastProgress" class="ftech-toast-progress"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// GLOBAL FTECH NOTIFICATION API
+// ============================================================
+window.ftechAlert = function(options) {
+    if (typeof options === 'string') {
+        options = { message: options, type: 'warning' };
+    }
+    const title = options.title || (options.type === 'error' ? 'Có lỗi xảy ra' : (options.type === 'success' ? 'Thành công' : 'Thông báo'));
+    const message = options.message || '';
+    const type = options.type || 'warning';
+    const buttonText = options.buttonText || 'Đã hiểu';
+
+    const modalEl = document.getElementById('ftechGlobalAlertModal');
+    if (!modalEl || typeof bootstrap === 'undefined') {
+        window._nativeAlert ? window._nativeAlert(message) : console.warn(message);
+        return;
+    }
+
+    const titleEl = document.getElementById('ftechGlobalAlertTitle');
+    const msgEl = document.getElementById('ftechGlobalAlertMessage');
+    const iconBox = document.getElementById('ftechGlobalAlertIconBox');
+    const icon = document.getElementById('ftechGlobalAlertIcon');
+    const btn = document.getElementById('ftechGlobalAlertBtn');
+
+    if (titleEl) titleEl.innerText = title;
+    if (msgEl) msgEl.innerText = message;
+    if (btn) btn.innerText = buttonText;
+
+    if (iconBox && icon) {
+        iconBox.className = 'ftech-notice-icon-box mx-auto mb-3 ftech-icon-' + type;
+        if (type === 'error') icon.className = 'bi bi-x-circle-fill fs-1 text-danger';
+        else if (type === 'success') icon.className = 'bi bi-check-circle-fill fs-1 text-success';
+        else if (type === 'info') icon.className = 'bi bi-info-circle-fill fs-1 text-info';
+        else icon.className = 'bi bi-exclamation-triangle-fill fs-1 text-warning';
+    }
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+};
+
+window.ftechToast = function(message, type, title) {
+    type = type || 'success';
+    const toastEl = document.getElementById('ftechGlobalToast');
+    if (!toastEl || typeof bootstrap === 'undefined') {
+        window.ftechAlert({ message: message, type: type, title: title });
+        return;
+    }
+
+    const titleEl = document.getElementById('ftechToastTitle');
+    const msgEl = document.getElementById('ftechToastMessage');
+    const iconBox = document.getElementById('ftechToastIconBox');
+    const icon = document.getElementById('ftechToastIcon');
+    const prog = document.getElementById('ftechToastProgress');
+
+    if (titleEl) titleEl.innerText = title || (type === 'success' ? 'Thành công' : (type === 'error' ? 'Thất bại' : 'Thông báo'));
+    if (msgEl) msgEl.innerHTML = message || '';
+
+    if (iconBox && icon) {
+        if (type === 'success') {
+            iconBox.style.background = 'rgba(16, 185, 129, 0.15)';
+            icon.className = 'bi bi-check-circle-fill text-success';
+            if (prog) prog.style.background = '#10b981';
+        } else if (type === 'error') {
+            iconBox.style.background = 'rgba(239, 68, 68, 0.15)';
+            icon.className = 'bi bi-x-circle-fill text-danger';
+            if (prog) prog.style.background = '#ef4444';
+        } else {
+            iconBox.style.background = 'rgba(59, 130, 246, 0.15)';
+            icon.className = 'bi bi-info-circle-fill text-primary';
+            if (prog) prog.style.background = '#3b82f6';
+        }
+    }
+
+    if (prog) {
+        prog.style.animation = 'none';
+        prog.offsetHeight;
+        prog.style.animation = 'ftechToastCountdown 3.5s linear forwards';
+    }
+
+    const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3500 });
+    toast.show();
+};
+
+window.ftechConfirm = function(message, options) {
+    options = options || {};
+    const title = options.title || 'Xác nhận thao tác';
+    const confirmText = options.confirmText || 'Xác nhận';
+    const cancelText = options.cancelText || 'Hủy bỏ';
+    const isDanger = options.isDanger !== false;
+
+    return new Promise(function(resolve) {
+        const modalEl = document.getElementById('ftechGlobalConfirmModal');
+        if (!modalEl || typeof bootstrap === 'undefined') {
+            resolve(window._nativeConfirm ? window._nativeConfirm(message) : true);
+            return;
+        }
+
+        const titleEl = document.getElementById('ftechGlobalConfirmTitle');
+        const msgEl = document.getElementById('ftechGlobalConfirmMessage');
+        const okBtn = document.getElementById('ftechGlobalConfirmOkBtn');
+        const cancelBtn = document.getElementById('ftechGlobalConfirmCancelBtn');
+
+        if (titleEl) titleEl.innerText = title;
+        if (msgEl) msgEl.innerText = message;
+        if (okBtn) {
+            okBtn.innerText = confirmText;
+            okBtn.className = isDanger ? 'btn btn-danger rounded-pill px-4 py-2 fw-semibold shadow-sm' : 'btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm';
+        }
+        if (cancelBtn) cancelBtn.innerText = cancelText;
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+        function handleConfirm() {
+            cleanup();
+            modal.hide();
+            resolve(true);
+        }
+        function handleCancel() {
+            cleanup();
+            resolve(false);
+        }
+
+        function cleanup() {
+            okBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+        }
+
+        okBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+
+        modal.show();
+    });
+};
+
+// 4. SMART OVERRIDE for window.alert
+if (!window._nativeAlert) {
+    window._nativeAlert = window.alert;
+    window.alert = function(msg) {
+        if (typeof msg !== 'string') {
+            try { msg = JSON.stringify(msg); } catch (e) { msg = String(msg); }
+        }
+        const lower = msg.toLowerCase();
+        if (lower.includes('sao chép') || lower.includes('thành công') || lower.includes('đã lưu')) {
+            window.ftechToast(msg, 'success');
+        } else {
+            window.ftechAlert({ message: msg, type: 'warning', title: 'Thông báo' });
+        }
+    };
+}
+
+// 5. SMART INTERCEPTOR for forms with onsubmit="return confirm(...)"
+document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (!form || form.tagName !== 'FORM') return;
+    if (form.dataset.ftechConfirmed === 'true') return;
+
+    const onsubmitAttr = form.getAttribute('onsubmit');
+    if (onsubmitAttr && onsubmitAttr.includes('confirm(')) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        const match = onsubmitAttr.match(/confirm\s*\(\s*['"](.*?)['"]\s*\)/);
+        const confirmMsg = match ? match[1] : 'Bạn có chắc chắn muốn thực hiện thao tác này?';
+
+        window.ftechConfirm(confirmMsg).then(function(confirmed) {
+            if (confirmed) {
+                form.dataset.ftechConfirmed = 'true';
+                form.submit();
+            }
+        });
+    }
+}, true);
+
+// 6. AUTO-TRIGGER from URL (?error=... or ?msg=...)
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const msg = urlParams.get('msg');
+        if (error) {
+            window.ftechAlert({ title: 'Thông báo lỗi', message: error, type: 'error' });
+        } else if (msg) {
+            window.ftechToast(msg, 'success');
+        }
+    } catch (e) {}
+});
+</script>
