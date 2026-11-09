@@ -198,13 +198,13 @@
       </div>
 
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center">
-        <!-- Thành viên 1: Vương Hoàng Phúc -->
+        <!-- Thành viên 1: Võ Thế Vinh -->
         <div class="col">
           <div class="card h-100 border border-secondary border-opacity-25 rounded-4 text-center p-3 shadow-sm">
             <div class="ratio ratio-1x1 w-50 mx-auto mb-3">
-              <div class="rounded-circle bg-primary text-white fs-2 fw-bold d-flex align-items-center justify-content-center shadow-sm">P</div>
+              <div class="rounded-circle bg-primary text-white fs-2 fw-bold d-flex align-items-center justify-content-center shadow-sm">V</div>
             </div>
-            <h3 class="h6 fw-bold mb-1 text-body">Vương Hoàng Phúc</h3>
+            <h3 class="h6 fw-bold mb-1 text-body">Võ Thế Vinh</h3>
             <div class="mb-2">
               <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-2.5 py-1 small">Trưởng nhóm</span>
             </div>
@@ -296,7 +296,8 @@
               • Ngân hàng câu hỏi & Chấm điểm
             </div>
           </div>
-        </div>      </div>
+        </div>
+      </div>
     </div>
   </section>
 
