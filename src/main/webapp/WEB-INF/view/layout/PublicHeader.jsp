@@ -339,7 +339,8 @@
                FTECH METEOR DIAGONAL SWEEP THEME TRANSITION
                ============================================================ */
             /* ============================================================
-               TELEGRAM CIRCULAR REVEAL THEME TRANSITION (CHUẨN TELEGRAM)
+               REALISTIC WATER RIPPLE / TELEGRAM THEME TRANSITION
+               (LÀN SÓNG GỢN NƯỚC CHUYỂN ĐỘNG THẬT 1.05S)
                ============================================================ */
             ::view-transition-old(root),
             ::view-transition-new(root) {
@@ -353,20 +354,84 @@
 
             ::view-transition-new(root) {
                 z-index: 999999;
-                animation: ftechTelegramCircularReveal 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+                animation: ftechRealisticCircularReveal 1.05s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
             }
 
-            @keyframes ftechTelegramCircularReveal {
-                from {
+            @keyframes ftechRealisticCircularReveal {
+                0% {
                     clip-path: circle(0px at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%));
                 }
-                to {
+                100% {
                     clip-path: circle(var(--ftech-radius, 150vmax) at var(--ftech-click-x, 50%) var(--ftech-click-y, 50%));
                 }
             }
 
+            /* Vành gợn sóng nước thực tế (Realistic Shockwave Ripples) */
+            #ftechWaveRing {
+                position: fixed;
+                pointer-events: none;
+                z-index: 10000000;
+                border-radius: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+                will-change: transform, opacity;
+            }
+
+            /* Gợn sóng đồng tâm thứ hai (Secondary concentric ripple) */
+            #ftechWaveRing::before {
+                content: '';
+                position: absolute;
+                inset: 16px;
+                border-radius: 50%;
+                pointer-events: none;
+                opacity: 0.65;
+            }
+
+            #ftechWaveRing.wave-active-dark {
+                border: 3.5px solid #38bdf8;
+                box-shadow: 
+                    0 0 35px 8px rgba(56, 189, 248, 0.85),
+                    inset 0 0 25px 6px rgba(56, 189, 248, 0.6),
+                    0 0 70px 20px rgba(139, 92, 246, 0.5);
+                animation: ftechRealisticWaveAnim 1.05s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+            }
+
+            #ftechWaveRing.wave-active-dark::before {
+                border: 2px dashed rgba(56, 189, 248, 0.7);
+            }
+
+            #ftechWaveRing.wave-active-light {
+                border: 3.5px solid #f59e0b;
+                box-shadow: 
+                    0 0 35px 8px rgba(245, 158, 11, 0.85),
+                    inset 0 0 25px 6px rgba(245, 158, 11, 0.6),
+                    0 0 70px 20px rgba(96, 165, 250, 0.5);
+                animation: ftechRealisticWaveAnim 1.05s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+            }
+
+            #ftechWaveRing.wave-active-light::before {
+                border: 2px dashed rgba(245, 158, 11, 0.7);
+            }
+
+            @keyframes ftechRealisticWaveAnim {
+                0% {
+                    transform: translate(-50%, -50%) scale(0);
+                    opacity: 0.95;
+                }
+                20% {
+                    opacity: 1;
+                }
+                70% {
+                    opacity: 0.85;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1);
+                    opacity: 0;
+                }
+            }
+
             .ftech-theme-icon-spin {
-                animation: ftechThemeIconSpin 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+                animation: ftechThemeIconSpin 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
             }
 
             @keyframes ftechThemeIconSpin {
@@ -376,13 +441,13 @@
             }
 
             [data-bs-theme="light"] #ftech-meteor-layer {
-                opacity: 0.2;
-                transition: opacity 0.8s ease;
+                opacity: 0.15;
+                transition: opacity 0.85s ease;
             }
 
             [data-bs-theme="dark"] #ftech-meteor-layer {
                 opacity: 1;
-                transition: opacity 0.8s ease;
+                transition: opacity 0.85s ease;
             }
 
 .logo-gradient {
@@ -2928,7 +2993,7 @@
                 const themeBtn = document.getElementById('themeToggle');
                 const icon = themeBtn ? themeBtn.querySelector('i') : null;
 
-                // Tọa độ click chuột hoặc tâm nút bấm (giống Telegram)
+                // Tọa độ click chuột chính xác để làn sóng khởi phát
                 const rect = themeBtn ? themeBtn.getBoundingClientRect() : null;
                 const x = (event && typeof event.clientX === 'number' && event.clientX > 0)
                     ? event.clientX
@@ -2942,10 +3007,25 @@
                     Math.max(y, window.innerHeight - y)
                 );
 
-                // Truyền biến CSS để @keyframes ftechTelegramCircularReveal tự động chạy
+                // Gán biến CSS cho mặt nạ Circular Reveal
                 html.style.setProperty('--ftech-click-x', x + 'px');
                 html.style.setProperty('--ftech-click-y', y + 'px');
                 html.style.setProperty('--ftech-radius', endRadius + 'px');
+
+                // Vành sóng nước phát quang chân thực
+                let waveRing = document.getElementById('ftechWaveRing');
+                if (!waveRing) {
+                    waveRing = document.createElement('div');
+                    waveRing.id = 'ftechWaveRing';
+                    waveRing.setAttribute('aria-hidden', 'true');
+                    document.body.appendChild(waveRing);
+                }
+
+                // Căn chỉnh tâm và kích thước vành sóng nước bám sát viền vòng tròn
+                waveRing.style.left = x + 'px';
+                waveRing.style.top = y + 'px';
+                waveRing.style.width = (endRadius * 2.02) + 'px';
+                waveRing.style.height = (endRadius * 2.02) + 'px';
 
                 _isThemeSwitching = true;
 
@@ -2954,6 +3034,9 @@
                     void icon.offsetWidth;
                     icon.classList.add('ftech-theme-icon-spin');
                 }
+
+                // Bắt đầu kích hoạt vành sóng gợn nước
+                waveRing.className = newTheme === 'dark' ? 'wave-active-dark' : 'wave-active-light';
 
                 const applyTheme = () => {
                     html.setAttribute('data-bs-theme', newTheme);
@@ -2984,13 +3067,19 @@
                     } catch (e) {
                         // ignore abort
                     } finally {
-                        if (icon) icon.classList.remove('ftech-theme-icon-spin');
-                        _isThemeSwitching = false;
+                        setTimeout(() => {
+                            waveRing.className = '';
+                            if (icon) icon.classList.remove('ftech-theme-icon-spin');
+                            _isThemeSwitching = false;
+                        }, 50);
                     }
                 } else {
                     applyTheme();
-                    if (icon) icon.classList.remove('ftech-theme-icon-spin');
-                    _isThemeSwitching = false;
+                    setTimeout(() => {
+                        waveRing.className = '';
+                        if (icon) icon.classList.remove('ftech-theme-icon-spin');
+                        _isThemeSwitching = false;
+                    }, 1050);
                 }
             };
 
