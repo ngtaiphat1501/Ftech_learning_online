@@ -338,69 +338,54 @@
             /* ============================================================
                FTECH METEOR DIAGONAL SWEEP THEME TRANSITION
                ============================================================ */
-            #ftechThemeSweep {
+            /* ============================================================
+               CIRCULAR REVEAL / RIPPLE THEME TRANSITION (Vite.dev / Telegram style)
+               ============================================================ */
+            ::view-transition-old(root),
+            ::view-transition-new(root) {
+                animation: none;
+                mix-blend-mode: normal;
+            }
+
+            ::view-transition-old(root) {
+                z-index: 1;
+            }
+
+            ::view-transition-new(root) {
+                z-index: 999999;
+            }
+
+            /* Fallback ripple overlay cho trình duyệt chưa hỗ trợ View Transitions */
+            #ftechThemeRipple {
                 position: fixed;
-                top: -60vh;
-                left: -60vw;
-                width: 220vw;
-                height: 220vh;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
                 pointer-events: none;
-                z-index: 9999999;
+                z-index: 999999;
                 opacity: 0;
-                transform: rotate(-45deg) translateY(-140%);
-                will-change: transform, opacity;
+                will-change: clip-path, opacity;
             }
 
-            #ftechThemeSweep.sweep-to-dark {
+            #ftechThemeRipple.ripple-to-dark {
                 opacity: 1;
-                background: linear-gradient(
-                    180deg,
-                    rgba(11, 15, 25, 0) 0%,
-                    rgba(15, 23, 42, 0.85) 20%,
-                    #0b0f19 50%,
-                    rgba(15, 23, 42, 0.85) 80%,
-                    rgba(11, 15, 25, 0) 100%
-                );
-                border-bottom: 4px solid #38bdf8;
-                box-shadow: 
-                    0 10px 45px rgba(56, 189, 248, 0.9),
-                    0 25px 80px rgba(139, 92, 246, 0.7),
-                    0 60px 140px rgba(11, 15, 25, 0.98);
-                animation: ftechMeteorSweepAnim 1.15s cubic-bezier(0.25, 1, 0.4, 1) forwards;
+                background-color: #0b0f19;
+                animation: ftechCircleRippleAnim 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             }
 
-            #ftechThemeSweep.sweep-to-light {
+            #ftechThemeRipple.ripple-to-light {
                 opacity: 1;
-                background: linear-gradient(
-                    180deg,
-                    rgba(248, 250, 252, 0) 0%,
-                    rgba(255, 255, 255, 0.9) 20%,
-                    #f8fafc 50%,
-                    rgba(255, 255, 255, 0.9) 80%,
-                    rgba(248, 250, 252, 0) 100%
-                );
-                border-bottom: 4px solid #f59e0b;
-                box-shadow: 
-                    0 10px 45px rgba(245, 158, 11, 0.9),
-                    0 25px 80px rgba(96, 165, 250, 0.6),
-                    0 60px 140px rgba(255, 255, 255, 0.98);
-                animation: ftechMeteorSweepAnim 1.15s cubic-bezier(0.25, 1, 0.4, 1) forwards;
+                background-color: #f8fafc;
+                animation: ftechCircleRippleAnim 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             }
 
-            @keyframes ftechMeteorSweepAnim {
+            @keyframes ftechCircleRippleAnim {
                 0% {
-                    opacity: 0.95;
-                    transform: rotate(-45deg) translateY(-130%);
-                }
-                40% {
-                    opacity: 1;
-                }
-                85% {
-                    opacity: 0.95;
+                    clip-path: circle(0px at var(--ripple-x, 50%) var(--ripple-y, 50%));
                 }
                 100% {
-                    opacity: 0;
-                    transform: rotate(-45deg) translateY(130%);
+                    clip-path: circle(var(--ripple-radius, 150vmax) at var(--ripple-x, 50%) var(--ripple-y, 50%));
                 }
             }
 
@@ -2955,7 +2940,7 @@
             };
 
             let _isThemeSwitching = false;
-            window.ftechSwitchTheme = function(targetTheme) {
+            window.ftechSwitchTheme = function(targetTheme, event) {
                 if (_isThemeSwitching) return;
 
                 const html = document.documentElement;
@@ -2964,19 +2949,44 @@
 
                 if (newTheme === currentTheme) return;
 
-                let sweepEl = document.getElementById('ftechThemeSweep');
-                if (!sweepEl) {
-                    sweepEl = document.createElement('div');
-                    sweepEl.id = 'ftechThemeSweep';
-                    sweepEl.setAttribute('aria-hidden', 'true');
-                    document.body.appendChild(sweepEl);
-                }
-
                 const themeBtn = document.getElementById('themeToggle');
                 const icon = themeBtn ? themeBtn.querySelector('i') : null;
 
+                // Tọa độ tâm vòng tròn lan tỏa (từ cú click chuột hoặc tâm nút toggle)
+                const rect = themeBtn ? themeBtn.getBoundingClientRect() : null;
+                const x = (event && typeof event.clientX === 'number' && event.clientX > 0)
+                    ? event.clientX
+                    : (rect ? rect.left + rect.width / 2 : window.innerWidth / 2);
+                const y = (event && typeof event.clientY === 'number' && event.clientY > 0)
+                    ? event.clientY
+                    : (rect ? rect.top + rect.height / 2 : window.innerHeight / 2);
+
+                // Bán kính tối đa để vòng tròn phủ trọn góc xa nhất của màn hình
+                const endRadius = Math.hypot(
+                    Math.max(x, window.innerWidth - x),
+                    Math.max(y, window.innerHeight - y)
+                );
+
+                const applyThemeChanges = () => {
+                    html.setAttribute('data-bs-theme', newTheme);
+                    html.dataset.bsTheme = newTheme;
+                    localStorage.setItem('ftech_theme', newTheme);
+                    document.cookie = 'ftech_theme=' + newTheme + ';path=/;max-age=31536000';
+
+                    if (icon) {
+                        icon.className = newTheme === 'dark'
+                            ? 'bi bi-brightness-high fs-5 text-warning ftech-theme-icon-spin'
+                            : 'bi bi-moon-stars fs-5 text-primary ftech-theme-icon-spin';
+                    }
+
+                    if (newTheme === 'dark' && typeof window.ftechSpawnMeteors === 'function') {
+                        window.ftechSpawnMeteors(true);
+                    }
+
+                    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+                };
+
                 _isThemeSwitching = true;
-                sweepEl.className = newTheme === 'dark' ? 'sweep-to-dark' : 'sweep-to-light';
 
                 if (icon) {
                     icon.classList.remove('ftech-theme-icon-spin');
@@ -2984,31 +2994,60 @@
                     icon.classList.add('ftech-theme-icon-spin');
                 }
 
-                // Chuyển theme tại trung điểm sóng quét (480ms) khi dải sao băng che kín màn hình
-                setTimeout(() => {
-                    html.setAttribute('data-bs-theme', newTheme);
-                    html.dataset.bsTheme = newTheme;
-                    localStorage.setItem('ftech_theme', newTheme);
-                    document.cookie = 'ftech_theme=' + newTheme + ';path=/;max-age=31536000';
+                // 1. Nếu trình duyệt hỗ trợ View Transitions API (Chrome, Edge, Safari 18+)
+                if (typeof document.startViewTransition === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    const transition = document.startViewTransition(() => {
+                        applyThemeChanges();
+                    });
 
-                    if (icon) {
-                        icon.className = newTheme === 'dark' ? 'bi bi-brightness-high fs-5 text-warning ftech-theme-icon-spin' : 'bi bi-moon-stars fs-5 text-primary ftech-theme-icon-spin';
+                    transition.ready.then(() => {
+                        const clipPath = [
+                            `circle(0px at ${x}px ${y}px)`,
+                            `circle(${endRadius}px at ${x}px ${y}px)`
+                        ];
+
+                        document.documentElement.animate(
+                            {
+                                clipPath: clipPath
+                            },
+                            {
+                                duration: 700,
+                                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                                pseudoElement: '::view-transition-new(root)'
+                            }
+                        );
+                    }).finally(() => {
+                        setTimeout(() => {
+                            if (icon) icon.classList.remove('ftech-theme-icon-spin');
+                            _isThemeSwitching = false;
+                        }, 700);
+                    });
+
+                } else {
+                    // 2. Fallback cho trình duyệt chưa hỗ trợ View Transitions (dùng circular ripple overlay)
+                    let rippleEl = document.getElementById('ftechThemeRipple');
+                    if (!rippleEl) {
+                        rippleEl = document.createElement('div');
+                        rippleEl.id = 'ftechThemeRipple';
+                        rippleEl.setAttribute('aria-hidden', 'true');
+                        document.body.appendChild(rippleEl);
                     }
 
-                    // Nếu bật theme Tối: Bùng nổ đợt mưa sao băng rực rỡ kéo dài bầu trời đêm
-                    if (newTheme === 'dark' && typeof window.ftechSpawnMeteors === 'function') {
-                        window.ftechSpawnMeteors(true);
-                    }
+                    rippleEl.style.setProperty('--ripple-x', `${x}px`);
+                    rippleEl.style.setProperty('--ripple-y', `${y}px`);
+                    rippleEl.style.setProperty('--ripple-radius', `${endRadius}px`);
+                    rippleEl.className = newTheme === 'dark' ? 'ripple-to-dark' : 'ripple-to-light';
 
-                    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
-                }, 480);
+                    setTimeout(() => {
+                        applyThemeChanges();
+                    }, 350);
 
-                // Kết thúc trọn vẹn dải quét chéo (1150ms)
-                setTimeout(() => {
-                    sweepEl.className = '';
-                    if (icon) icon.classList.remove('ftech-theme-icon-spin');
-                    _isThemeSwitching = false;
-                }, 1150);
+                    setTimeout(() => {
+                        rippleEl.className = '';
+                        if (icon) icon.classList.remove('ftech-theme-icon-spin');
+                        _isThemeSwitching = false;
+                    }, 750);
+                }
             };
 
             document.addEventListener("DOMContentLoaded", function () {

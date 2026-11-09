@@ -121,13 +121,13 @@
     html.dataset.bsTheme = currentTheme;
     syncThemeIcon(currentTheme);
 
-    // 2. Bắt sự kiện click để bật tắt Sáng / Tối với hiệu ứng Meteor Diagonal Sweep
+    // 2. Bắt sự kiện click để bật tắt Sáng / Tối với hiệu ứng Vòng tròn lan tỏa (Circular Reveal / Ripple)
     if (themeBtn && !themeBtn.dataset.themeBound) {
       themeBtn.dataset.themeBound = 'true';
       themeBtn.addEventListener('click', (e) => {
         e.preventDefault();
         if (typeof window.ftechSwitchTheme === 'function') {
-          window.ftechSwitchTheme();
+          window.ftechSwitchTheme(null, e);
         } else {
           const active = html.getAttribute('data-bs-theme') || html.dataset.bsTheme || 'dark';
           const newTheme = active === 'dark' ? 'light' : 'dark';
