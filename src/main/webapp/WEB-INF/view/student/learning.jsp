@@ -45,12 +45,10 @@
             = (LearningLesson) request.getAttribute("nextLesson");
 
     String videoUrl = selectedLesson == null
-            ? null : selectedLesson.getVideoUrl();
+            ? null : util.VideoUtil.toEmbedUrl(selectedLesson.getVideoUrl());
 
     boolean youtubeVideo = videoUrl != null
-            && videoUrl.matches(
-                    "^https://www\\.youtube\\.com/embed/[A-Za-z0-9_-]+$"
-            );
+            && util.VideoUtil.isYouTube(videoUrl);
 
     boolean isEnrolled = Boolean.TRUE.equals(request.getAttribute("isEnrolled"));
     boolean isAdminViewer = Boolean.TRUE.equals(request.getAttribute("isAdminViewer"));
@@ -70,9 +68,16 @@
             Khóa học của tôi
         </a>
 
-        <h1 class="h3 fw-bold mt-3 mb-0">
-            <%= escape(courseTitle) %>
-        </h1>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
+            <h1 class="h3 fw-bold mb-0">
+                <%= escape(courseTitle) %>
+            </h1>
+            <a href="<%= contextPath %>/student/certificate?courseId=<%= request.getParameter("courseId") %>"
+               class="btn btn-warning btn-sm rounded-pill px-3 py-1.5 fw-bold text-dark shadow-sm d-inline-flex align-items-center gap-1.5">
+                <i class="bi bi-award-fill fs-6 text-dark"></i>
+                <span>Xem chứng chỉ khóa học</span>
+            </a>
+        </div>
     </div>
 
     <% if (selectedLesson == null) { %>

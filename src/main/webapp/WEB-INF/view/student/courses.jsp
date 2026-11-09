@@ -268,6 +268,14 @@
                             <%= course.isCompleted() ? "Xem lại khóa học" : "Tiếp tục học" %>
                         </a>
 
+                        <% if (course.isCompleted()) { %>
+                        <a href="<%= contextPath %>/student/certificate?courseId=<%= course.getCourseId() %>"
+                           class="btn btn-warning w-100 mt-2 fw-bold text-dark rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                            <i class="bi bi-award-fill fs-5 text-dark"></i>
+                            <span>Xem chứng chỉ hoàn thành</span>
+                        </a>
+                        <% } %>
+
                         <% } else { %>
 
                         <button type="button"

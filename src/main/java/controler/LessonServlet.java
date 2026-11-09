@@ -299,7 +299,7 @@ public class LessonServlet extends HttpServlet {
                         instructorId,
                         title.trim(),
                         emptyToNull(content),
-                        emptyToNull(videoUrl),
+                        emptyToNull(util.VideoUtil.toEmbedUrl(videoUrl)),
                         durationSeconds,
                         preview,
                         required
@@ -420,7 +420,7 @@ public class LessonServlet extends HttpServlet {
                         instructorId,
                         title.trim(),
                         emptyToNull(content),
-                        emptyToNull(videoUrl),
+                        emptyToNull(util.VideoUtil.toEmbedUrl(videoUrl)),
                         durationSeconds,
                         preview,
                         required,

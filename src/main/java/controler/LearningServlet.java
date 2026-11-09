@@ -192,14 +192,17 @@ public class LearningServlet extends HttpServlet {
             request.setAttribute("isEnrolled", enrollmentId > 0);
             request.setAttribute("isAdminViewer", isAdmin);
             request.setAttribute("isInstructorViewer", isInstructorOwner);
-            if (enrollmentId > 0 || isInstructorOwner || isAdmin) {
-                QuizDAO quizDAO = new QuizDAO();
-                request.setAttribute(
-                        "quizzes",
-                        quizDAO.getCourseQuizzes(studentId, courseId)
-                );
+            QuizDAO quizDAO = new QuizDAO();
+            if (enrollmentId > 0) {
+                try {
+                    request.setAttribute(
+                            "quizzes",
+                            quizDAO.getCourseQuizzes(studentId, courseId)
+                    );
+                } catch (Exception ex) {
+                    request.setAttribute("quizzes", quizDAO.getQuizList(courseId));
+                }
             } else {
-                QuizDAO quizDAO = new QuizDAO();
                 request.setAttribute("quizzes", quizDAO.getQuizList(courseId));
             }
 

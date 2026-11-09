@@ -31,7 +31,7 @@
             <div class="card bg-black border border-secondary border-opacity-25 rounded-4 overflow-hidden mb-4 shadow-lg">
                 <div class="ratio ratio-16x9">
                     <% if (lesson.getVideoUrl() != null && !lesson.getVideoUrl().isBlank()) { %>
-                        <iframe src="<%= lesson.getVideoUrl() %>"
+                        <iframe src="<%= util.VideoUtil.toEmbedUrl(lesson.getVideoUrl()) %>"
                                 title="<%= lesson.getTitle() %>"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowfullscreen></iframe>
