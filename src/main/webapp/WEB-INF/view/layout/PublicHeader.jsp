@@ -354,7 +354,7 @@
 
             ::view-transition-new(root) {
                 z-index: 999999;
-                animation: ftechRealisticCircularReveal 1.05s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+                animation: ftechRealisticCircularReveal 2s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
             }
 
             @keyframes ftechRealisticCircularReveal {
@@ -393,7 +393,7 @@
                     0 0 35px 8px rgba(56, 189, 248, 0.85),
                     inset 0 0 25px 6px rgba(56, 189, 248, 0.6),
                     0 0 70px 20px rgba(139, 92, 246, 0.5);
-                animation: ftechRealisticWaveAnim 1.05s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+                animation: ftechRealisticWaveAnim 2s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
             }
 
             #ftechWaveRing.wave-active-dark::before {
@@ -406,7 +406,7 @@
                     0 0 35px 8px rgba(245, 158, 11, 0.85),
                     inset 0 0 25px 6px rgba(245, 158, 11, 0.6),
                     0 0 70px 20px rgba(96, 165, 250, 0.5);
-                animation: ftechRealisticWaveAnim 1.05s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+                animation: ftechRealisticWaveAnim 2s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
             }
 
             #ftechWaveRing.wave-active-light::before {
@@ -431,7 +431,7 @@
             }
 
             .ftech-theme-icon-spin {
-                animation: ftechThemeIconSpin 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+                animation: ftechThemeIconSpin 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
             }
 
             @keyframes ftechThemeIconSpin {
@@ -442,12 +442,12 @@
 
             [data-bs-theme="light"] #ftech-meteor-layer {
                 opacity: 0.15;
-                transition: opacity 0.85s ease;
+                transition: opacity 1.8s ease;
             }
 
             [data-bs-theme="dark"] #ftech-meteor-layer {
                 opacity: 1;
-                transition: opacity 0.85s ease;
+                transition: opacity 1.8s ease;
             }
 
 .logo-gradient {
@@ -3079,7 +3079,7 @@
                         waveRing.className = '';
                         if (icon) icon.classList.remove('ftech-theme-icon-spin');
                         _isThemeSwitching = false;
-                    }, 1050);
+                    }, 2000);
                 }
             };
 
