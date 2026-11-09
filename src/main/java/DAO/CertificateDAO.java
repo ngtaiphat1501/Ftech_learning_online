@@ -9,44 +9,28 @@ import java.time.LocalDateTime;
 public class CertificateDAO {
 
     /**
-     * Finds or auto-issues a Certificate for a student in a specific course.
+     * Finds or auto-issues a Certificate for a student in a specific course ONLY IF the course is completed.
      */
     public Certificate getOrCreateCertificate(long studentId, long courseId) throws SQLException {
-        String findExistingSql = "SELECT c.CertificateId, c.EnrollmentId, c.CertificateCode, c.Status, c.IssuedAt, c.VerificationUrl, "
-                + "u.FullName AS StudentName, co.Title AS CourseTitle, inst.FullName AS InstructorName "
-                + "FROM dbo.Certificates c "
-                + "JOIN dbo.Enrollments e ON e.EnrollmentId = c.EnrollmentId "
-                + "JOIN dbo.Users u ON u.UserId = e.StudentId "
-                + "JOIN dbo.Courses co ON co.CourseId = e.CourseId "
-                + "JOIN dbo.Users inst ON inst.UserId = co.InstructorId "
-                + "WHERE e.StudentId = ? AND e.CourseId = ?";
-
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(findExistingSql)) {
-            ps.setLong(1, studentId);
-            ps.setLong(2, courseId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapCertificate(rs);
-                }
-            }
-        }
-
-        // Check if student has an active enrollment
-        String enrollmentSql = "SELECT e.EnrollmentId, u.FullName AS StudentName, co.Title AS CourseTitle, inst.FullName AS InstructorName "
+        // 1. Verify if the student is enrolled and has COMPLETED the course
+        String checkCompletionSql = "SELECT e.EnrollmentId, e.CompletedAt, u.FullName AS StudentName, "
+                + "co.Title AS CourseTitle, inst.FullName AS InstructorName, "
+                + "ISNULL(p.IsEligibleForCompletion, 0) AS IsEligible "
                 + "FROM dbo.Enrollments e "
                 + "JOIN dbo.Users u ON u.UserId = e.StudentId "
                 + "JOIN dbo.Courses co ON co.CourseId = e.CourseId "
                 + "JOIN dbo.Users inst ON inst.UserId = co.InstructorId "
+                + "LEFT JOIN dbo.vEnrollmentProgress p ON p.EnrollmentId = e.EnrollmentId "
                 + "WHERE e.StudentId = ? AND e.CourseId = ? AND e.AccessStatus = 'ACTIVE'";
 
         long enrollmentId = 0;
         String studentName = "";
         String courseTitle = "";
         String instructorName = "";
+        boolean isCompleted = false;
 
         try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(enrollmentSql)) {
+             PreparedStatement ps = conn.prepareStatement(checkCompletionSql)) {
             ps.setLong(1, studentId);
             ps.setLong(2, courseId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -55,13 +39,50 @@ public class CertificateDAO {
                     studentName = rs.getString("StudentName");
                     courseTitle = rs.getString("CourseTitle");
                     instructorName = rs.getString("InstructorName");
+                    boolean completedAtNotNull = rs.getTimestamp("CompletedAt") != null;
+                    boolean isEligible = rs.getBoolean("IsEligible");
+                    isCompleted = completedAtNotNull || isEligible;
                 } else {
-                    return null; // Not enrolled
+                    return null; // Not enrolled or not active
                 }
             }
         }
 
-        // Issue new certificate in Certificates table
+        // If the course is not completed, no certificate is granted
+        if (!isCompleted) {
+            return null;
+        }
+
+        // If eligible but CompletedAt is null, mark CompletedAt now
+        String updateCompletedSql = "UPDATE dbo.Enrollments SET CompletedAt = SYSUTCDATETIME() "
+                + "WHERE EnrollmentId = ? AND CompletedAt IS NULL";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(updateCompletedSql)) {
+            ps.setLong(1, enrollmentId);
+            ps.executeUpdate();
+        }
+
+        // 2. Check if a certificate already exists for this enrollment
+        String findExistingSql = "SELECT c.CertificateId, c.EnrollmentId, c.CertificateCode, c.Status, c.IssuedAt, c.VerificationUrl, "
+                + "u.FullName AS StudentName, co.Title AS CourseTitle, inst.FullName AS InstructorName "
+                + "FROM dbo.Certificates c "
+                + "JOIN dbo.Enrollments e ON e.EnrollmentId = c.EnrollmentId "
+                + "JOIN dbo.Users u ON u.UserId = e.StudentId "
+                + "JOIN dbo.Courses co ON co.CourseId = e.CourseId "
+                + "JOIN dbo.Users inst ON inst.UserId = co.InstructorId "
+                + "WHERE c.EnrollmentId = ?";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(findExistingSql)) {
+            ps.setLong(1, enrollmentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapCertificate(rs);
+                }
+            }
+        }
+
+        // 3. Issue new certificate in Certificates table
         int currentYear = LocalDateTime.now().getYear();
         String code = "LN-" + currentYear + "-CERT-" + String.format("%04d", courseId) + String.format("%04d", studentId);
         String verificationUrl = "/student/certificate?code=" + code;

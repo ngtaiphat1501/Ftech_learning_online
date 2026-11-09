@@ -22,7 +22,7 @@ public class StudentCourseDAO {
                 + "u.FullName AS InstructorName, "
                 + "e.AccessStatus, e.CompletedAt, "
                 + "p.ProgressPercent, p.CompletedRequiredLessons, "
-                + "p.TotalRequiredLessons "
+                + "p.TotalRequiredLessons, ISNULL(p.IsEligibleForCompletion, 0) AS IsEligible "
                 + "FROM Enrollments e "
                 + "JOIN Courses c ON e.CourseId = c.CourseId "
                 + "JOIN Users u ON c.InstructorId = u.UserId "
@@ -55,7 +55,7 @@ public class StudentCourseDAO {
                             result.getInt("TotalRequiredLessons")
                     );
                     course.setCompleted(
-                            result.getTimestamp("CompletedAt") != null
+                            result.getTimestamp("CompletedAt") != null || result.getBoolean("IsEligible")
                     );
 
                     list.add(course);

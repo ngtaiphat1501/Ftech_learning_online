@@ -53,6 +53,7 @@
     boolean isEnrolled = Boolean.TRUE.equals(request.getAttribute("isEnrolled"));
     boolean isAdminViewer = Boolean.TRUE.equals(request.getAttribute("isAdminViewer"));
     boolean isInstructorViewer = Boolean.TRUE.equals(request.getAttribute("isInstructorViewer"));
+    boolean isCourseCompleted = Boolean.TRUE.equals(request.getAttribute("isCourseCompleted"));
 %>
 
 <%@include file="/WEB-INF/view/layout/PublicHeader.jsp"%>
@@ -72,11 +73,13 @@
             <h1 class="h3 fw-bold mb-0">
                 <%= escape(courseTitle) %>
             </h1>
-            <a href="<%= contextPath %>/student/certificate?courseId=<%= request.getParameter("courseId") %>"
+            <% if (isCourseCompleted) { %>
+            <a href="<%= contextPath %>/student/certificate?courseId=<%= courseId %>"
                class="btn btn-warning btn-sm rounded-pill px-3 py-1.5 fw-bold text-dark shadow-sm d-inline-flex align-items-center gap-1.5">
                 <i class="bi bi-award-fill fs-6 text-dark"></i>
                 <span>Xem chứng chỉ khóa học</span>
             </a>
+            <% } %>
         </div>
     </div>
 

@@ -108,4 +108,25 @@ public class LearningDAO {
 
         return list;
     }
+
+    public boolean isCourseCompleted(long studentId, long courseId) throws SQLException {
+        String sql = "SELECT e.CompletedAt, ISNULL(p.IsEligibleForCompletion, 0) AS IsEligible "
+                + "FROM dbo.Enrollments e "
+                + "LEFT JOIN dbo.vEnrollmentProgress p ON p.EnrollmentId = e.EnrollmentId "
+                + "WHERE e.StudentId = ? AND e.CourseId = ? AND e.AccessStatus = 'ACTIVE'";
+
+        try (Connection connection = DBContext.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, studentId);
+            statement.setLong(2, courseId);
+
+            try (ResultSet result = statement.executeQuery()) {
+                if (result.next()) {
+                    return result.getTimestamp("CompletedAt") != null || result.getBoolean("IsEligible");
+                }
+            }
+        }
+        return false;
+    }
 }

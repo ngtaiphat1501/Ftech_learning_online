@@ -117,6 +117,11 @@ public class LearningServlet extends HttpServlet {
                 return;
             }
 
+            boolean isCourseCompleted = false;
+            if (enrollmentId > 0) {
+                isCourseCompleted = learningDAO.isCourseCompleted(studentId, courseId);
+            }
+
             List<LearningLesson> lessons = learningDAO.getLessons(
                     courseId, enrollmentId
             );
@@ -134,6 +139,7 @@ public class LearningServlet extends HttpServlet {
                     request.setAttribute("isEnrolled", enrollmentId > 0);
                     request.setAttribute("isAdminViewer", isAdmin);
                     request.setAttribute("isInstructorViewer", isInstructorOwner);
+                    request.setAttribute("isCourseCompleted", isCourseCompleted);
 
                     request.getRequestDispatcher(
                             "/WEB-INF/view/student/learning.jsp"
@@ -192,6 +198,8 @@ public class LearningServlet extends HttpServlet {
             request.setAttribute("isEnrolled", enrollmentId > 0);
             request.setAttribute("isAdminViewer", isAdmin);
             request.setAttribute("isInstructorViewer", isInstructorOwner);
+            request.setAttribute("isCourseCompleted", isCourseCompleted);
+
             QuizDAO quizDAO = new QuizDAO();
             if (enrollmentId > 0) {
                 try {
