@@ -335,7 +335,7 @@
                                name="couponCode"
                                id="couponCodeInput"
                                class="form-control bg-dark border-secondary border-opacity-50 text-white font-monospace text-uppercase"
-                               placeholder="VD: LEARNORA20"
+                               placeholder="VD: FTECH20"
                                value="<%= quote.appliedCoupon != null ? quote.appliedCoupon.getCode() : couponCode %>">
                         <button type="submit" class="btn btn-outline-primary px-3 fw-medium">
                             Áp dụng
@@ -435,7 +435,7 @@
                         
                         <div class="d-inline-block position-relative my-2">
                             <img id="vietQrImg"
-                                 src="https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=<%= quote.missingVnd %>&addInfo=NAPTIEN%20<%= currentUserId %>&accountName=LEARNORA%20LMS"
+                                 src="https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=<%= quote.missingVnd %>&addInfo=NAPTIEN%20<%= currentUserId %>&accountName=FTECH%20LMS"
                                  alt="VietQR nạp tiền"
                                  class="qr-image img-fluid"
                                  onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=NAPTIEN_<%= currentUserId %>_<%= quote.missingVnd %>';">
@@ -448,7 +448,7 @@
                             <div class="col-5">Số tài khoản:</div>
                             <div class="col-7 qr-meta-val font-monospace">0987654321</div>
                             <div class="col-5">Chủ tài khoản:</div>
-                            <div class="col-7 qr-meta-val">LEARNORA LMS</div>
+                            <div class="col-7 qr-meta-val">FTECH LMS</div>
                             <div class="col-5">Số tiền nạp:</div>
                             <div class="col-7 text-danger fw-bold" id="qrMissingAmountText"><%= currency.format(quote.missingVnd) %>đ</div>
                             <div class="col-5">Nội dung:</div>
@@ -462,7 +462,7 @@
                         
                         <div class="d-inline-block position-relative my-2">
                             <img id="momoQrImg"
-                                 src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|LEARNORA%20LMS||0|0|<%= quote.missingVnd %>|NAPTIEN%20<%= currentUserId %>|transfer_mycode"
+                                 src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|FTECH%20LMS||0|0|<%= quote.missingVnd %>|NAPTIEN%20<%= currentUserId %>|transfer_mycode"
                                  alt="MoMo QR nạp tiền"
                                  class="qr-image img-fluid"
                                  style="border: 2px solid #d82d8b;">
@@ -475,7 +475,7 @@
                             <div class="col-5">Số điện thoại:</div>
                             <div class="col-7 qr-meta-val font-monospace">0987654321</div>
                             <div class="col-5">Tên ví nhận:</div>
-                            <div class="col-7 qr-meta-val">LEARNORA LMS</div>
+                            <div class="col-7 qr-meta-val">FTECH LMS</div>
                             <div class="col-5">Số tiền nạp:</div>
                             <div class="col-7 text-danger fw-bold" id="momoMissingAmountText"><%= currency.format(quote.missingVnd) %>đ</div>
                             <div class="col-5">Lời nhắn:</div>
@@ -489,7 +489,7 @@
                             onclick="submitCheckout('topup_and_pay')" 
                             class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
                         <i class="bi bi-qr-code-scan fs-5"></i>
-                        <span id="btnTopUpAndPayText">Xác nhận đã chuyển khoản VietQR (Nạp tiền Demo & Thanh toán)</span>
+                        <span id="btnTopUpAndPayText">Xác nhận đã chuyển khoản VietQR & Thanh toán ngay</span>
                     </button>
                     <div class="text-center text-secondary small mt-2">
                         <i class="bi bi-info-circle me-1"></i>Hệ thống tự động cộng tiền vào ví và kích hoạt khóa học ngay lập tức.
@@ -592,7 +592,7 @@
                 btnSubmit.style.background = 'linear-gradient(135deg, #d82d8b, #a50064)';
                 btnSubmit.style.borderColor = '#a50064';
             }
-            if (btnText) btnText.innerText = 'Xác nhận đã chuyển qua Ví MoMo (Nạp tiền Demo & Thanh toán)';
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển qua Ví MoMo & Thanh toán ngay';
         } else {
             if (btnMomo) btnMomo.classList.remove('active-momo');
             if (btnVietQr) btnVietQr.classList.add('active-vietqr');
@@ -602,7 +602,7 @@
                 btnSubmit.style.background = '';
                 btnSubmit.style.borderColor = '';
             }
-            if (btnText) btnText.innerText = 'Xác nhận đã chuyển khoản VietQR (Nạp tiền Demo & Thanh toán)';
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển khoản VietQR & Thanh toán ngay';
         }
     }
 
@@ -704,13 +704,13 @@
             // Update Dynamic VietQR Image URL
             const vietQrImg = document.getElementById('vietQrImg');
             if (vietQrImg) {
-                vietQrImg.src = "https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=" + missing + "&addInfo=NAPTIEN%20" + currentUserId + "&accountName=LEARNORA%20LMS";
+                vietQrImg.src = "https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=" + missing + "&addInfo=NAPTIEN%20" + currentUserId + "&accountName=FTECH%20LMS";
             }
 
             // Update Dynamic MoMo QR Image URL
             const momoQrImg = document.getElementById('momoQrImg');
             if (momoQrImg) {
-                momoQrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|LEARNORA%20LMS||0|0|" + missing + "|NAPTIEN%20" + currentUserId + "|transfer_mycode";
+                momoQrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|FTECH%20LMS||0|0|" + missing + "|NAPTIEN%20" + currentUserId + "|transfer_mycode";
             }
         }
     }

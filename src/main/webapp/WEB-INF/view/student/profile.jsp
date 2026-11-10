@@ -124,7 +124,7 @@
                     <% } %>
                 </div>
                 <div class="text-secondary small mb-2"><i class="bi bi-envelope me-1"></i><%= userProfile.getEmail() %></div>
-                <div class="text-body-secondary small"><%= userProfile.getHeadline() != null ? userProfile.getHeadline() : "Thành viên nền tảng học tập Learnora" %></div>
+                <div class="text-body-secondary small"><%= userProfile.getHeadline() != null ? userProfile.getHeadline() : "Thành viên nền tảng học tập Ftech" %></div>
             </div>
 
             <div class="col-12 col-md-auto text-md-end border-top border-md-top-0 border-secondary border-opacity-25 pt-3 pt-md-0">
@@ -237,7 +237,7 @@
                         <div class="row align-items-center g-3">
                             <div class="col-md-7">
                                 <span class="text-secondary small text-uppercase fw-semibold d-block mb-1">
-                                    <i class="bi bi-wallet-fill text-primary me-1"></i>Số dư khả dụng Ví Learnora
+                                    <i class="bi bi-wallet-fill text-primary me-1"></i>Số dư khả dụng Ví Ftech
                                 </span>
                                 <h2 class="display-6 fw-bold text-success font-monospace mb-1">
                                     <%= currency.format(userProfile.getBalanceVnd()) %> đ
@@ -385,7 +385,7 @@
             <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 pt-3 pb-2">
                 <div>
                     <h5 class="modal-title fw-bold text-white mb-0" id="topUpModalLabel">
-                        <i class="bi bi-plus-circle text-success me-2"></i>Nạp tiền vào Ví Learnora
+                        <i class="bi bi-plus-circle text-success me-2"></i>Nạp tiền vào Ví Ftech
                     </h5>
                     <span class="text-secondary small">Chọn số tiền và phương thức chuyển khoản</span>
                 </div>
@@ -455,7 +455,7 @@
                         <div class="text-secondary small mb-2 fw-medium" id="walletQrTitle">Quét mã VietQR bằng App Ngân hàng bất kỳ:</div>
                         <div class="d-inline-block bg-white p-2 rounded-3 mb-2 shadow">
                             <img id="walletQrImage" 
-                                 src="https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=100000&addInfo=NAPTIEN%20<%= userProfile.getUserId() %>&accountName=LEARNORA%20LMS" 
+                                 src="https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=100000&addInfo=NAPTIEN%20<%= userProfile.getUserId() %>&accountName=FTECH%20LMS" 
                                  alt="QR Nạp tiền" 
                                  class="img-fluid" 
                                  style="width: 175px; height: 175px; object-fit: contain;">
@@ -467,7 +467,7 @@
                             <div class="col-5" id="walletAccLabel">Số tài khoản:</div>
                             <div class="col-7 text-white font-monospace fw-semibold" id="walletAccVal">0987654321</div>
                             <div class="col-5">Chủ tài khoản:</div>
-                            <div class="col-7 text-white fw-semibold">LEARNORA LMS</div>
+                            <div class="col-7 text-white fw-semibold">FTECH LMS</div>
                             <div class="col-5">Số tiền nạp:</div>
                             <div class="col-7 text-danger fw-bold font-monospace" id="walletAmountDisplay">100.000đ</div>
                             <div class="col-5">Nội dung:</div>
@@ -478,7 +478,7 @@
                     <!-- Instant Simulation Confirmation Button -->
                     <button type="submit" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
                         <i class="bi bi-qr-code-scan fs-5"></i>
-                        <span id="btnWalletTopUpSubmitText">Xác nhận đã chuyển khoản (Nạp demo ngay)</span>
+                        <span id="btnWalletTopUpSubmitText">Xác nhận đã chuyển khoản nạp tiền ngay</span>
                     </button>
                     <div class="text-center text-secondary small mt-2">
                         <i class="bi bi-shield-check me-1"></i>Hệ thống tự động ghi nhận giao dịch và cộng tiền vào ví lập tức.
@@ -499,7 +499,7 @@
             <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 pt-3 pb-2">
                 <div>
                     <h5 class="modal-title fw-bold text-white mb-0" id="withdrawModalLabel">
-                        <i class="bi bi-box-arrow-up-right text-warning me-2"></i>Rút tiền từ Ví Learnora
+                        <i class="bi bi-box-arrow-up-right text-warning me-2"></i>Rút tiền từ Ví Ftech
                     </h5>
                     <span class="text-secondary small">Rút về tài khoản ngân hàng hoặc ví điện tử MoMo</span>
                 </div>
@@ -673,7 +673,7 @@
             if (destVal) destVal.innerText = 'Ví MoMo';
             if (accLabel) accLabel.innerText = 'SĐT nhận:';
             if (accVal) accVal.innerText = '0987654321';
-            if (submitText) submitText.innerText = 'Xác nhận đã chuyển qua MoMo (Nạp demo ngay)';
+            if (submitText) submitText.innerText = 'Xác nhận đã chuyển qua MoMo nạp tiền ngay';
         } else {
             if (btnMomo) btnMomo.classList.remove('active-momo');
             if (btnVietQr) btnVietQr.classList.add('active-vietqr');
@@ -682,7 +682,7 @@
             if (destVal) destVal.innerText = 'MBBank (Quân Đội)';
             if (accLabel) accLabel.innerText = 'Số tài khoản:';
             if (accVal) accVal.innerText = '0987654321';
-            if (submitText) submitText.innerText = 'Xác nhận đã chuyển khoản VietQR (Nạp demo ngay)';
+            if (submitText) submitText.innerText = 'Xác nhận đã chuyển khoản VietQR nạp tiền ngay';
         }
 
         updateWalletQrImage();
@@ -695,9 +695,9 @@
         if (!img) return;
 
         if (currentTopUpMethod === 'MOMO') {
-            img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=2|99|0987654321|LEARNORA%20LMS||0|0|' + amount + '|NAPTIEN%20' + currentUserId + '|transfer_mycode';
+            img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=2|99|0987654321|FTECH%20LMS||0|0|' + amount + '|NAPTIEN%20' + currentUserId + '|transfer_mycode';
         } else {
-            img.src = 'https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=' + amount + '&addInfo=NAPTIEN%20' + currentUserId + '&accountName=LEARNORA%20LMS';
+            img.src = 'https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=' + amount + '&addInfo=NAPTIEN%20' + currentUserId + '&accountName=FTECH%20LMS';
         }
     }
 

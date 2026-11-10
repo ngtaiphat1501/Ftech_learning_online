@@ -77,7 +77,7 @@ public class AdminOrderServlet extends HttpServlet {
             try (Connection conn = DBContext.getConnection()) {
                 List<Order> orders = orderDAO.getAllOrdersForAdmin(conn, statusFilter, search);
                 response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                response.setHeader("Content-Disposition", "attachment; filename=\"Learnora_Orders_" + System.currentTimeMillis() + ".xlsx\"");
+                response.setHeader("Content-Disposition", "attachment; filename=\"Ftech_Orders_" + System.currentTimeMillis() + ".xlsx\"");
                 ExcelUtil.exportOrders(orders, response.getOutputStream());
                 return;
             } catch (SQLException ex) {

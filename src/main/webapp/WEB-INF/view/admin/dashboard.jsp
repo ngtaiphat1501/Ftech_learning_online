@@ -90,7 +90,7 @@
                 <i class="bi bi-speedometer2 text-primary me-2"></i>Bảng Điều Khiển Quản Trị Hệ Thống
             </h1>
             <p class="text-secondary small mb-0">
-                Thống kê số liệu học tập thời gian thực, doanh thu thực nhận từ đơn hàng PAID và tình trạng vận hành nền tảng Learnora.
+                Thống kê số liệu học tập thời gian thực, doanh thu thực nhận từ đơn hàng PAID và tình trạng vận hành nền tảng Ftech.
             </p>
         </div>
 

@@ -193,7 +193,7 @@
 
         <title>
             ${empty pageTitle
-              ? 'Ftech PRJ đỉnh cao'
+              ? 'Ftech - Nền tảng Học trực tuyến'
               : pageTitle}
         </title>
 

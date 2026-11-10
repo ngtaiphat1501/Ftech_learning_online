@@ -1,5 +1,5 @@
 # BÁO CÁO TOÀN DIỆN PHẦN VIỆC & KỊCH BẢN THUYẾT TRÌNH BẢO VỆ PROJECT MÔN HỌC PRJ301 (ĐẠI HỌC FPT CẦN THƠ)
-**Dự án:** Learnora LMS — Nền tảng học trực tuyến  
+**Dự án:** Ftech LMS — Nền tảng học trực tuyến  
 **Thành viên thực hiện:** **Nguyễn Phát Tài**  
 **Công nghệ:** Java Servlet (Jakarta EE 10 / Servlet 6.0), JSP, JSTL, JDBC, SQL Server, Apache POI  
 **Ngày cập nhật:** 09/11/2026  
@@ -32,7 +32,7 @@ Dựa theo bảng phân công chính thức của nhóm (**`Phân công - Trang 
 ### Bảng đối soát chi tiết từng đầu việc:
 | STT | Phân hệ / Servlet | URL Endpoint | Sprint | Trạng thái |
 | :---: | :--- | :--- | :---: | :---: |
-| 1 | **Database & JDBC** | `LearnoraDemoDB` / `DBContext.java` | Sprint 1 | **Hoàn thành 100%** |
+| 1 | **Database & JDBC** | `FtechDemoDB` / `DBContext.java` | Sprint 1 | **Hoàn thành 100%** |
 | 2 | **Trang chủ Catalog** | `/` (`PublicCatalogServlet`) | Sprint 1 | **Hoàn thành 100%** |
 | 3 | **Giỏ hàng (Cart)** | `/student/cart` (`CartServlet`) | Sprint 1 | **Hoàn thành 100%** |
 | 4 | **Sửa/Xóa Danh mục** | `/admin/category` (`CategoryServlet`) | Sprint 1 | **Hoàn thành 100%** |
@@ -65,7 +65,7 @@ flowchart TD
     I --> J["Bấm 'Checkout' trên Drawer hoặc Cart Page"]
     
     J --> K["In-place Checkout Modal (Popup không tải lại trang)"]
-    K --> L["Nhập mã giảm giá Coupon (VD: LEARNORA20)"]
+    K --> L["Nhập mã giảm giá Coupon (VD: FTECH20)"]
     L --> M{"Kiểm tra số dư ví BalanceVnd?"}
     
     M -- "Đủ số dư" --> N["Bấm 'Xác nhận thanh toán'"]
@@ -91,7 +91,7 @@ flowchart TD
 ## 3. CHI TIẾT KỸ THUẬT TỪNG MODULE DO TÀI ĐẢM NHIỆM
 
 ### Module 1: Thiết kế Database & Quản lý Transaction JDBC
-- **File:** [`config/DBContext.java`](file:///D:/prj_project_final/GroupASM/src/main/java/config/DBContext.java), [`GroupASM/database/LearnoraDemo_SQLServer.sql`](file:///D:/prj_project_final/GroupASM/database/LearnoraDemo_SQLServer.sql).
+- **File:** [`config/DBContext.java`](file:///D:/prj_project_final/GroupASM/src/main/java/config/DBContext.java), [`GroupASM/database/FtechDemo_SQLServer.sql`](file:///D:/prj_project_final/GroupASM/database/FtechDemo_SQLServer.sql).
 - **Cơ chế kỹ thuật:**
   - Thiết kế chuẩn 29 bảng theo kiến trúc phân hệ: Tài khoản (`Users`, `Roles`, `UserRoles`), Khóa học (`Courses`, `Categories`, `Chapters`, `Lessons`), Mua sắm (`Carts`, `CartItems`, `Orders`, `OrderItems`), Học tập (`Enrollments`, `LessonProgress`), Đánh giá & Giám sát (`CourseReviews`, `DiscussionPosts`, `AuditLogs`).
   - Hàm `beginTransaction()` tắt `setAutoCommit(false)`, trả về `Connection` duy nhất để truyền qua nhiều DAO trong cùng 1 nghiệp vụ.
@@ -195,7 +195,7 @@ flowchart TD
 Khi đến lượt Tài thuyết trình, hãy mở trình duyệt và thực hiện theo kịch bản chuẩn sau:
 
 ### Bước 1: Giới thiệu Kiến trúc Database & Quản lý Transaction
-* **Nói:** *"Em chào thầy cô, em là Nguyễn Phát Tài. Trong đồ án Learnora LMS, em phụ trách thiết kế Database 29 bảng, phân hệ Giỏ hàng, Đặt hàng thanh toán, Quản lý đơn hàng Admin, Quản lý danh mục, Phân quyền và các tính năng nâng cao như Excel và Cookie."*
+* **Nói:** *"Em chào thầy cô, em là Nguyễn Phát Tài. Trong đồ án Ftech LMS, em phụ trách thiết kế Database 29 bảng, phân hệ Giỏ hàng, Đặt hàng thanh toán, Quản lý đơn hàng Admin, Quản lý danh mục, Phân quyền và các tính năng nâng cao như Excel và Cookie."*
 * **Thao tác:** Mở file [`DBContext.java`](file:///D:/prj_project_final/GroupASM/src/main/java/config/DBContext.java), chỉ vào hàm `beginTransaction()` và giải thích cơ chế quản lý giao dịch an toàn khi học viên thanh toán.
 
 ### Bước 2: Demo Giỏ hàng & Thanh toán In-place (Student Flow)
@@ -203,7 +203,7 @@ Khi đến lượt Tài thuyết trình, hãy mở trình duyệt và thực hi�
   1. Đăng nhập bằng tài khoản học viên: `student@learnora.test` / `student123`.
   2. Bấm vào một khóa học có phí (PAID) -> Bấm **"Thêm vào giỏ hàng"**.
   3. Mở **Cart Drawer** góc phải -> Bấm **Checkout**.
-  4. Hiển thị Popup Modal -> Áp mã giảm giá `LEARNORA20` (giảm 20%).
+  4. Hiển thị Popup Modal -> Áp mã giảm giá `FTECH20` (giảm 20%).
   5. Giải thích: *"Hệ thống kiểm tra số dư ví học viên (`BalanceVnd`). Vì số dư đủ nên hệ thống thực hiện trừ tiền trực tiếp trong 1 Transaction nguyên tử."*
   6. Bấm thanh toán thành công -> Kiểm tra trang **Khóa học của tôi** đã xuất hiện khóa học mới, và trong giỏ hàng khóa học đó đã tự động được xóa đi.
   7. Vào trang **Lịch sử đơn hàng** (`/student/orders`) để xem hóa đơn và biên lai snapshot.

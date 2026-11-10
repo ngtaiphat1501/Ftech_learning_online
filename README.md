@@ -87,14 +87,14 @@ Hệ thống cung cấp trải nghiệm hoàn chỉnh cho mọi đối tượng 
 
 ### 2. Cài đặt Cơ sở Dữ liệu
 1. Mở **SQL Server Management Studio (SSMS)** hoặc Azure Data Studio.
-2. Mở file kịch bản tại đường dẫn: `database/LearnoraDemo_SQLServer.sql`.
-3. Nhấn **Execute** (`F5`) để khởi tạo CSDL `LearnoraDemoDB` kèm 29 bảng và dữ liệu mẫu (Kịch bản idempotent an toàn, có thể chạy lại nhiều lần).
+2. Mở file kịch bản tại đường dẫn: `database/FtechDemo_SQLServer.sql`.
+3. Nhấn **Execute** (`F5`) để khởi tạo CSDL `FtechDemoDB` kèm 29 bảng và dữ liệu mẫu (Kịch bản idempotent an toàn, có thể chạy lại nhiều lần).
 
 ### 3. Cấu hình Kết nối CSDL
 Mặc định hệ thống kết nối qua file `src/main/java/config/DBContext.java`:
 ```properties
 Server: localhost:1433
-DatabaseName: LearnoraDemoDB
+DatabaseName: FtechDemoDB
 User: sa
 Password: sa12345
 ```
@@ -128,7 +128,7 @@ docker compose up -d --build
 
 ## 🔑 Tài khoản Kiểm thử Dựng sẵn (Demo Accounts)
 
-Tất cả các tài khoản thử nghiệm bên dưới đều sử dụng **Mật khẩu chung**: `Learnora@123`
+Tất cả các tài khoản thử nghiệm bên dưới đều sử dụng **Mật khẩu chung**: `Ftech@123`
 
 | Vai trò | Email đăng nhập | Tên người dùng | Mục đích kiểm thử |
 | :--- | :--- | :--- | :--- |

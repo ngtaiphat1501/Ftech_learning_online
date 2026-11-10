@@ -284,7 +284,7 @@
                     <div class="p-3 rounded-3 mb-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <span class="text-secondary small d-block">Số dư ví Learnora:</span>
+                                <span class="text-secondary small d-block">Số dư ví Ftech:</span>
                                 <span class="fw-bold text-warning fs-5" id="modalUserBalanceDisplay">0đ</span>
                             </div>
                             <div class="text-end">
@@ -364,7 +364,7 @@
                                 <div class="col-5">Số tài khoản:</div>
                                 <div class="col-7 modal-qr-val font-monospace">0987654321</div>
                                 <div class="col-5">Chủ TK:</div>
-                                <div class="col-7 modal-qr-val">LEARNORA LMS</div>
+                                <div class="col-7 modal-qr-val">FTECH LMS</div>
                                 <div class="col-5">Nội dung:</div>
                                 <div class="col-7 text-warning fw-bold font-monospace" id="modalTransferSyntax">NAPTIEN</div>
                             </div>
@@ -382,7 +382,7 @@
                                 <div class="col-5">Số điện thoại:</div>
                                 <div class="col-7 modal-qr-val font-monospace">0987654321</div>
                                 <div class="col-5">Chủ ví:</div>
-                                <div class="col-7 modal-qr-val">LEARNORA LMS</div>
+                                <div class="col-7 modal-qr-val">FTECH LMS</div>
                                 <div class="col-5">Lời nhắn:</div>
                                 <div class="col-7 text-warning fw-bold font-monospace" id="modalMomoTransferSyntax">NAPTIEN</div>
                             </div>
@@ -394,7 +394,7 @@
                                 onclick="executeModalCheckout('topup_and_pay')" 
                                 class="btn btn-success w-100 py-2.5 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
                             <i class="bi bi-qr-code-scan fs-5"></i>
-                            <span id="btnModalTopUpText">Xác nhận đã chuyển khoản VietQR (Nạp demo & Kích hoạt)</span>
+                            <span id="btnModalTopUpText">Xác nhận đã chuyển khoản VietQR & Kích hoạt ngay</span>
                         </button>
                     </div>
 
@@ -472,7 +472,7 @@
                 btnSubmit.style.background = 'linear-gradient(135deg, #d82d8b, #a50064)';
                 btnSubmit.style.borderColor = '#a50064';
             }
-            if (btnText) btnText.innerText = 'Xác nhận đã chuyển qua Ví MoMo (Nạp demo & Kích hoạt)';
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển qua Ví MoMo & Kích hoạt ngay';
         } else {
             if (btnMomo) btnMomo.classList.remove('active-momo');
             if (btnVietQr) btnVietQr.classList.add('active-vietqr');
@@ -482,7 +482,7 @@
                 btnSubmit.style.background = '';
                 btnSubmit.style.borderColor = '';
             }
-            if (btnText) btnText.innerText = 'Xác nhận đã chuyển khoản VietQR (Nạp demo & Kích hoạt)';
+            if (btnText) btnText.innerText = 'Xác nhận đã chuyển khoản VietQR & Kích hoạt ngay';
         }
     }
 
@@ -724,11 +724,11 @@
             const userId = state.userId;
             const qrImg = document.getElementById('modalVietQrImage');
             if (qrImg) {
-                qrImg.src = 'https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=' + missing + '&addInfo=NAPTIEN%20' + userId + '&accountName=LEARNORA%20LMS';
+                qrImg.src = 'https://api.vietqr.io/image/970422-0987654321-compact2.png?amount=' + missing + '&addInfo=NAPTIEN%20' + userId + '&accountName=FTECH%20LMS';
             }
             const momoImg = document.getElementById('modalMomoQrImage');
             if (momoImg) {
-                momoImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|LEARNORA%20LMS||0|0|' + missing + '|NAPTIEN%20' + userId + '|transfer_mycode';
+                momoImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=2|99|0987654321|FTECH%20LMS||0|0|' + missing + '|NAPTIEN%20' + userId + '|transfer_mycode';
             }
             document.getElementById('modalTransferSyntax').innerText = 'NAPTIEN ' + userId;
             document.getElementById('modalMomoTransferSyntax').innerText = 'NAPTIEN ' + userId;

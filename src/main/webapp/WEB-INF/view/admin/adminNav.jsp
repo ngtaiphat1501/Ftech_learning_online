@@ -10,7 +10,7 @@
             <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1.5 fw-semibold">
                 <i class="bi bi-shield-lock-fill me-1"></i>Khu vực Quản trị (Admin)
             </span>
-            <span class="text-secondary small d-none d-md-inline">Hệ thống quản lý Learnora LMS</span>
+            <span class="text-secondary small d-none d-md-inline">Hệ thống quản lý Ftech LMS</span>
         </div>
 
         <nav class="nav nav-pills gap-1">

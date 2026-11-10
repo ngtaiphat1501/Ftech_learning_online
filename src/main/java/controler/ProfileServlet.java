@@ -103,7 +103,7 @@ public class ProfileServlet extends HttpServlet {
             request.setAttribute("walletTransactions", transactions);
             request.setAttribute("activeTab", activeTab);
             request.setAttribute("activeMenu", "profile");
-            request.setAttribute("pageTitle", "Hồ sơ cá nhân & Ví - Learnora LMS");
+            request.setAttribute("pageTitle", "Hồ sơ cá nhân & Ví - Ftech LMS");
 
             request.getRequestDispatcher("/WEB-INF/view/student/profile.jsp").forward(request, response);
 
@@ -159,7 +159,7 @@ public class ProfileServlet extends HttpServlet {
                     User updatedUser = userDAO.findById(userId);
                     HttpSession session = request.getSession(false);
                     if (session != null) session.setAttribute("user", updatedUser);
-                    response.sendRedirect(request.getContextPath() + "/profile?tab=wallet&msg=" + urlEncode("Nạp thành công " + currency.format(amount) + "đ vào ví Learnora!"));
+                    response.sendRedirect(request.getContextPath() + "/profile?tab=wallet&msg=" + urlEncode("Nạp thành công " + currency.format(amount) + "đ vào ví Ftech!"));
                 } else {
                     response.sendRedirect(request.getContextPath() + "/profile?tab=wallet&error=" + urlEncode("Không thể thực hiện nạp tiền. Vui lòng thử lại."));
                 }

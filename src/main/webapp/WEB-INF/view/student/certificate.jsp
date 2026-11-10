@@ -468,10 +468,10 @@
                 <div>
                     <span class="cert-institution-badge">
                         <i class="bi bi-shield-shaded"></i>
-                        <span>LEARNORA ACADEMY OF ADVANCED TECHNOLOGY</span>
+                        <span>FTECH ACADEMY OF ADVANCED TECHNOLOGY</span>
                     </span>
                 </div>
-                <div class="cert-institution-name">HỌC VIỆN CÔNG NGHỆ LEARNORA • HỘI ĐỒNG KHẢO THÍ ĐÀO TẠO</div>
+                <div class="cert-institution-name">HỌC VIỆN CÔNG NGHỆ FTECH • HỘI ĐỒNG KHẢO THÍ ĐÀO TẠO</div>
                 <div class="cert-subinstitution">FPT UNIVERSITY CAMPUS • ENTERPRISE SOFTWARE ENGINEERING CREDENTIAL</div>
 
                 <!-- Grand Title -->
@@ -484,7 +484,7 @@
                 <!-- Recipient Name -->
                 <div>
                     <span class="cert-recipient-name">
-                        <%= cert.getStudentName() != null ? cert.getStudentName() : "Học viên Learnora" %>
+                        <%= cert.getStudentName() != null ? cert.getStudentName() : "Học viên Ftech" %>
                     </span>
                 </div>
 
@@ -516,7 +516,7 @@
 
                 <!-- Official Endorsement Description -->
                 <div class="cert-description">
-                    Được công nhận đáp ứng toàn diện các tiêu chuẩn kỹ năng lập trình, tư duy kiến trúc phần mềm doanh nghiệp, năng lực phân tích tối ưu hiệu năng và được cấp quyền chứng nhận chuyên môn tại nền tảng giáo dục trực tuyến Learnora.
+                    Được công nhận đáp ứng toàn diện các tiêu chuẩn kỹ năng lập trình, tư duy kiến trúc phần mềm doanh nghiệp, năng lực phân tích tối ưu hiệu năng và được cấp quyền chứng nhận chuyên môn tại nền tảng giáo dục trực tuyến Ftech.
                 </div>
 
                 <!-- Signatures, Official 3D Seal & Real-Time QR Verification -->
@@ -538,7 +538,7 @@
                     <div class="col-4 text-center">
                         <div class="cert-seal-wrapper">
                             <div class="cert-wax-seal">
-                                <span>LEARNORA LMS</span>
+                                <span>FTECH LMS</span>
                                 <div class="seal-star">★ ★ ★</div>
                                 <span>OFFICIAL</span>
                                 <span>CREDENTIAL</span>

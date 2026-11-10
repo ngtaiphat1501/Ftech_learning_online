@@ -83,7 +83,7 @@ public final class ExcelUtil {
             // Title Row
             Row titleRow = sheet.createRow(0);
             Cell titleCell = titleRow.createCell(0);
-            titleCell.setCellValue("LEARNORA LMS - BÁO CÁO QUẢN LÝ ĐƠN HÀNG & DOANH THU");
+            titleCell.setCellValue("FTECH LMS - BÁO CÁO QUẢN LÝ ĐƠN HÀNG & DOANH THU");
             titleCell.setCellStyle(titleStyle);
 
             // Subtitle Row

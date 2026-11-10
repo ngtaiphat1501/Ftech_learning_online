@@ -85,7 +85,7 @@ public class AdminDashboardServlet extends HttpServlet {
             request.setAttribute("selectedYear", currentYear);
             request.setAttribute("activeMenu", "admin");
             request.setAttribute("adminTab", "dashboard");
-            request.setAttribute("pageTitle", "Tổng quan Quản trị - Learnora LMS");
+            request.setAttribute("pageTitle", "Tổng quan Quản trị - Ftech LMS");
 
             request.getRequestDispatcher("/WEB-INF/view/admin/dashboard.jsp").forward(request, response);
 

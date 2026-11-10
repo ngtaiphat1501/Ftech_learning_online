@@ -34,7 +34,7 @@ public class CertificateServlet extends HttpServlet {
             if (codeParam != null && !codeParam.isBlank()) {
                 cert = certificateDAO.getCertificateByCode(codeParam.trim());
                 if (cert == null) {
-                    request.setAttribute("pageTitle", "Không tìm thấy chứng chỉ - Learnora");
+                    request.setAttribute("pageTitle", "Không tìm thấy chứng chỉ - Ftech");
                     request.setAttribute("jakarta.servlet.error.message", "Mã chứng chỉ không tồn tại hoặc không hợp lệ.");
                     request.getRequestDispatcher("/WEB-INF/view/error/404.jsp").forward(request, response);
                     return;
@@ -47,7 +47,7 @@ public class CertificateServlet extends HttpServlet {
                 long courseId = Long.parseLong(courseIdParam.trim());
                 cert = certificateDAO.getOrCreateCertificate(currentUserId, courseId);
                 if (cert == null) {
-                    request.setAttribute("pageTitle", "Chưa hoàn thành khóa học - Learnora");
+                    request.setAttribute("pageTitle", "Chưa hoàn thành khóa học - Ftech");
                     request.setAttribute("jakarta.servlet.error.message",
                             "Bạn chưa hoàn thành khóa học này. Vui lòng hoàn thành 100% tất cả bài học và vượt qua các bài kiểm tra bắt buộc để nhận chứng chỉ tốt nghiệp.");
                     request.getRequestDispatcher("/WEB-INF/view/error/403.jsp").forward(request, response);
